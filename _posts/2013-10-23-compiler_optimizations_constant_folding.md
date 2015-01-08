@@ -1,6 +1,6 @@
 ---
 title:      编译器优化，part 1，常量折叠
-category:   pages
+category:   blog
 layout:     post
 tags:       [compiler, optimization]
 ---

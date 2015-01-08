@@ -1,6 +1,6 @@
 ---
 title:      JVM性能优化, Part 5 — 伸缩性
-category:   pages
+category:   blog
 layout:     post
 tags:       [java, jvm, translation]
 ---

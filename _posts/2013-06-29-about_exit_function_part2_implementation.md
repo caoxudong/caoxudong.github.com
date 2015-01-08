@@ -1,6 +1,6 @@
 ---
 title:      进程退出的相关函数，part2，实现
-category:   pages
+category:   blog
 layout:     post
 tags:       [c. glibc]
 ---

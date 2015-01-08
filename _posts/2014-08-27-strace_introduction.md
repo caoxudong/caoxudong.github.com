@@ -1,6 +1,6 @@
 ---
 title:      strace简介
-category:   pages
+category:   blog
 layout:     post
 tags:       [strace, performance, linux]
 ---

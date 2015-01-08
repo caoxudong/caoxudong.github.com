@@ -1,6 +1,6 @@
 ---
 title:      Java之坑，part1：wait和notify
-category:   pages
+category:   blog
 layout:     post
 tags:       [java]
 ---

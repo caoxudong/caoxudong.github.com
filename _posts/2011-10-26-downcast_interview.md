@@ -1,6 +1,6 @@
 ---
 title:      让我郁闷的面试
-category:   pages
+category:   blog
 tags:       [interview life]
 layout:     post
 ---

@@ -1,12 +1,21 @@
+defaults:
+  -
+    scope:
+      path: "_posts"
+    values:
+      layout: "post"
+      category: "blog"
+
+
 # Site settings
-title: caoxudong's workstation
-email: caoxudong818@gmail.com
+title: "Don't worry. Be happy."
+email: "caoxudong818@gmail.com"
 description: > # this means to ignore newlines until "baseurl:"
-  Don't worry. Be happy.
+  caoxudong's workstation
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://blog.caoxudong.info" # the base hostname & protocol for your site
-twitter_username: caoxudong127
-github_username:  caoxudong
+twitter_username: "caoxudong127"
+github_username:  "caoxudong"
 
 # Build settings
-markdown: kramdown
+markdown: "kramdown"

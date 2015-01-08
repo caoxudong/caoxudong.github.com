@@ -1,6 +1,6 @@
 ---
 title:      获取本机ip信息
-category:   pages
+category:   blog
 layout:     post
 tag:        [java, network]
 ---

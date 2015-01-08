@@ -1,7 +1,7 @@
 ---
 title:      循环计算中看到的小问题
 layout:     post
-category:   pages
+category:   blog
 tags:       [java, javascript]
 ---
 

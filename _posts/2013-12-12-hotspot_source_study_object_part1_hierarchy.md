@@ -1,6 +1,6 @@
 ---
 title:      hotspot源代码学习，对象，part1，jvm中对象的结构关系
-category:   pages
+category:   blog
 layout:     post
 tags:       [jvm, openjdk, hotspot, hashcode]
 ---

@@ -1,6 +1,6 @@
 ---
 title:      bash中alias的实现
-category:   pages
+category:   blog
 layout:     post
 tags:       [shell, bash]
 ---

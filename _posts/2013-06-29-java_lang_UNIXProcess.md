@@ -1,6 +1,6 @@
 ---
 title:      java.lang.UNIXProcess类
-category:   pages
+category:   blog
 layout:     post
 tags:       [java, openjdk]
 ---

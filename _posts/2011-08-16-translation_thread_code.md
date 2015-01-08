@@ -1,6 +1,6 @@
 ---
 title:      翻译《Threaded Code》
-category:   pages
+category:   blog
 tags:       [interpreter, translation]
 layout:     post
 ---

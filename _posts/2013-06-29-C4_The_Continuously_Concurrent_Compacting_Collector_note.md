@@ -1,6 +1,6 @@
 ---
 title:      "C4: The Continuously Concurrent Compacting Collector"
-category:   pages
+category:   blog
 layout:     post
 tags:       [java, jvm, gc, c4]
 ---

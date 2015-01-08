@@ -1,6 +1,6 @@
 ---
 title:      JVM性能优化， Part 1 ―― 概述
-category:   pages
+category:   blog
 layout:     post
 tags:       [translation, java, jvm]
 ---

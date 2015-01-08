@@ -1,6 +1,6 @@
 ---
 title:      JVM 性能优化， Part 4 —— C4 垃圾回收 
-category:   pages
+category:   blog
 layout:     post
 tags:       [c4, gc, java, jvm, translation]
 ---

@@ -1,6 +1,6 @@
 ---
 title:      hotspot源代码学习，对象，part2，默认hashcode的生成
-category:   pages
+category:   blog
 layout:     post
 tags:       [jvm, openjdk, hotspot, hashcode]
 ---
@@ -24,6 +24,7 @@ java中，计算对象的默认hashcode的方法主要在[synchronizer.cpp文件
 
 其中，`hash`方法的实现是先获取该对象的标记字对象，然后对该标记字对象的的地址做位移和逻辑与操作，以结果作为hashcode（其中，mark_bits方法在[globalDefinitions.hpp][4]），之所以做移位操作操作是因为hashcode在标记字中只占用了部分位（32位机器上是占用25位，64位机器上占用31，标记字的内容参见[这里][5]）。
 
+    
     intptr_t hash() const {
         return mask_bits(value() >> hash_shift, hash_mask);
     }

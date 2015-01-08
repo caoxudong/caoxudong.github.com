@@ -1,7 +1,7 @@
 ---
 title:      翻译《The Java HotSpot Performance Engine Architecture》 
 tags:       [java, jvm, translation]
-category:   pages
+category:   blog
 layout:     post
 ---
 

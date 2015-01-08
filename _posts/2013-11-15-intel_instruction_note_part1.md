@@ -1,6 +1,6 @@
 ---
 title:      intel汇编指令，笔记，part1，控制转换指令
-category:   pages
+category:   blog
 layout:     post
 tags:       [assembly, intel]
 ---

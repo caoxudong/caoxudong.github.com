@@ -1,6 +1,6 @@
 ---
 title:      "PDO: bindValue vs. bindParam"
-category:   pages
+category:   blog
 layout:     post
 tags:       [pdo, php]
 ---

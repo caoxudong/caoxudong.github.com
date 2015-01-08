@@ -1,6 +1,6 @@
 ---
 title:      Btrace基本流程图 
-category:   pages
+category:   blog
 layout:     post
 tags:       [btrace, java]
 ---

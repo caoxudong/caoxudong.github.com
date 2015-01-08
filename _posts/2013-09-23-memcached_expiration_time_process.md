@@ -1,6 +1,6 @@
 ---
 title:      memcache中超时时间的设置
-category:   pages
+category:   blog
 layout:     post
 tag:        [memcache]
 ---

@@ -1,6 +1,6 @@
 ---
 title:      KMP算法的实现 
-category:   pages
+category:   blog
 layout:     post
 tags:       [algorithm, java, kmp]
 ---

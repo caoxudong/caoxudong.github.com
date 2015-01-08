@@ -1,6 +1,6 @@
 ---
 title:      bash 拾零， part 2 - 数学运算
-category:   pages
+category:   blog
 layout:     post
 tags:       [bash, shell]
 ---

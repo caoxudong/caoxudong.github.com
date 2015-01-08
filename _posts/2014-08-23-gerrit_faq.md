@@ -1,6 +1,6 @@
 ---
 title:      Gerrit FAQ
-category:   pages
+category:   blog
 layout:     post
 tags:       [gerrit, git]
 ---

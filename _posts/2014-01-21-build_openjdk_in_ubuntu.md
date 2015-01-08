@@ -1,6 +1,6 @@
 ---
 title:      ubuntu编译jdk
-category:   pages
+category:   blog
 layout:     post
 tags:       [java, jvm, openjdk, ubuntu]
 ---

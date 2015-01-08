@@ -1,7 +1,7 @@
 ---
 title:      翻译《how tomcat works》
 layout:     post
-category:   pages
+category:   blog
 tags:       [tomcat, translation, java]
 ---
 

@@ -1,6 +1,6 @@
 ---
 title:      切换gerrit的认证方式为http
-category:   pages
+category:   blog
 layout:     post
 tags:       [git, gerrit]
 ---

@@ -1,6 +1,6 @@
 ---
 title:      nginx搭配php环境配置
-category:   pages
+category:   blog
 layout:     post
 tags:       [nginx, php]
 ---

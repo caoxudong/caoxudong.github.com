@@ -1,6 +1,6 @@
 ---
 title:      bash 拾零， part 3 – awk
-category:   pages
+category:   blog
 layout:     post
 tags:       [awk, bash, shell]
 ---

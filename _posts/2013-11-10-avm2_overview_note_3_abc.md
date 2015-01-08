@@ -1,6 +1,6 @@
 ---
 title:      AVM2 Overview学习笔记3 — ABC
-category:   pages
+category:   blog
 layout:     post
 tags:       [note, avm, flash]
 ---

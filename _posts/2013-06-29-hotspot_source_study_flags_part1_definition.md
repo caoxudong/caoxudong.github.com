@@ -1,6 +1,6 @@
 ---
 title:      hotspot源代码学习，flags，part1，定义
-category:   pages
+category:   blog
 layout:     post
 tags:       [hotspot, jvm, openjdk]
 ---

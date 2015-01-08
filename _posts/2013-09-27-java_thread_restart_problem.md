@@ -1,6 +1,6 @@
 ---
 title:      java线程重复执行start方法的问题
-category:   pages
+category:   blog
 layout:     post
 tags:       [java]
 ---
