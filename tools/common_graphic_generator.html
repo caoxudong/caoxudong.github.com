@@ -1,0 +1,113 @@
+<html>
+    <head>
+        <title>Common Graphics Generator</title>
+        <style type="text/css">
+            div#headDiv {
+                margin-bottom: 30px
+            }
+            label.titleLabel {
+                font-size:30px;
+                padding-right: 20px;
+            }
+            textarea#outputTextArea {
+                width: 100%;
+                height: 40%;
+            }
+            div#container {
+                width:90%;
+                margin:auto;
+            }
+        </style>
+        <script type="text/javascript" src="/scripts/jquery/jquery-1.8.1.js"></script>
+        <script type="text/javascript" src="/scripts/highcharts/highcharts.js"></script>
+        <script type="text/javascript" src="/scripts/highcharts/exporting.js"></script>
+    </head>
+    <body>
+        <div id="headDiv">
+            <label class="titleLabel">Common Graphics Generator</label>
+            <br>
+            <a href="/">Home Page</a>
+        </div>
+
+        <label class="titleLabel">Paste the data here and click 'submit' button, and the first line is the name of the data line:</label>
+        <input type="button" value="submit" onclick="return drawGraph();">
+        <br>
+        <textarea id="outputTextArea"></textarea>
+        <hr>
+        <div id="container" />
+        <script type="text/javascript">
+            "use strict";
+
+            var container = null;
+            var options = null;
+            var textarea = null;
+            String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
+
+            function drawGraph() {
+                //clean the old lines
+                if ((container.series != null) && (container.series.length > 0)) {
+                    while (container.series.length > 0) {
+                        container.series[0].remove();
+                    }
+                }
+
+                //redraw
+                var textareaValue = textarea.value;
+                var categories = [];
+                var series = [];
+                if ((textareaValue != undefined) && (textareaValue != null)) {
+                    var lines = textareaValue.split(/\n/);
+                    if ((lines != null) || (lines.length > 0)) {
+                        categories = lines[0].trim().split(/\s+/);
+                        for (var i=0; i<categories.length; i++) {
+                            series[i] = {"name":categories[i], "data":[]};
+                        }
+                    }
+                    for (var i=1; i<lines.length; i++) {
+                        var tempLine = lines[i].trim();
+                        var tempElements = tempLine.split(/\s+/);
+                        if ((tempElements != null) && (tempElements.length > 0)) {
+                            for (var j=0; j<tempElements.length; j++) {
+                                series[j]["data"].push(parseFloat(tempElements[j]));
+                            }
+                        }
+                    }
+                    //add series to the chart
+                    for (var i=0; i<series.length; i++) {
+                        container.addSeries(series[i],false);
+                    }
+                    container.redraw();
+                }
+            }
+
+            $(function(){
+                container = document.getElementById("container");
+                options = {
+                    chart: {
+                        renderTo: 'container',
+                        type: 'line'
+                    },
+                    title: {
+                        text: 'Output Displayer',
+                        x: -20
+                    },
+                    tooltip: {
+                        formatter: function() {
+                            return '<b>' + this.series.name + '</b><br/>' + this.x + ': ' + this.y;
+                        }
+                    },
+                    legend: {
+                        layout: 'vertical',
+                        align: 'right',
+                        verticalAlign: 'top',
+                        x: -10,
+                        y: 100,
+                        borderWidth: 0
+                    }
+                };
+                container = new Highcharts.Chart(options);
+                textarea = document.getElementById("outputTextArea");
+            });
+        </script>
+    </body>
+</html>
