@@ -1,4 +1,5 @@
 ---
+title:      编译OpenJDK
 category:   pages
 layout:     post
 tag:        [openjdk, java, jvm, hotspot]

@@ -1,4 +1,5 @@
 ---
+title:      译文 —— RTMFP FAQ
 category:   pages
 layout:     post
 tags:       [flash, p2p, rtmfp, translation]

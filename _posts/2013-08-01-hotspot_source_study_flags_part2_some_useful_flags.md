@@ -1,4 +1,5 @@
 ---
+title:      hotspot源代码学习，flags，part2，一些有用的命令行参数
 category:   pages
 layout:     post
 tags:       [hotspot, jvm, openjdk]

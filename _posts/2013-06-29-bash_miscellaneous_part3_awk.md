@@ -1,4 +1,5 @@
 ---
+title:      bash 拾零， part 3 – awk
 category:   pages
 layout:     post
 tags:       [awk, bash, shell]

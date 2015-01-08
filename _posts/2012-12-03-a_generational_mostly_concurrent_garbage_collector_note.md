@@ -1,4 +1,5 @@
 ---
+title:      阅读笔记——《A Generational Mostly-concurrent Garbage Collector》
 category:   pages
 layout:     post
 tags:       [note, gc, java, jvm, cms]

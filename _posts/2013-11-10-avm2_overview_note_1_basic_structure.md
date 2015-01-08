@@ -1,4 +1,5 @@
 ---
+title:      AVM2 Overview学习笔记1 -- AVM2基本结构
 category:   pages
 layout:     post
 tags:       [note, flash, avm]

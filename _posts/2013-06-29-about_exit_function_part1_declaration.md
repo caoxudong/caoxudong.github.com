@@ -1,4 +1,5 @@
 ---
+title:      进程退出的相关函数，part1，声明
 category:   pages
 layout:     post
 tags:       [c. glibc]

@@ -1,4 +1,5 @@
 ---
+title:      在Mac OS X 10.8.4上编译OpenJDK 8
 category:   pages
 layout:     post
 tags:       [mac, openjdk, java]

@@ -1,4 +1,5 @@
 ---
+title:      AVM2 Overview学习笔记2 -- 运行
 category:   pages
 layout:     post
 tags:       [note, avm, flash]

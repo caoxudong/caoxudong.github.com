@@ -1,4 +1,5 @@
 ---
+title:      bash中alias的实现
 category:   pages
 layout:     post
 tags:       [shell, bash]

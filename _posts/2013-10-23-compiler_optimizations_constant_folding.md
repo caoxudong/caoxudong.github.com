@@ -1,4 +1,5 @@
 ---
+title:      编译器优化，part 1，常量折叠
 category:   pages
 layout:     post
 tags:       [compiler, optimization]

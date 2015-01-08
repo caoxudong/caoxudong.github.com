@@ -1,4 +1,5 @@
 ---
+title:      hotspot源代码学习，对象，part2，默认hashcode的生成
 category:   pages
 layout:     post
 tags:       [jvm, openjdk, hotspot, hashcode]

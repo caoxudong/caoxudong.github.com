@@ -1,4 +1,5 @@
 ---
+title:      bash 拾零， part 4 - 字符串
 category:   pages
 layout:     post
 tags:       [bash, shell]

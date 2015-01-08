@@ -1,4 +1,5 @@
 ---
+title:      JVM性能优化， Part 3 —— 垃圾回收 
 category:   pages
 layout:     post
 tags:       [gc, java, jvm, translation]

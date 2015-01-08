@@ -1,4 +1,5 @@
 ---
+title:      翻译《Memory Management in the Java HotSpot™ Virtual Machine》
 layout:     post
 category:   pages
 tags:       [translation, java, hotspot, jvm, memory]

@@ -1,4 +1,5 @@
 ---
+title:      nginx搭配php环境配置
 category:   pages
 layout:     post
 tags:       [nginx, php]

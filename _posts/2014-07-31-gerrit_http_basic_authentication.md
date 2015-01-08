@@ -1,4 +1,5 @@
 ---
+title:      切换gerrit的认证方式为http
 category:   pages
 layout:     post
 tags:       [git, gerrit]

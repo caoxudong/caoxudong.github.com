@@ -1,4 +1,5 @@
 ---
+title:      memcache中超时时间的设置
 category:   pages
 layout:     post
 tag:        [memcache]

@@ -1,4 +1,5 @@
 ---
+title:      hotspot源代码学习，对象，part3, 标记字
 category:   pages
 layout:     post
 tags:       [hotspot, java, jvm, vm]

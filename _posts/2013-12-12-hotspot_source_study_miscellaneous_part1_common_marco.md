@@ -1,4 +1,5 @@
 ---
+title:      hotspot源代码学习，杂项，part1，常用的宏
 category:   pages
 layout:     post
 tags:       [jvm, openjdk, hotspot, marco]

@@ -1,4 +1,5 @@
 ---
+title:      bash 拾零， part 1 - 变量
 category:   pages
 layout:     post
 tags:       [bash, shell]

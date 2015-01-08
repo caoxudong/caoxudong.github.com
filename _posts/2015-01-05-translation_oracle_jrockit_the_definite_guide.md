@@ -1,4 +1,5 @@
 ---
+title:      "译文 —— Oracle JRockit:The Definite Guide"
 category:   pages
 layout:     post
 tags:       [translation, java, jvm, jrockit]

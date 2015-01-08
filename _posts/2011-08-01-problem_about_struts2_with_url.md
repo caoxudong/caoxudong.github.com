@@ -1,4 +1,5 @@
 ---
+title:      struts2应用中URL里面含有“static”时无法访问
 layout:     post
 category:   pages
 tags:       [java, struts2]
