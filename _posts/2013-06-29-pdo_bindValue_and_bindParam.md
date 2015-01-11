@@ -6,10 +6,6 @@ tags:       [pdo, php]
 ---
 
 
-PDO: bindValue vs. bindParam
-=============
-
-
 在使用PDO的时候，经常会使用`bingParam`或者`bindValue`方法进行参数绑定。(对这两个方法的描述参见官方文档，[bingValue][1] vs. [bindParam][2])
 
 正如文档中描述的，这两个方法最重要的区别在于，`binParam`方法的参数绑定是在调用`PDOStatement::execute()`方法才完成的。

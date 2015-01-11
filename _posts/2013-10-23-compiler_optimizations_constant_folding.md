@@ -6,10 +6,6 @@ tags:       [compiler, optimization]
 ---
 
 
-编译器优化，part 1，常量折叠
-==================
-
-
 wiki地址： [http://en.wikipedia.org/wiki/Constant_folding][1]
 
 # 常量折叠

@@ -6,10 +6,6 @@ tags:       [algorithm, java, kmp]
 ---
 
 
-转载：KMP算法的实现 
-=============
-
-
 原文地址: <http://caoxudong818.iteye.com/blog/1218109>
 
 用Java实现KMP算法，并与String.indexOf方法做比较。

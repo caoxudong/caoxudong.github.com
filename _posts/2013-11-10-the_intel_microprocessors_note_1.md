@@ -6,12 +6,7 @@ tags:       [intel, miscroprocessor, register, assembly]
 ---
 
 
-Intel微处理器，笔记，part1，寄存器简介
-=================
-
-
-
->这里的内容主要来自于[《Intel微处理器》和网络的文章][2]
+>这里的内容主要来自于《Intel微处理器》和网络的文章
 
 # 寄存器分类
 
@@ -33,7 +28,6 @@ Intel微处理器，笔记，part1，寄存器简介
 >
 >**R8~R15** 这些寄存器只存在于Pentium 4和Core2中64位扩展允许的情况下。如前所述，这些寄存器中的数据是用于通用目的的，按照64、32、16或8位大小寻址。直到64位处理器广泛使用，大部分应用程序才会使用这些寄存器。请注意8位部分只是寄存器中最右边的8位，第8位第15位不按照一个字节直接寻址。
 
-<a name="special_registers">
 ## 专用寄存器
 
 >专用寄存器包括： RIP、RSP和RFLAGS以及段寄存器CS、DS、ES、SS、FS和GS。
@@ -98,7 +92,6 @@ Intel微处理器，笔记，part1，寄存器简介
 >
 >FS和GSFS和GS段是在80386Core2微处理器中增加的段寄存器，以便允许程序访问这两个附加的存储器段。Windows将这些段寄存器用于内部操作，但没有说明其使用方法。
 
-<a name="resources">
 # 相关资料
 
 * [《Intel微处理器》][1]
@@ -107,7 +100,6 @@ Intel微处理器，笔记，part1，寄存器简介
 
 
 [1]:    http://www.amazon.cn/Intel%E5%BE%AE%E5%A4%84%E7%90%86%E5%99%A8-%E5%B8%83%E9%9B%B7/dp/B003U2RZ6C
-[2]:    #resources
 [3]:    http://blog.csdn.net/u010481185/article/details/8949844
 [4]:    http://blog.chinaunix.net/uid-10014667-id-471549.html
 [5]:    /image/the_intel_microprocessors_note_1_fig_1.png

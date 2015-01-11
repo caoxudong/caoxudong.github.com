@@ -6,20 +6,9 @@ tags:       [translation, java, hotspot, jvm, memory]
 ---
 
 
-转载：翻译《Memory Management in the Java HotSpot™ Virtual Machine》
-======================
-
-
 原文地址：<http://caoxudong818.iteye.com/admin/blogs/1135981>
 
-想要学习一下java虚拟机这个东西，找到一篇文章，随手翻译之。 如哪位大侠发现在下有翻译错的地方，请赐教，让我多学一点。
-
-3q all.
-
-原文：[Memory Management in the Java HotSpot™ Virtual Machine][1] 
-
-译文：[jvm内存管理][2]
-
+原英文地址：[Memory Management in the Java HotSpot™ Virtual Machine][1] 
 
 # 1 简介
 
@@ -508,7 +497,6 @@ HAT工具可以帮助调试无意识对象保持（unintentional object retentio
 
 
 [1]:    http://www.oracle.com/technetwork/java/javase/memorymanagement-whitepaper-150215.pdf
-[2]:    /attachment/translation_Memory_management_in_the_java_hotSpot_virtual_machine.pdf
 [3]:    /image/translation_Memory_management_in_the_java_hotSpot_virtual_machine-fig_1.png
 [4]:    /image/translation_Memory_management_in_the_java_hotSpot_virtual_machine-fig_2.png
 [5]:    /image/translation_Memory_management_in_the_java_hotSpot_virtual_machine-fig_3.png

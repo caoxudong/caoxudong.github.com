@@ -6,9 +6,6 @@ tags:       [gerrit, git]
 ---
 
 
-Gerrit FAQ
-=============
-
 # 1 提交
 
 ## 1.1 如何生成结构干净的提交？
@@ -43,7 +40,7 @@ Gerrit FAQ
 
 当所有commit都应用之后，若代码通过了审核，则代码可以以Fast-Forward的形式合并到目标分支中。
 
-## 2 审核
+# 2 审核
 
 ## 2.1 提交审核请求后，审核人没有及时审核，该怎么办？
 
@@ -73,7 +70,7 @@ Gerrit FAQ
 
 这样，featureA就可以以Fast-Forward的方式合并到featureB，然后提交到gerrit后，可以顺利合并代码。
 
-在使用`rebase`合并分支代码时，提交对象可能会很多，这样提交到gerrit后会产生大量的 **review**，非常麻烦。这时可以在`rebase`的交互编辑器中，将多个commit进行合并。例如：
+在使用`rebase`合并分支代码时，提交对象可能会很多，这样提交到gerrit后会产生大量的 **review**，非常麻烦。这时可以在`rebase`的交互编辑器中，将多个commit进行合并（压缩合并不好，并不太好，将来再想对某个commit做cherry-pick就没法做）例如：
 
     pick ee8593d blablabla...
     squash 927ac28 blablabla...

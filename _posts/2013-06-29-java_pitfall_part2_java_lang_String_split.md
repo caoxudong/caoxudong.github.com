@@ -6,11 +6,6 @@ tags:       [java]
 ---
 
 
-Java之坑，part2：java.lang.String#split
-=======================
-
-
-
 # split函数
 
 split函数一种重载方式的定义如下：

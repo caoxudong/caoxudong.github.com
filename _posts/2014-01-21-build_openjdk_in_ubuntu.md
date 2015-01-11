@@ -6,9 +6,8 @@ tags:       [java, jvm, openjdk, ubuntu]
 ---
 
 
-ubuntu编译jdk
-=====================
 
+>本机环境如下：
 
     [henry@henry-ubuntu:~/program/java/oracle_jdk/jdk1.7.0_51]$ java -version
     java version "1.7.0_51"
@@ -40,17 +39,17 @@ ubuntu编译jdk
 
 5.  相关依赖库 
 
-    1 安装CUPs，如果安装的时候制定了自定义目录，则还需要配置环境变量`ALT_CUPS_HEADERS_PATH`
+    5.1 安装CUPs，如果安装的时候制定了自定义目录，则还需要配置环境变量`ALT_CUPS_HEADERS_PATH`
 
         sudo apt-get install cups-common
         sudo apt-get install libcups2-dev
 
-    2 安装FreeType，需要2.3以上的版本。如果安装的时候制定了自定义目录，则还需要配置环境变量`ALT_FREETYPE_LIB_PATH`和`ALT_FREETYPE_HEADERS_PATH`
+    5.2 安装FreeType，需要2.3以上的版本。如果安装的时候制定了自定义目录，则还需要配置环境变量`ALT_FREETYPE_LIB_PATH`和`ALT_FREETYPE_HEADERS_PATH`
 
         sudo apt-get install libfreetype6
         sudo apt-get install libfreetype6-dev
 
-    3 安装ALSA，这个就不要自定义安装了
+    5.3 安装ALSA，这个就不要自定义安装了
 
         sudo apt-get alsa-base
         sudo apt-get alsa-utils
@@ -182,4 +181,4 @@ ubuntu编译jdk
 [1]:    http://mail.openjdk.java.net/pipermail/mlvm-dev/2012-July/004821.html
 [2]:    http://mail.openjdk.java.net/pipermail/build-dev/2013-May/008877.html
 [3]:    http://www.java.net/download/openjdk/jdk7u40/promoted/b43/openjdk-7u40-fcs-src-b43-26_aug_2013.zip
-[4]:    ./build_openjdk#compilation_options
+[4]:    /blog/2013/09/26/build_openjdk.html

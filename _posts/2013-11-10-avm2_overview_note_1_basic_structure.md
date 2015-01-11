@@ -5,11 +5,6 @@ layout:     post
 tags:       [note, flash, avm]
 ---
 
-AVM2 Overview学习笔记1 -- AVM2基本结构
-=======================
-
-
-
 
 >组里的同事都是用flash的，所以哥也得学学flash才能有共同语言。本来就对虚拟机比较感兴趣，所以呢，哥准备学学avm2，努努力，争取做个自己的avm出来，哪怕矬一点也好。当然，这个东西只能作为业余爱好或是玩具，不应该占据太多的时间和精力。在网上搜了搜，adobe放出来的资料还真是少，官网上有两篇，"[AVM2 Overview][1]"和"[SWF File Format Specification][2]"。先从AVM2 Overview开始看吧，了解一下AVM2的基本概念。
 
@@ -146,51 +141,51 @@ RTQName常用于那些在编译时无法确定命名空间的限定名：
 2.  如果调用的闭包是一个方法闭包，那么传给`[[Call]]`的第一个参数会被忽略，而`this`值会被传给方法作为第一个参数。
 3.  如果调用的闭包是一个类闭包，并且对`[[Call]]`的调用存在一个参数，则本次调用被认为是类型转换，而参数会被强制转换为闭包所表示的类。
 
-## 字节码指令小节
+## 字节码指令小结
 
 一些指令前缀：
 
-> _b(Boolean), _a(any), _i (int), _d(double), _s(string), _u(unsigned), _o(object)
+    _b(Boolean), _a(any), _i (int), _d(double), _s(string), _u(unsigned), _o(object)
 
 操作局部变量区的指令：
 
-> getlocal , getlocal0, getlocal1, getlocal2, getlocal3, setlocal , setlocal0, setlocal1, setlocal2, setlocal3
+    getlocal, getlocal0, getlocal1, getlocal2, getlocal3, setlocal , setlocal0, setlocal1, setlocal2, setlocal3
 
 数学运算指令：
 
-> increment, increment_i, inclocal, inclocal_i, add, add_i, decrement, decrement_i, declocal, declocal_i, subtract, subtract_i, multiply , multiply_i, divide, modulo, negate, negate_i, equals, strictequals, lessthan, lessequals, greaterthan, greaterequals, istype, istypelate, in
+    increment, increment_i, inclocal, inclocal_i, add, add_i, decrement, decrement_i, declocal, declocal_i, subtract, subtract_i, multiply , multiply_i, divide, modulo, negate, negate_i, equals, strictequals, lessthan, lessequals, greaterthan, greaterequals, istype, istypelate, in
 
 位运算指令：
 
-> bitnot, bitand, bitor, bitxor, lshift, rshift, urshift
+    bitnot, bitand, bitor, bitxor, lshift, rshift, urshift
 
 类型转换指令：
 
-> coerce, convert_b, coerce_a, convert_i, convert_d, coerce_s, convert_s, convert_u, convert_o
+    coerce, convert_b, coerce_a, convert_i, convert_d, coerce_s, convert_s, convert_u, convert_o
 
 对象操作指令：
 
-> newclass, newobject, newarray, newactivation， construct, constructsuper, constructprop， dxns， dxnslate
+    newclass, newobject, newarray, newactivation， construct, constructsuper, constructprop， dxns， dxnslate
 
 栈操作指令：
 
-> pushnull, pushundefined, pushtrue, pushfalse, pushnan, pushbyte, pushshort, pushstring, pushint, pushdouble, pushscope, pushnamespace， pop, dup, swap
+    pushnull, pushundefined, pushtrue, pushfalse, pushnan, pushbyte, pushshort, pushstring, pushint, pushdouble, pushscope, pushnamespace， pop, dup, swap
 
 流转控制指令：
 
-> iflt, ifle, ifnlt, ifnle, ifgt, ifge, ifngt, ifnge, ifeq, ifne, ifstricteq, ifstrictne, iftrue, iffalse, label, lookupswitch
+    iflt, ifle, ifnlt, ifnle, ifgt, ifge, ifngt, ifnge, ifeq, ifne, ifstricteq, ifstrictne, iftrue, iffalse, label, lookupswitch
 
 方法调用指令：
 
-> call, callmethod, callstatic, callproperty, callproplex, callpropvoid, callsupervoid, callsuper
+    call, callmethod, callstatic, callproperty, callproplex, callpropvoid, callsupervoid, callsuper
 
 异常处理指令:
 
-> throw
+    throw
 
 调试指令：
 
-> debugfile, debugline, debug
+    debugfile, debugline, debug
 
 to be continued...
 

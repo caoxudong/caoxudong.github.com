@@ -6,12 +6,6 @@ tags:       [gc, java, jvm, translation]
 ---
 
 
-转载： JVM性能优化， Part 3 —— 垃圾回收 
-==========
-
-
-
-
 原文地址： <a href="http://www.javaworld.com/javaworld/jw-10-2012/121010-jvm-performance-optimization-garbage-collection.html?page=1" target="_blank">http://www.javaworld.com/javaworld/jw-10-2012/121010-jvm-performance-optimization-garbage-collection.html?page=1</a>
 
 转载地址： <a href="http://www.importnew.com/2233.html" target="_blank">http://www.importnew.com/2233.html</a>
@@ -20,7 +14,7 @@ tags:       [gc, java, jvm, translation]
 
 [转载： JVM性能优化， Part2 -- 编译器][3]
 
-*Java平台的垃圾回收机制大大提高的开发人员的生产力，但实现糟糕的垃圾回收器却会大大消耗应用程序的资源。本文作为JVM性能优化系列的第3篇，Eva Andeasson将为Java初学者介绍Java平台的内存模型和GC机制。她将解释为什么碎片化（不是GC）是Java应用程序出现性能问题的主要原因，以及为什么当前主要通过分代垃圾回收和压缩，而不是其他最具创意的方法，来解决Java应用程序中碎片化的问题。 垃圾回收（GC）是旨在释放不可达Java对象所占用的内存的过程，是Java virtual machine（JVM）中动态内存管理系统的核心组成部分。在一个典型的垃圾回收周期中，所有仍被引用的对象，即可达对象，会被保留。没有被引用的Java对象所占用的内存会被释放并回收，以便分配给新创建的对象。 为了更好的理解垃圾回收与各种不同的GC算法，你首先需要了解一些关于Java平台内存模型的内容。 *
+>Java平台的垃圾回收机制大大提高的开发人员的生产力，但实现糟糕的垃圾回收器却会大大消耗应用程序的资源。本文作为JVM性能优化系列的第3篇，Eva Andeasson将为Java初学者介绍Java平台的内存模型和GC机制。她将解释为什么碎片化（不是GC）是Java应用程序出现性能问题的主要原因，以及为什么当前主要通过分代垃圾回收和压缩，而不是其他最具创意的方法，来解决Java应用程序中碎片化的问题。 垃圾回收（GC）是旨在释放不可达Java对象所占用的内存的过程，是Java virtual machine（JVM）中动态内存管理系统的核心组成部分。在一个典型的垃圾回收周期中，所有仍被引用的对象，即可达对象，会被保留。没有被引用的Java对象所占用的内存会被释放并回收，以便分配给新创建的对象。 为了更好的理解垃圾回收与各种不同的GC算法，你首先需要了解一些关于Java平台内存模型的内容。 
 
 # 垃圾回收与Java平台内存模型
 
@@ -134,5 +128,5 @@ Eva Andearsson对JVM计数、SOA、云计算和其他企业级中间件解决方
 
 
 [1]:    /image/jvmperf3-fig1.png
-[2]:    /post/jvm_performance_optimization_1_overview
-[3]:    /post/jvm_performance_optimization_2_compiler
+[2]:    /blog/2013/09/27/jvm_performance_optimization_1_overview.html
+[3]:    /blog/2013/11/10/jvm_performance_optimization_2_compiler.html

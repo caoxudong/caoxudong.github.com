@@ -6,11 +6,6 @@ tags:       [jvm, openjdk, hotspot, hashcode]
 ---
 
 
-hotspot源代码学习，对象，part1，jvm中对象的结构关系
-=======================
-
-
-
 >jdk版本是openjdk-7u40-fcs-src-b43-26_aug_2013
 
     // oopDesc is the top baseclass for objects classes.  The {name}Desc classes describe

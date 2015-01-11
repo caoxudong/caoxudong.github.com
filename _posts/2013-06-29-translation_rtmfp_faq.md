@@ -7,10 +7,6 @@ tags:       [flash, p2p, rtmfp, translation]
 
 
 
-译文 —— RTMFP FAQ
-===================
-
-
 > 原文地址：<http://www.adobe.com/products/adobe-media-server-extended/rtmfp-faq.html>
 
 # 什么是RTMFP（Real-Time Media Flow Protocol）？
@@ -120,6 +116,10 @@ Adobe开发的RTMP与之最为相似。
 # RTMFP对CDN（content delivery networks）有什么影响？
 
 RTMFP对CDN没有影响。CDN致力于视频按需传输和大规模实施视频传输，而不是RTMFP所关注的终端用户之间的直接传输。CDN可以帮助RTMFP应用程序的用户初始化连接。
+
+
+
+
 
 [1]:    http://www.adobe.com/products/adobe-media-server-family.html
 [2]:    /image/rtmfp_faq01.jpg

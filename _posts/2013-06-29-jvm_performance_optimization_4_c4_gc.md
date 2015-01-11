@@ -7,11 +7,6 @@ tags:       [c4, gc, java, jvm, translation]
 
 
 
-转载： JVM 性能优化， Part 4 —— C4 垃圾回收 
-============================
-
-
-
 原文地址 <a href="http://www.javaworld.com/javaworld/jw-11-2012/121107-jvm-performance-optimization-low-latency-garbage-collection.html" target="_blank">http://www.javaworld.com/javaworld/jw-11-2012/121107-jvm-performance-optimization-low-latency-garbage-collection.html</a>
 
 转载地址 <a href="http://www.importnew.com/2410.html" target="_blank">http://www.importnew.com/2410.html</a>
@@ -115,6 +110,6 @@ Eva Andearsson对JVM计数、SOA、云计算和其他企业级中间件解决方
 [1]:    /image/jvmperf4-fig1.png
 [2]:    /image/jvmperf4-fig2.png
 [3]:    /image/jvmperf4-fig3.png
-[4]:    /post/jvm_performance_optimization_1_overview
-[5]:    /post/jvm_performance_optimization_2_compiler
-[6]:    /post/jvm_performance_optimization_3_gc
+[4]:    /blog/2013/09/27/jvm_performance_optimization_1_overview.html
+[5]:    /blog/2013/11/10/jvm_performance_optimization_2_compiler.html
+[6]:    /blog/2013/11/10/jvm_performance_optimization_3_gc.html

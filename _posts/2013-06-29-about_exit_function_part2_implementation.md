@@ -6,10 +6,6 @@ tags:       [c. glibc]
 ---
 
 
-进程退出的相关函数，part2，实现
-=====================
-
-
 > [进程退出的相关函数，part1，声明][1]
 
 # _exit函数
@@ -98,5 +94,5 @@ _exit函数的实现在$glibc_src_home/sysdeps/unix/sysv/linux/_exit.c中
         }
     }
 
-[1]:    /post/about_exit_function_part1_declaration
+[1]:    /blog/2013/06/29/about_exit_function_part1_declaration.html
 [2]:    http://gcc.gnu.org/onlinedocs/gcc-3.2/gcc/Function-Attributes.html

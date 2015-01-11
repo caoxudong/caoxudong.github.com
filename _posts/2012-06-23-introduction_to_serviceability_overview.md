@@ -5,11 +5,6 @@ layout:     post
 tags:       [java, jvm, serviceability]
 ---
 
-
-转载：Serviceability 简介 —— 概述
-=======================
-
-
 原文地址： <http://caoxudong818.iteye.com/blog/1565980>
 
 以下内容均已jdk1.7.0_04为准。

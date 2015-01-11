@@ -6,10 +6,6 @@ tags:       [java, openjdk]
 ---
 
 
-java.lang.UNIXProcess类
-======================
-
-
 > 今天的定时任务抛了个异常，在调用栈中发现有个名为UNIXProcess的类，这里记录一下。
 
 UNIXProcess类是*nix系统在java程序中的体现，程序员可以使用该类创建新进程，实现与"fork"类似的功能（对于Windows系统，使用的是java.lang.ProcessImpl类）。相关用法参见[Runtime.exec方法][1]。下面继续说说UNIXProcess本身。

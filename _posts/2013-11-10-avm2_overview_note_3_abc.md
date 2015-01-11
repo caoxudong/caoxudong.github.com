@@ -5,11 +5,6 @@ layout:     post
 tags:       [note, avm, flash]
 ---
 
-AVM2 Overview学习笔记3 — ABC
-===============
-
-
-
 >[AVM2 Overview学习笔记1 -- AVM2基本结构][4]
 >[AVM2 Overview学习笔记2 -- 运行][5]
 
@@ -953,5 +948,5 @@ to be continued...
 [1]:    http://grouper.ieee.org/groups/754/
 [2]:    http://unicode.org
 [3]:    http://en.wikipedia.org/wiki/IEEE_floating_point
-[4]:    /post/avm2_overview_note_1_basic_structure
-[5]:    /post/avm2_overview_note_2_run
+[4]:    /blog/2013/11/10/avm2_overview_note_1_basic_structure.html
+[5]:    /blog/2013/11/10/avm2_overview_note_2_run.html

@@ -7,11 +7,6 @@ tag:        [memcache]
 
 
 
-memcache中超时时间的设置
-=====================
-
-
-
 先贴一段memcache中的注释：
 
     #define REALTIME_MAXDELTA 60*60*24*30

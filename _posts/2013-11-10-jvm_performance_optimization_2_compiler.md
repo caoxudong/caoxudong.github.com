@@ -6,12 +6,6 @@ tags:       [compiler, java, jvm, translation]
 ---
 
 
-转载： JVM性能优化， Part 2 ―― 编译器
-===============
-
-
-
-
 原文地址： <a href="http://www.google.com/url?q=http%3A%2F%2Fwww.javaworld.com%2Fjavaworld%2Fjw-09-2012%2F120905-jvm-performance-optimization-compilers.html&sa=D&sntz=1&usg=AFQjCNGA_3yyF8ccxVeWj7RlRcMuG7vVmg" target="_blank">http://www.google.com/url?q=http%3A%2F%2Fwww.javaworld.com%2Fjavaworld%2Fjw-09-2012%2F120905-jvm-performance-optimization-compilers.html&sa=D&sntz=1&usg=AFQjCNGA_3yyF8ccxVeWj7RlRcMuG7vVmg</a>
 
 转载地址： <a href="http://www.importnew.com/2009.html" target="_blank">http://www.importnew.com/2009.html</a>
@@ -254,18 +248,24 @@ Eva Andearsson对JVM计数、SOA、云计算和其他企业级中间件解决方
 
 # 相关资源
 
-*   “[JVM性能优化， Part 1 ——JVM简介][2]”(原文作者Eva Andreasson, 于2012年8约发表于JavaWorld)是该系列的第一篇，对经典JVM的工作原理做了简单介绍，包括Java“一次编写，到处运行”的优势，垃圾回收基础和一些常用的垃圾回收算法。
-*   更多有关HotSpot优化原理以及JVM热身的内容请参见Vladimir Roubtsov与2003年4约发表于JavaWorld.com的文章“<a href="http://www.javaworld.com/javaqa/2003-04/01-qa-0411-hotspot.html" target="_blank">Watch your HotSpot compiler go</a>”
-*   如果你想对JVM和字节码有更深入的了解，请参见Bill Venners在1996年发表于JavaWorld的文章“<a href="http://www.javaworld.com/javaworld/jw-09-1996/jw-09-bytecodes.html" target="_blank">Bytecode basics</a>”。文章对JVM中的字节码指令集做了介绍，内容包括原生类型操作、类型转换以及栈上操作等。
-*   在Java平台的官方文档中有对<a href="http://docs.oracle.com/javase/6/docs/technotes/guides/javac/index.html" target="_blank">Java编译器</a>javac的详细描述。
-*   更多有关JVM中JIT编译器的内容，请参见IBM Research中有关<a href="http://researchweb.watson.ibm.com/trl/projects/jit/index_e.htm" target="_blank">Java JIT Compiler</a>的内容。
-*   或者参见Oracle JRockit文档中“<a href="http://docs.oracle.com/cd/E15289_01/doc.40/e15058/underst_jit.htm" target="_blank">Understanding Just-In-Time Compilation and Optimization</a>”的相关内容.
-*   Cliff Click博士在其博客上有关于<a href="http://www.azulsystems.com/blog/cliff/2010-07-16-tiered-compilation" target="_blank">层次编译</a>的完整教程。
-*   更多有关使用性能计数器完成JVM性能优化的文章：“<a href="http://dl.acm.org/citation.cfm?id=2081919" target="_blank">Using Platform-Specific Performance Counters for Dynamic Compilation</a>” (作者Florian Schneider与Thomas R. Gross;由ACM Digital Lirary发表在第18届Languages and Compilers for Parallel Computing会议上)
+*   "[JVM性能优化， Part 1 ——JVM简介][2]"(原文作者Eva Andreasson, 于2012年8约发表于JavaWorld)是该系列的第一篇，对经典JVM的工作原理做了简单介绍，包括Java“一次编写，到处运行”的优势，垃圾回收基础和一些常用的垃圾回收算法。
+*   更多有关HotSpot优化原理以及JVM热身的内容请参见Vladimir Roubtsov与2003年4约发表于JavaWorld.com的文章"[Watch your HotSpot compiler go][3]"。
+*   如果你想对JVM和字节码有更深入的了解，请参见Bill Venners在1996年发表于JavaWorld的文章"[Bytecode basics][4]"。文章对JVM中的字节码指令集做了介绍，内容包括原生类型操作、类型转换以及栈上操作等。
+*   在Java平台的官方文档中有对[Java编译器][5]的详细描述。
+*   更多有关JVM中JIT编译器的内容，请参见IBM Research中有关<a href="" target="_blank">Java JIT Compiler</a>的内容。
+*   或者参见Oracle JRockit文档中"[Understanding Just-In-Time Compilation and Optimization][6]"的相关内容.
+*   Cliff Click博士在其博客上有关于"[层次编译][7]"的完整教程。
+*   更多有关使用性能计数器完成JVM性能优化的文章："[Using Platform-Specific Performance Counters for Dynamic Compilation][8]" (作者Florian Schneider与Thomas R. Gross;由ACM Digital Lirary发表在第18届Languages and Compilers for Parallel Computing会议上)
 *   Oracle JRockit: The Definitive Guide (Marcus Hirt, Marcus Lagergren; Packt Publishing, 2010): Oracle JRockit权威指南
 
 
 
 
 [1]:   /image/jvmperf2-fig1.png
-[2]:   /post/jvm_performance_optimization_1_overview
+[2]:   /blog/2013/09/27/jvm_performance_optimization_1_overview.html            "JVM性能优化， Part 1 ―― 概述"
+[3]:   http://www.javaworld.com/javaqa/2003-04/01-qa-0411-hotspot.html          "Watch your HotSpot compiler go"
+[4]:   http://www.javaworld.com/javaworld/jw-09-1996/jw-09-bytecodes.html       "Bytecode basics"
+[5]:   http://docs.oracle.com/javase/6/docs/technotes/guides/javac/index.html   "Java编译器"
+[6]:   http://researchweb.watson.ibm.com/trl/projects/jit/index_e.htm           "Understanding Just-In-Time Compilation and Optimization"
+[7]:   http://www.azulsystems.com/blog/cliff/2010-07-16-tiered-compilation      "层次编译"
+[8]:   http://dl.acm.org/citation.cfm?id=2081919                                "Using Platform-Specific Performance Counters for Dynamic Compilation"

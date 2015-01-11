@@ -5,10 +5,6 @@ layout:     post
 tags:       [hotspot, java, jvm, vm]
 ---
 
-hotspot源代码学习，对象，part3, 标记字
-================
-
-
 >源代码版本openjdk-7u40-fcs-src-b43-26_aug_2013
 
 标记字（mark word）的定义在[markOop.hpp][1]中，内容如下所示

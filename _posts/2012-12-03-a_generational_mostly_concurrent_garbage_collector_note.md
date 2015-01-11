@@ -6,9 +6,6 @@ tags:       [note, gc, java, jvm, cms]
 ---
 
 
-转载： 阅读笔记——《A Generational Mostly-concurrent Garbage Collector》
-========================
-
 转载地址： <http://caoxudong818.iteye.com/blog/1388880>
 
 原文在[这里][1]。

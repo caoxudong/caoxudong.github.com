@@ -6,10 +6,6 @@ tags:       [flash, p2p, rtmfp, translation]
 ---
 
 
-译文 —— rtmplite项目中rtmfp协议部分注释
-==================
-
-
 > rtmplite项目地址： <https://code.google.com/p/rtmplite/>
 
 # RTMFP
@@ -415,5 +411,8 @@ data使用"next-user-data"消息发送，格式如下：
 当有多个数据消息在同一个数据包中发送时，会将用户数据进行压缩。flow-id、seq和forward-seq-offset合并，即flow-id是相同的，后继的"next-user-data"会增加seq和forward-seq-offset的值，取消option的内容。单一数据包不会包含来自多个流的数据，这样就避免了出现head-of-line阻塞的情况，而且当出现问题时可以反转优先级。
 
 TODO: 完成对剩余消息流的说明。添加对中间人（man-in-middle）模式的描述，该模式使服务器可以传输音频/视频。
+
+
+
 
 [1]:    http://www.ietf.org/proceedings/10mar/slides/tsvarea-1.pdf

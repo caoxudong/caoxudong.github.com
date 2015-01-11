@@ -6,11 +6,6 @@ tags:       [java, jvm, serviceability]
 ---
 
 
-转载：Serviceability 简介 —— tools
-=======
-
-
-
 原文地址： <http://caoxudong818.iteye.com/blog/1576234>
 
 在[前文][1]中提到，$JAVA_HOME/bin下有一些工具也是通过SA实现的，本文就对SA中tools包下的工具做简单介绍。
@@ -301,7 +296,7 @@ Win32DebuggerLocal类的writeBytesToProcess方法：
 
 to be continued......
 
-[1]:    /post/introduction_to_serviceability_overview
+[1]:    /blog/2012/06/23/introduction_to_serviceability_overview.html
 [2]:    http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/tools/Tool.java
 [3]:    http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/tools/JInfo.java#JInfo
 [4]:    http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/tools/FinalizerInfo.java#FinalizerInfo

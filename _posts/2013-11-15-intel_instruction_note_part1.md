@@ -6,10 +6,6 @@ tags:       [assembly, intel]
 ---
 
 
-intel汇编指令，笔记，part1，控制转换指令
-================
-
-
 >内容来自[Intel 64 and IA-32 Architectures Software Developer][1]
 
 # 控制转换指令
@@ -61,4 +57,4 @@ intel汇编指令，笔记，part1，控制转换指令
 
 
 [1]:    http://www.intel.cn/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-manual-325462.pdf
-[2]:    ./the_intel_microprocessors_note_1#special_registers
+[2]:    /blog/2013/11/10/the_intel_microprocessors_note_1.html

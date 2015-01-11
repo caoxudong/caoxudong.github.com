@@ -6,10 +6,6 @@ tags:       [note, avm, flash]
 ---
 
 
-AVM2 Overview学习笔记2 -- 运行
-==============
-
-
 >[AVM2 Overview学习笔记1 -- AVM2基本结构][2]
 
 
@@ -58,4 +54,4 @@ ABC文件的其中一个入口是包含了`script_info`结构的数组，其中�
 （相对来说，JVM这几个阶段的划分更清楚，也更复杂一些，回头应该把两者做个比较。）
 
 [1]:    http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
-[2]:    /post/avm2_overview_note_1_basic_structure
+[2]:    /blog/2013/11/10/avm2_overview_note_1_basic_structure.html

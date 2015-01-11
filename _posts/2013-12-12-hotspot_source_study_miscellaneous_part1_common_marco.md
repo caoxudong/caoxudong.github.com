@@ -6,11 +6,6 @@ tags:       [jvm, openjdk, hotspot, marco]
 ---
 
 
-hotspot源代码学习，杂项，part1，常用的宏
-==========================
-
-status: private
-
 >jdk版本是openjdk-7u6-fcs-src-b24-28_aug_2012
 
 # JVM方法常用的宏

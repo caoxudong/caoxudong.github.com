@@ -5,9 +5,6 @@ category:   blog
 tags:       [tomcat, translation, java]
 ---
 
-转载：翻译《how tomcat works》
-===============================
-
 原文地址： <http://caoxudong818.iteye.com/admin/blogs/1109439>
 
 最近对tomcat的实现比较感兴趣，就找了本《how tomcat works》看，觉着这书挺好，就顺手翻译成中文的了，希望对大家有帮助。

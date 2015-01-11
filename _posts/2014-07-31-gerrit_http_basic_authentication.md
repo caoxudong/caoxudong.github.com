@@ -6,9 +6,6 @@ tags:       [git, gerrit]
 ---
 
 
-切换gerrit的认证方式为http
-========
-
 
 >gerrit版本为2.8.3
 

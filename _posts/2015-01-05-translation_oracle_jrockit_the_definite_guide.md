@@ -6,8 +6,6 @@ tags:       [translation, java, jvm, jrockit]
 ---
 
 
-译文 —— Oracle JRockit: The Definite Guide
-====================
 
 
 昨晚，终于是完成了《Oracle JRockit: The Definite Guide》的翻译，至少自己认为是翻译完了，当然，没有校审，里面应该还有不少错误。翻译了一年多，中间还想过断掉，好歹总算是坚持下来了，也算是做了点事情。

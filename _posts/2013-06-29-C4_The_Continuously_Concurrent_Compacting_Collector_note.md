@@ -5,11 +5,6 @@ layout:     post
 tags:       [java, jvm, gc, c4]
 ---
 
-《C4: The Continuously Concurrent Compacting Collector》笔记
-=========================
-
-
-
 > [《C4: The Continuously Concurrent Compacting Collector》][1]是Azul System公司发表一篇论文，对C4垃圾回收器做了介绍。这里对其中的一些内容做简单记录。另外，Eva Anderssion也写过一篇文中对C4进行介绍（参见[译文][2]）。
 
 # 摘要
@@ -64,4 +59,4 @@ Quich Release方法在Pauseless中被引入，后来Compressor做了些许修改
 
 
 [1]:    http://www.azulsystems.com/products/zing/c4-java-garbage-collector-wp
-[2]:    /post/jvm_performance_optimization_4_c4_gc
+[2]:    /blog/2013/06/29/jvm_performance_optimization_4_c4_gc.html

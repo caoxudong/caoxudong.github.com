@@ -7,10 +7,6 @@ tags:       [awk, bash, shell]
 
 
 
-bash 拾零， part 3 – awk
-===============
-
-
 # 在awk程序中使用单引号
 
 示例代码如下：

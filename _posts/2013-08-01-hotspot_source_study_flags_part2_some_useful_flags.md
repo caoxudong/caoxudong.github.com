@@ -6,11 +6,6 @@ tags:       [hotspot, jvm, openjdk]
 ---
 
 
-hotspot源代码学习，flags，part2，一些有用的命令行参数
-===================
-
-
-
 >hotpost的参数一般都定义在globals.hpp相关文件中，包括运行时、编译器、gc等模块都有自己的globals.hpp文件，这些文件中定义的参数都是以`-XX`开头的参数。还有一些是以`-`和`-X`开头的参数，这些参数的解析是在launcher模块中完成的。
 
 >源代码版本： `openjdk-7u6-fcs-src-b24-28_aug_2012`

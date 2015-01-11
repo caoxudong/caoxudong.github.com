@@ -6,11 +6,6 @@ tag:        [openjdk, java, jvm, hotspot]
 ---
 
 
-编译OpenJDK
-=================
-
-
-
 
 >[在ubuntu上编译openjdk][1]
 >
@@ -30,8 +25,6 @@ tag:        [openjdk, java, jvm, hotspot]
 * XRender: 编译GUI工具会用到
 * ALSA: （only linux，0.9.1 or newer）编译时需要alsa和alsa-devel两个包
 
-
-<a name="compilation_options" />
 # 编译选项
 
 ## 环境变量
@@ -81,6 +74,6 @@ tag:        [openjdk, java, jvm, hotspot]
 
 
 
-[1]:    /post/build_openjdk_in_ubuntu
+[1]:    /blog/2014/01/21/build_openjdk_in_ubuntu.html
 [2]:    http://en.wikipedia.org/wiki/Certificate_Authority
-[3]:    /post/build_openjdk8_in_macosx_10.8.4
+[3]:    /blog/2013/09/09/build_openjdk8_in_macosx_10.8.4.html

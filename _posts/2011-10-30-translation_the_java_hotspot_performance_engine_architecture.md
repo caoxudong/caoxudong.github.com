@@ -6,10 +6,6 @@ layout:     post
 ---
 
 
-转载：翻译《The Java HotSpot Performance Engine Architecture》 
-=====================
-
-
 >原文地址： <http://caoxudong818.iteye.com/blog/1223086>
 
 # 1 Introduction and Overview 
@@ -337,7 +333,7 @@ Java HotSpot虚拟机已经成为苹果电脑公司的Macintosh  OS  X操作系�
 [1]:    /image/translation_the_java_hotspot_performance_engine_architecture-1.jpg
 [2]:    /image/translation_the_java_hotspot_performance_engine_architecture-2.jpg
 [3]:    http://java.sun.com
-[4]:    ./translation_memory_management_in_the_java_hotspot_virtual_machine
+[4]:    /blog/2011/07/29/translation_memory_management_in_the_java_hotspot_virtual_machine.html
 [5]:    http://www.oracle.com/technetwork/java/gc-tuning-5-138395.html
 [6]:    http://www.oracle.com/technetwork/java/javase/tech/index-jsp-136373.html
 [7]:    http://www.oracle.com/technetwork/java/ergo5-140223.html

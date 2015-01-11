@@ -6,11 +6,6 @@ tags:       [java]
 ---
 
 
-Java之坑，part1：wait和notify
-=====================
-
-
-
 先上一段死锁的代码。
 
     package test.java.lang.thread;

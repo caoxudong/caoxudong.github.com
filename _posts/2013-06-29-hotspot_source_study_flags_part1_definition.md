@@ -7,10 +7,6 @@ tags:       [hotspot, jvm, openjdk]
 
 
 
-hotspot源代码学习，flags，part1，定义
-=======================
-
-
 > jvm中hotspot的参数(flag)的定义主要位于[globals.hpp][1]、其他个操作系统相关的globals.hpp（如[globals_linux.hpp][2]）以及其他相关组件（如compiler和gc）的globals.hpp（如[g1_globals.hpp][3], [c1_globals.hpp][4]）。 下面主要以hotspot的主globals.hpp来说明对flags的处理。
 
 >源代码版本： `openjdk-7u6-fcs-src-b24-28_aug_2012`

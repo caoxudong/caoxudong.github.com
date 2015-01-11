@@ -6,12 +6,6 @@ tags:       [translation, java, jvm]
 ---
 
 
-转载： JVM性能优化， Part 1 ―― 概述
-==================
-
-
-
-
 原文地址 <a href="http://www.javaworld.com/javaworld/jw-08-2012/120821-jvm-performance-optimization-overview.html" target="_blank">http://www.javaworld.com/javaworld/jw-08-2012/120821-jvm-performance-optimization-overview.html</a>
 
 转载地址 <a href="http://www.importnew.com/1774.html" target="_blank">http://www.importnew.com/1774.html</a>
@@ -123,10 +117,21 @@ Eva Andearsson对JVM计数、SOA、云计算和其他企业级中间件解决方
 
 # 相关资源
 
-*   "<a href="https://www.usenix.org/conference/java-vm-02/collect-or-not-collect-machine-learning-memory-management" target="_blank">To Colelct or Not To Collect</a>" (Eva Andreasson, Frank Hoffmann, Olof Lindholm; JVM-02: Proceedings of the Java Virtual Machine Research and Technology Symposium, 2002): 文章介绍了作者对自适应决策过程的研究，该过程用于确定应该使用哪种垃圾回收器技术，以及如何应用该技术。
-*   "<a href="http://www.nada.kth.se/utbildning/grukth/exjobb/rapportlistor/2002/Rapporter02/andreasson_eva_02041.pdf" target="_blank">Reinforcement Learning for a dynamic JVM</a>" (Eva Andreasson, KTH Royal Institute of Technology, 2002): 一篇硕士论文，介绍了如何运用增强学习（reinforcement learning）优化决策，以决定对于一个动态工作负载来说，何时开始垃圾回收的决策更加合适。
-*   "<a href="http://www.oracle.com/us/technologies/java/oracle-jrockit-real-time-1517310.pdf" target="_blank">Deterministic Garbage Collection: Unleash the Power of Java with Oracle JRockit Real Time</a>" (An Oracle White Paper, August 2008): 介绍了更多JRockit实时（JRockit Real Time）系统中Deterministic Garbage Collection算法的内容。
-*   "<a href="http://stackoverflow.com/questions/1878696/why-is-java-faster-when-using-a-jit-vs-compiling-to-machine-code" target="_blank">Why is Java faster when using a JIT vs. compiling to machine code?</a>" (Stackoverflow, December 2009): 一个关于JIT的讨论。
-*   <a href="http://www.azulsystems.com/products/zing/virtual-machine" target="_blank">Zing</a>: Zing是一个完整实现了Java相关规范，具有高伸缩性的软件平台，其中包含了应用程序级资源控制器、无损监控工具、以及诊断工具（这里原文是'includes an application-aware resource controller and zero overhead, always-on production visibility and diagnostic tools'，<a href="http://www.azulsystems.com/products/zing/diagnostics" target="_blank">Zing官网</a>给出的描述是'Zing also includes a runtime monitoring and diagnostics tool called Zing Vision. It is a zero overhead, always-on production time monitoring, diagnostic and tuning tool instrumented into the Zing JVM.'，怀疑是本文作者将"vision"和"visibility"弄混了）。 Zing整合了业界领先技术，使得每个JVM实例可以拥有TB级的堆内存，使其在动态负载和极限内存分配情况下仍可以保持较高的吞吐量 。
-*   "<a href="http://www.drdobbs.com/jvm/g1-javas-garbage-first-garbage-collector/219401061" target="_blank">G1: Java's Garbage First Garbage Collector</a>" (Eric Bruno, Dr. Dobb's, August 2009): 文章对GC做了回顾，并介绍了G1垃圾回收器。
-*   <a href="http://www.packtpub.com/oracle-jrockit-definitive-guide/book?tag=" target="_blank">Oracle JRockit: The Definitive Guide</a> (Marcus Hirt, Marcus Lagergren; Packt Publishing, 2010): JRcokit权威指南。
+*   "[To Colelct or Not To Collect][1]" (Eva Andreasson, Frank Hoffmann, Olof Lindholm; JVM-02: Proceedings of the Java Virtual Machine Research and Technology Symposium, 2002): 文章介绍了作者对自适应决策过程的研究，该过程用于确定应该使用哪种垃圾回收器技术，以及如何应用该技术。
+*   "[Reinforcement Learning for a dynamic JVM][2]" (Eva Andreasson, KTH Royal Institute of Technology, 2002): 一篇硕士论文，介绍了如何运用增强学习（reinforcement learning）优化决策，以决定对于一个动态工作负载来说，何时开始垃圾回收的决策更加合适。
+*   "[Deterministic Garbage Collection: Unleash the Power of Java with Oracle JRockit Real Time][3]" (An Oracle White Paper, August 2008): 介绍了更多JRockit实时（JRockit Real Time）系统中Deterministic Garbage Collection算法的内容。
+*   "[Why is Java faster when using a JIT vs. compiling to machine code?][4]</a>" (Stackoverflow, December 2009): 一个关于JIT的讨论。
+*   "[Zing][5]": Zing是一个完整实现了Java相关规范，具有高伸缩性的软件平台，其中包含了应用程序级资源控制器、无损监控工具、以及诊断工具（这里原文是'includes an application-aware resource controller and zero overhead, always-on production visibility and diagnostic tools'，[Zing官网][6]给出的描述是'Zing also includes a runtime monitoring and diagnostics tool called Zing Vision. It is a zero overhead, always-on production time monitoring, diagnostic and tuning tool instrumented into the Zing JVM.'，怀疑是本文作者将"vision"和"visibility"弄混了）。 Zing整合了业界领先技术，使得每个JVM实例可以拥有TB级的堆内存，使其在动态负载和极限内存分配情况下仍可以保持较高的吞吐量 。
+*   "[G1: Java's Garbage First Garbage Collector][7]" (Eric Bruno, Dr. Dobb's, August 2009): 文章对GC做了回顾，并介绍了G1垃圾回收器。
+*   "[Oracle JRockit: The Definitive Guide][8] (Marcus Hirt, Marcus Lagergren; Packt Publishing, 2010): JRcokit权威指南。
+
+
+
+[1]:    https://www.usenix.org/conference/java-vm-02/collect-or-not-collect-machine-learning-memory-management      "To Colelct or Not To Collect"
+[2]:    http://www.nada.kth.se/utbildning/grukth/exjobb/rapportlistor/2002/Rapporter02/andreasson_eva_02041.pdf     "Reinforcement Learning for a dynamic JVM"
+[3]:    http://www.oracle.com/us/technologies/java/oracle-jrockit-real-time-1517310.pdf                             "Deterministic Garbage Collection: Unleash the Power of Java with Oracle JRockit Real Time"
+[4]:    http://stackoverflow.com/questions/1878696/why-is-java-faster-when-using-a-jit-vs-compiling-to-machine-code "Why is Java faster when using a JIT vs. compiling to machine code?"
+[5]:    http://www.azulsystems.com/products/zing/virtual-machine                                                    "Zing"
+[6]:    http://www.azulsystems.com/products/zing/diagnostics                                                        "Zing官网中诊断工具的介绍"
+[7]:    http://www.drdobbs.com/jvm/g1-javas-garbage-first-garbage-collector/219401061                               "G1: Java's Garbage First Garbage Collector"
+[8]:    http://www.packtpub.com/oracle-jrockit-definitive-guide/book?tag=                                           "Oracle JRockit: The Definite Guide"

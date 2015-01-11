@@ -5,10 +5,6 @@ layout:     post
 tags:       [java]
 ---
 
-java线程重复执行start方法的问题
-=================
-
-
 先看代码
 
     package test.java.lang.thread;

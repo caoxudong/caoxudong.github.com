@@ -7,13 +7,6 @@ tags:       [bash, shell]
 
 
 
-bash 拾零， part 4 - 字符串
-=================
-
-
-
-
-<a name="substring" />
 # 字符串截取
 
 基本方法参见下面的代码：
