@@ -8,10 +8,10 @@ defaults:
 
 
 # Site settings
-title: "Don't worry. Be happy."
+title: "caoxudong's workstation"
 email: "caoxudong818@gmail.com"
 description: > # this means to ignore newlines until "baseurl:"
-  caoxudong's workstation
+  My work records.
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://blog.caoxudong.info" # the base hostname & protocol for your site
 twitter_username: "caoxudong127"
