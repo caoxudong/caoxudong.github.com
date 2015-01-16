@@ -19,3 +19,7 @@ github_username:  "caoxudong"
 
 # Build settings
 markdown: "kramdown"
+
+# pagination
+paginate: 10
+paginate_path: "blog/page:num"
