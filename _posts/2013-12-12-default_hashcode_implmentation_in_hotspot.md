@@ -1,5 +1,5 @@
 ---
-title:      hotspot源代码学习，对象，part2，默认hashcode的生成
+title:      hotspot中java对象默认hashcode的生成方式
 category:   blog
 layout:     post
 tags:       [jvm, openjdk, hotspot, hashcode]

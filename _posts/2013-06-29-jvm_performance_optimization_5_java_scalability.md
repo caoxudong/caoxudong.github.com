@@ -1,20 +1,20 @@
 ---
-title:      JVM性能优化, Part 5 — 伸缩性
+title:      JVM性能优化，Part 5 -- 伸缩性
 category:   blog
 layout:     post
-tags:       [java, jvm, translation]
+tags:       [java, jvm, translation, optimization]
 ---
 
 
 原文地址 <http://www.javaworld.com/javaworld/jw-03-2013/130301-jvm-performance-optimization-java-scalability.html?page=1>
 
-[转载： JVM性能优化， Part 1 — 概述][1]
+[转载： JVM性能优化， Part 1 -- 概述][1]
 
-[转载： JVM性能优化， Part 2 — 编译器][2]
+[转载： JVM性能优化， Part 2 -- 编译器][2]
 
-[转载： JVM性能优化， Part 3 — 垃圾回收][3]
+[转载： JVM性能优化， Part 3 -- 垃圾回收][3]
 
-[转载： JVM性能优化,  Part 4 — C4 垃圾回收][4]
+[转载： JVM性能优化,  Part 4 -- C4 垃圾回收][4]
 
 大部分开发人员在处理JVM性能问题时都没有涉及到问题的本质，也就是说，花费大量的时间来解决应用程序层面的性能瓶颈。而我一直将之视为一个系统性的问题，这个观点也贯穿于本系列的全部文章中。我认为，限制企业级Java应用程序伸缩性的根本因素在于JVM技术本身。在进一步讨论这个问题之前，先看以下几个事实：
 

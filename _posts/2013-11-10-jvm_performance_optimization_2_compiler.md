@@ -1,8 +1,8 @@
 ---
-title:      JVM性能优化， Part 2 ―― 编译器
+title:      JVM性能优化，Part 2，编译器
 category:   blog
 layout:     post
-tags:       [compiler, java, jvm, translation]
+tags:       [compiler, java, jvm, translation, optimization]
 ---
 
 

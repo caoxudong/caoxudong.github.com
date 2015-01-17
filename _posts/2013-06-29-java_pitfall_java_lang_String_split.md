@@ -1,5 +1,5 @@
 ---
-title:      Java之坑，part2：java.lang.String#split
+title:      java.lang.String#split
 category:   blog
 layout:     post
 tags:       [java]

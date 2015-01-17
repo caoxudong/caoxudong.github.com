@@ -1,7 +1,7 @@
 ---
 title:      让我郁闷的面试
 category:   blog
-tags:       [interview life]
+tags:       [interview]
 layout:     post
 ---
 

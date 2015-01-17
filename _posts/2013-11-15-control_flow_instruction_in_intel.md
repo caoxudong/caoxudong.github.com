@@ -1,5 +1,5 @@
 ---
-title:      intel汇编指令，笔记，part1，控制转换指令
+title:      intel汇编中的控制转换指令
 category:   blog
 layout:     post
 tags:       [assembly, intel]

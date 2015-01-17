@@ -1,8 +1,8 @@
 ---
-title:      进程退出的相关函数，part2，实现
+title:      进程退出的相关函数的实现
 category:   blog
 layout:     post
-tags:       [c. glibc]
+tags:       [c, glibc]
 ---
 
 

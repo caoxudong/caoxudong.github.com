@@ -1,5 +1,5 @@
 ---
-title:      Intel微处理器，笔记，part1，寄存器简介
+title:      Intel微处理器寄存器简介
 category:   blog
 layout:     post
 tags:       [intel, miscroprocessor, register, assembly]

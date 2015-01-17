@@ -1,5 +1,5 @@
 ---
-title:      bash 拾零， part 2 - 数学运算
+title:      bash中的数学运算
 category:   blog
 layout:     post
 tags:       [bash, shell]

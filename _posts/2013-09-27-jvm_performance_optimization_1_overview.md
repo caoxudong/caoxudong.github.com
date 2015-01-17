@@ -1,8 +1,8 @@
 ---
-title:      JVM性能优化， Part 1 ―― 概述
+title:      JVM性能优化，Part 1，概述
 category:   blog
 layout:     post
-tags:       [translation, java, jvm]
+tags:       [translation, java, jvm, optimization]
 ---
 
 

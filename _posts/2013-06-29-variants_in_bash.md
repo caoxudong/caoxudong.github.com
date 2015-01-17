@@ -1,5 +1,5 @@
 ---
-title:      bash 拾零， part 1 - 变量
+title:      bash中的变量
 category:   blog
 layout:     post
 tags:       [bash, shell]

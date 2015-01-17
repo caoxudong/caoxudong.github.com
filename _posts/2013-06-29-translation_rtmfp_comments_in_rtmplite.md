@@ -1,5 +1,5 @@
 ---
-title:      译文 —— rtmplite项目中rtmfp协议部分注释
+title:      译文《rtmplite项目中rtmfp协议部分注释》
 category:   blog
 layout:     post
 tags:       [flash, p2p, rtmfp, translation]

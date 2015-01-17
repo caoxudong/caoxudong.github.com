@@ -1,5 +1,5 @@
 ---
-title:      bash 拾零， part 4 - 字符串
+title:      bash中的字符串处理
 category:   blog
 layout:     post
 tags:       [bash, shell]

@@ -1,8 +1,8 @@
 ---
-title:      "译文 —— Oracle JRockit:The Definite Guide"
+title:      翻译《Oracle JRockit:The Definite Guide》
 category:   blog
 layout:     post
-tags:       [translation, java, jvm, jrockit]
+tags:       [translation, java, jvm, jrockit, optimization]
 ---
 
 

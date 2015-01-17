@@ -1,8 +1,8 @@
 ---
-title:      进程退出的相关函数，part1，声明
+title:      进程退出的相关函数的声明
 category:   blog
 layout:     post
-tags:       [c. glibc]
+tags:       [c, glibc]
 ---
 
 

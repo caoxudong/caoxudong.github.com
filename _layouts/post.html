@@ -5,7 +5,13 @@ layout: default
 
   <header class="post-header">
     <h1 class="post-title">{{ page.title }}</h1>
-    <p class="post-meta">{{ page.date | date: "%b %-d, %Y" }}{% if page.author %} • {{ page.author }}{% endif %}{% if page.meta %} • {{ page.meta }}{% endif %}</p>
+    <p class="post-meta">Date: {{ page.date | date: "%b %-d, %Y" }}</p>
+    <p class="post-meta">
+      Tags:&nbsp;&nbsp;
+      {% for tag in page.tags %}
+        <span style="margin-right:15px;"><a href="/tags/{{ tag }}/index.html">{{ tag }}</a></span>
+      {% endfor %}
+    </p>
   </header>
 
   <article class="post-content">

@@ -1,5 +1,5 @@
 ---
-title:      Serviceability 简介 —— 概述
+title:      Serviceability 简介 -- 概述
 category:   blog
 layout:     post
 tags:       [java, jvm, serviceability]

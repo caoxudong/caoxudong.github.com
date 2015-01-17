@@ -1,5 +1,5 @@
 ---
-title:      hotspot源代码学习，对象，part3, 标记字
+title:      hotspot中对象的标记字
 category:   blog
 layout:     post
 tags:       [hotspot, java, jvm, vm]

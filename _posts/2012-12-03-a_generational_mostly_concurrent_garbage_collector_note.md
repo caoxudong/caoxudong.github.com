@@ -1,8 +1,8 @@
 ---
-title:      阅读笔记——《A Generational Mostly-concurrent Garbage Collector》
+title:      阅读笔记《A Generational Mostly-concurrent Garbage Collector》
 category:   blog
 layout:     post
-tags:       [note, gc, java, jvm, cms]
+tags:       [gc, java, jvm, cms]
 ---
 
 

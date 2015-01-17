@@ -1,5 +1,5 @@
 ---
-title:      Java之坑，part1：wait和notify
+title:      wait和notify
 category:   blog
 layout:     post
 tags:       [java]

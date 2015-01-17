@@ -1,5 +1,5 @@
 ---
-title:      hotspot源代码学习，flags，part1，定义
+title:      hotspot中的虚拟机参数
 category:   blog
 layout:     post
 tags:       [hotspot, jvm, openjdk]

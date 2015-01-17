@@ -1,5 +1,5 @@
 ---
-title:      AVM2 Overview学习笔记3 — ABC
+title:      AVM2 Overview学习笔记3 -- ABC
 category:   blog
 layout:     post
 tags:       [note, avm, flash]
