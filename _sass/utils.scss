@@ -1,8 +1,15 @@
 /**
  * google search
  */
-div#googleSearchDiv {
+div#googleSearch {
     display: inline-block; 
     width: 300px;
+    float: right;
+}
+
+/**
+ * pagination
+ */
+div#pagination {
     float: right;
 }
