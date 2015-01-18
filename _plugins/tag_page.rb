@@ -46,10 +46,17 @@ EOS
  
     def write(dest_prefix, dest_suffix = nil)
       dest = dest_prefix
-      dest = File.join(dest, dest_suffix) if dest_suffix
+      dest = File.join(dest, dest_suffix) if dest_suffix      
       path = File.join(dest, CGI.unescape(self.url))
       FileUtils.mkdir_p(File.dirname(path))
       File.open(path, 'w') do |f|        
+        f.write(self.output)
+      end
+      # 将标签文件写入到项目根目录，以便可以在github中看到
+      project_home = File.join(dest, "..")
+      tag_file_in_project_home = File.join(project_home, CGI.unescape(self.url))
+      FileUtils.mkdir_p(File.expand_path(File.dirname(tag_file_in_project_home)))
+      File.open(tag_file_in_project_home, 'w') do |f|        
         f.write(self.output)
       end
     end
