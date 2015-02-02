@@ -19,4 +19,4 @@ tags:       [tomcat, translation, java]
 
 [how-tomcat-works][1]
 
-[1]:    https://www.dropbox.com/s/33bmjcctfq9msdq/how-tomcat-works.docx
+[1]:    /attachments/how-tomcat-works.pdf
