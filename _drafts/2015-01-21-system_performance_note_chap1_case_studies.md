@@ -2,7 +2,7 @@
 title:      《System Performance》笔记，chap1，case study
 layout:     post
 category:   blog
-tags:       [tomcat, translation, java, "System Performance"]
+tags:       [tomcat, translation, java, performance]
 ---
 
 
@@ -31,3 +31,39 @@ Scott（故事的主人公，系统管理员）的处理过程如下：
 
 ## 分析
 
+查看`/proc/diskstats`文件以获取与磁盘相关的统计信息，其每行数据字段的含义如下（详细内容参见[iostats.txt文件][1]）：
+
+1. 自系统启动以来，成功完成的读操作数量。
+2. 自系统启动以来，合并的读（写）操作数量（字段6与此类似）。合并相邻的读（写）可以提升执行性能。在具体执行操作之前，合并相邻的读（写）操作，然后再作为一个操作提交到硬盘可以提升整体性能。
+3. 自系统启动以来，成功读取的硬盘扇区数目。
+4. 自系统启动以来，执行读操作所花费的总时间，单位为毫秒。
+5. 自系统启动以来，成功完成的写操作。
+6. 参见字段2的说明。
+7. 自系统启动以来，成功写入的硬盘扇区数目。
+8. 自系统启动以来，执行写操作所花费的总时间，单位为毫秒。
+9. 当前系统中正在执行的IO操作的数目。正常情况下，该字段的数值最终应该归为0.
+10. 自系统启动以来，存在I/O操作的总时长，单位为毫秒。当字段9的数值不为0时，该字段的数值就会增长。
+11. 自系统启动以来，带权重的、存在I/O操作的总时长，单位为毫秒。当启动I/O操作、完成I/O操作、合并I/O操作
+
+Field  8 -- # of milliseconds spent writing
+    This is the total number of milliseconds spent by all writes (as
+    measured from __make_request() to end_that_request_last()).
+Field  9 -- # of I/Os currently in progress
+    The only field that should go to zero. Incremented as requests are
+    given to appropriate struct request_queue and decremented as they finish.
+Field 10 -- # of milliseconds spent doing I/Os
+    This field increases so long as field 9 is nonzero.
+Field 11 -- weighted # of milliseconds spent doing I/Os
+    This field is incremented at each I/O start, I/O completion, I/O
+    merge, or read of these stats by the number of I/Os in progress
+    (field 9) times the number of milliseconds spent doing I/O since the
+    last update of this field.  This can provide an easy measure of both
+    I/O completion time and the backlog that may be accumulating.
+
+
+
+
+
+
+
+[1]:    https://www.kernel.org/doc/Documentation/iostats.txt        "iostats.txt"
