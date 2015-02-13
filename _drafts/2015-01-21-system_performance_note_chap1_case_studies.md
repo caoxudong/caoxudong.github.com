@@ -31,6 +31,8 @@ Scott（故事的主人公，系统管理员）的处理过程如下：
 
 ## 分析
 
+### 查看磁盘I/O信息
+
 查看`/proc/diskstats`文件以获取与磁盘相关的统计信息，其每行数据字段的含义如下（详细内容参见[iostats.txt文件][1]）：
 
 1. 自系统启动以来，成功完成的读操作数量。
@@ -45,10 +47,38 @@ Scott（故事的主人公，系统管理员）的处理过程如下：
 10. 自系统启动以来，存在I/O操作的总时长，单位为毫秒。当字段9的数值不为0时，该字段的数值就会增长。
 11. 这个字段的数值会在每次启动I/O操作、完成I/O操作、合并I/O操作，或读取这些统计数字时做累加操作，每次累加的数值等于正在进行的I/O操作数量（即字段9的值）乘以自上次更新本字段之后花费在I/O操作上的时间。最后，本子段的值可用于表示，自系统启动以来，I/O操作的完成和排队情况。
 
+其中，磁盘使用率 = 单位时间内执行I/O操作占用的时间 / 单位时间（参见[man iostat][5]）
+
+### 动态追踪脚本
+
+linux上，可以使用systemtap对内核运行情况做动态追踪（在某些类Unix上，可以使用solaris）。
 
 
 
 
 
 
-[1]:    https://www.kernel.org/doc/Documentation/iostats.txt        "iostats.txt"
+# references
+
+1. [man iostat][5]
+
+
+
+
+# resources
+
+1. [iostats.txt][1]
+2. [systemtap][2]
+3. [dtrace][3]
+4. [sysstat][4]
+
+
+
+
+
+
+[1]:    https://www.kernel.org/doc/Documentation/iostats.txt                        "iostats.txt"
+[2]:    https://sourceware.org/systemtap/                                           "systemtap"
+[3]:    http://dtrace.org/                                                          "dtrace"
+[4]:    http://sebastien.godard.pagesperso-orange.fr/                               "sysstat"
+[5]:    http://sebastien.godard.pagesperso-orange.fr/man_iostat.html                "man_iostat"
