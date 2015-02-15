@@ -51,7 +51,7 @@ Scott（故事的主人公，系统管理员）的处理过程如下：
 
 ### 动态追踪脚本
 
-linux上，可以使用systemtap对内核运行情况做动态追踪（在某些类Unix上，可以使用solaris）。
+linux上，可以使用systemtap对内核运行情况做动态追踪（在某些类Unix上，可以使用dtrace）。
 
 
 
