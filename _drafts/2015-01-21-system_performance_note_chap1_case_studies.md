@@ -33,7 +33,9 @@ Scott（故事的主人公，系统管理员）的处理过程如下：
 
 ### 查看磁盘I/O信息
 
-查看`/proc/diskstats`文件以获取与磁盘相关的统计信息，其每行数据字段的含义如下（详细内容参见[iostats.txt文件][1]）：
+使用`iostat -x`可以查看系统的IO情况。
+
+iostat的实现是查看`/proc/diskstats`文件以获取与磁盘相关的统计信息，其每行数据字段的含义如下（详细内容参见[iostats.txt文件][1]）：
 
 1. 自系统启动以来，成功完成的读操作数量。
 2. 自系统启动以来，合并的读（写）操作数量（字段6与此类似）。合并相邻的读（写）可以提升执行性能。在具体执行操作之前，合并相邻的读（写）操作，然后再作为一个操作提交到硬盘可以提升整体性能。
@@ -53,7 +55,7 @@ Scott（故事的主人公，系统管理员）的处理过程如下：
 
 linux上，可以使用[systemtap][2]对内核运行情况做动态追踪（在某些类Unix上，可以使用[dtrace][3]）。
 
-systemtap的教程中提供了一些示例，例如[SystemTap Beginners Guide: Disk][6]，
+systemtap的教程中提供了一些示例，例如[iotime.stp][6]和[ioblktime.stp][7]，可用于监控磁盘的IO操作的执行时间和阻塞时间。
 
 
 
@@ -63,7 +65,7 @@ systemtap的教程中提供了一些示例，例如[SystemTap Beginners Guide: D
 # references
 
 1. [man iostat][5]
-2. [SystemTap Beginners Guide: Disk][6]
+2. [iotime.stp][6]
 
 
 
@@ -85,4 +87,5 @@ systemtap的教程中提供了一些示例，例如[SystemTap Beginners Guide: D
 [3]:    http://dtrace.org/                                                                          "dtrace"
 [4]:    http://sebastien.godard.pagesperso-orange.fr/                                               "sysstat"
 [5]:    http://sebastien.godard.pagesperso-orange.fr/man_iostat.html                                "man_iostat"
-[6]:    https://sourceware.org/systemtap/SystemTap_Beginners_Guide/mainsect-disk.html               "systemtap disk"
+[6]:    https://sourceware.org/systemtap/SystemTap_Beginners_Guide/iotimesect.html                  "iotime.stp"
+[7]:    https://sourceware.org/systemtap/SystemTap_Beginners_Guide/ioblktimesect.html               "ioblktime.stp"
