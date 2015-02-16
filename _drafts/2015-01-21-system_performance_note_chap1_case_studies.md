@@ -51,7 +51,9 @@ Scott（故事的主人公，系统管理员）的处理过程如下：
 
 ### 动态追踪脚本
 
-linux上，可以使用systemtap对内核运行情况做动态追踪（在某些类Unix上，可以使用dtrace）。
+linux上，可以使用[systemtap][2]对内核运行情况做动态追踪（在某些类Unix上，可以使用[dtrace][3]）。
+
+systemtap的教程中提供了一些示例，例如[SystemTap Beginners Guide: Disk][6]，
 
 
 
@@ -61,6 +63,7 @@ linux上，可以使用systemtap对内核运行情况做动态追踪（在某些
 # references
 
 1. [man iostat][5]
+2. [SystemTap Beginners Guide: Disk][6]
 
 
 
@@ -77,8 +80,9 @@ linux上，可以使用systemtap对内核运行情况做动态追踪（在某些
 
 
 
-[1]:    https://www.kernel.org/doc/Documentation/iostats.txt                        "iostats.txt"
-[2]:    https://sourceware.org/systemtap/                                           "systemtap"
-[3]:    http://dtrace.org/                                                          "dtrace"
-[4]:    http://sebastien.godard.pagesperso-orange.fr/                               "sysstat"
-[5]:    http://sebastien.godard.pagesperso-orange.fr/man_iostat.html                "man_iostat"
+[1]:    https://www.kernel.org/doc/Documentation/iostats.txt                                        "iostats.txt"
+[2]:    https://sourceware.org/systemtap/                                                           "systemtap"
+[3]:    http://dtrace.org/                                                                          "dtrace"
+[4]:    http://sebastien.godard.pagesperso-orange.fr/                                               "sysstat"
+[5]:    http://sebastien.godard.pagesperso-orange.fr/man_iostat.html                                "man_iostat"
+[6]:    https://sourceware.org/systemtap/SystemTap_Beginners_Guide/mainsect-disk.html               "systemtap disk"
