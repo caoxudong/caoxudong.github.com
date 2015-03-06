@@ -62,20 +62,14 @@ systemtap的教程中提供了一些示例，例如[iotime.stp][6]和[ioblktime.
 
 
 
-# references
-
-1. [man iostat][5]
-2. [iotime.stp][6]
-
-
-
-
 # resources
 
 1. [iostats.txt][1]
 2. [systemtap][2]
 3. [dtrace][3]
 4. [sysstat][4]
+5. [man iostat][5]
+6. [iotime.stp][6]
 
 
 
