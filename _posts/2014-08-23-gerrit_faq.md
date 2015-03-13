@@ -80,3 +80,5 @@ tags:       [gerrit, git]
     squash 02ba3b8 blablabla...
 
 这样，rebase后会将这些commit合并为一个，并保留相关提交信息，提交到gerrit后，就只会有一个review。
+
+当然，压缩提交和丢失之前的提交信息，因此后续就直接将合并后的代码push到远程库中就好了。
