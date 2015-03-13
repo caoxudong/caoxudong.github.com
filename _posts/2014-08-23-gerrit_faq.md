@@ -12,7 +12,7 @@ tags:       [gerrit, git]
 
 善用`rebase`可以使提交记录整齐干净，没有那些看着就让人烦躁的Merge提交，例如：
 
-    Merge branch 'opsPolicy' of ssh://115.28.216.58:29418/flymaster_ops into ops
+    Merge branch 'opsPolicy' of ssh://127.0.0.1:29418/flymaster_ops into ops
 
 解决方案是在将代码提交到远程之前，先在本地针对远程分支执行一次`rebase`，将新提交的内容放到当前本地分支的尾部。在使用`rebase`命令时，加上参数`-i`，git会将需要应用的commit都列出来，以便选择实际需要的commit。完整操作如下：
 
