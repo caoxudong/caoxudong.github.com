@@ -64,7 +64,7 @@ auth_token是如此重要，因此为了提升其安全性，可以在用户每�
 若用户的所有cookie都被盗了，而且盗窃者与用户的对外IP相同（还在同一个局域网内网），没招了，爱咋咋地吧。
 
 
-# resources
+# 参考文档
 
 1. [HTTP][3]
 2. [stateless protocol][2]
