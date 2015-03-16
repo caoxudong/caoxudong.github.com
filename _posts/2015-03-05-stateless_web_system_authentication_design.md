@@ -48,20 +48,33 @@ tags:       [web, authentication, cookie, security]
 auth_token在某种程度上代替了密码的功能，因此就需要非常注意auth_token的安全性。
 
 1. 尽量使用安全连接（例如HTTPS）来传输数据。
-2. 若是使用cookie存储各类信息，需要小心设置cookie的属性，包括expire，httponly，secure，domain和path，最小化访问权限。
-3. 服务器端存储auth_token时，切不可存储明文，应该加密存储，否则一旦应用服务器被攻破，很有可能会威胁到所有用户的账户安全。
-4. 由于各类token只是一个标记，可以任意复制，因此最好能够将之与用户IP（最好是MAC地址，不过太不方便）绑定。
-5. 在访问/修改关键信息（例如查看/修改银行账户信息，修改电子邮件/手机信息等）时，必需通过用户名密码进行身份校验。
+2. 将token可ip绑定
+3. 若是使用cookie存储各类信息，需要小心设置cookie的属性，包括expire，httponly，secure，domain和path，最小化访问权限。
+4. 服务器端存储auth_token时，切不可存储明文，应该加密存储，否则一旦应用服务器被攻破，很有可能会威胁到所有用户的账户安全。
+5. 由于各类token只是一个标记，可以任意复制，因此最好能够将之与用户IP（最好是MAC地址，不过太不方便）绑定。
+6. token最好能够表达时序语义（参考[github中token][8]的设计），以便确认前后两次访问是否是连续的，例如将上次访问时间进行编码作为token。
+7. 在访问/修改关键信息（例如查看/修改银行账户信息，修改电子邮件/手机信息等）时，必需通过用户名密码进行身份校验。
 
 auth_token是如此重要，因此为了提升其安全性，可以在用户每次发送请求后，都为用户换一个新的auth_token，下次用户提交请求时，就应该使用新的auth_token了。但换了auth_token后该如何辨别用户是来自哪个设备（浏览器）呢？针对这种情况，可以在客户端设置一个临时性的、不会持久化的标记session_token，这个标记会在用户登录时设置，并在关闭设备（浏览器）时被客户端清除掉。用户发送请求时，需要将userId, auth_token, session_token一起带回，服务器根据这三个信息来验证用户身份。
 
-现在来看用户cookie被盗的情况。这里假设使用了安全连接，网站自身没有XSS或CSRF漏洞，而且用户的密码并没有丢失。
+当用户关闭浏览器后，客户端session_token失效，用户再次打开浏览器访问时，带回auth_token和userId，再对比ip，若匹配则重新生成新的session_token给用户，同时使原来的session_token失效。
 
-若用户的cookie文件被盗，由于session_cookie并未作持久化，因此hacker只会拿到用户的userId和auth_token（假设cookie没有被加密存储的话），当hacker使用用户的cookie信息访问网站时，由于没有session_token信息，应用服务器会将该请求重定向到登录页面，从而避免信息泄露。
+### 2.2.3 场景模拟
 
-若用户的所有cookie都被盗了，则应用服务器会发现用户信息都对，但IP信息与之前不一致，则应强制登录，将之前登录状态清空以确保安全，并通知用户账户有风险。
+>现在来看用户cookie被盗的情况。这里假设使用了安全连接，网站自身没有XSS或CSRF漏洞，而且用户的密码并没有丢失。
 
-若用户的所有cookie都被盗了，而且盗窃者与用户的对外IP相同（还在同一个局域网内网），没招了，爱咋咋地吧。
+#### 2.2.3.1 IP不同
+
+这个好办，IP不同，未经过重新登录，但又拿着之前用过的token的请求，都重定向到登陆页面。
+
+#### 2.2.3.2 IP相同
+
+若用户的所有cookie都被盗了，而且hacker与用户的对外IP相同，这时，hacker可以查看相关信息，但根据前面的设定，对于敏感信息是不能查看修改的。此时，若用户继续使用网站，会带回之前已经用过token。这时就无法确认到底谁才是真正的用户，因此只好将相关的token都清楚，强制重新登录，并通知用户账户有风险。
+
+当然，这种方式并不能阻止hacker再次盗取cookie。
+
+其他的办法，后续再想想。
+
 
 
 # 参考文档
@@ -85,3 +98,4 @@ auth_token是如此重要，因此为了提升其安全性，可以在用户每�
 [5]:    http://en.wikipedia.org/wiki/HTTP_cookie
 [6]:    http://homakov.blogspot.com/2013/03/hacking-github-with-webkit.html
 [7]:    http://coolshell.cn/articles/5353.html
+[8]:    https://github.com
