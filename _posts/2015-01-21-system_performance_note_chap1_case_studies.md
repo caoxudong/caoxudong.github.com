@@ -58,9 +58,18 @@ linux上，可以使用[systemtap][2]对内核运行情况做动态追踪（在�
 systemtap的教程中提供了一些示例，例如[iotime.stp][6]和[ioblktime.stp][7]，可用于监控磁盘的IO操作的执行时间和阻塞时间。
 
 
+### linux IO栈
+
+![Linux-storage-stack-diagram][8]
+
+### 文件系统碎片
+
+[文件系统碎片][9]会增加磁头的移动距离，降低系统吞吐量。使用SSD的话，碎片化所带来的影响会小一些。
 
 
+### 文件系统缓存
 
+[文件系统缓存][10]
 
 # resources
 
@@ -70,7 +79,8 @@ systemtap的教程中提供了一些示例，例如[iotime.stp][6]和[ioblktime.
 4. [sysstat][4]
 5. [man iostat][5]
 6. [iotime.stp][6]
-
+7. [ioblktime.stp][7]
+8. [File system fragmentation][9]
 
 
 
@@ -83,3 +93,6 @@ systemtap的教程中提供了一些示例，例如[iotime.stp][6]和[ioblktime.
 [5]:    http://sebastien.godard.pagesperso-orange.fr/man_iostat.html                                "man_iostat"
 [6]:    https://sourceware.org/systemtap/SystemTap_Beginners_Guide/iotimesect.html                  "iotime.stp"
 [7]:    https://sourceware.org/systemtap/SystemTap_Beginners_Guide/ioblktimesect.html               "ioblktime.stp"
+[8]:    /image/Linux-storage-stack-diagram_v3.17.png                                                "Linux-storage-stack-diagram"
+[9]:    http://en.wikipedia.org/wiki/File_system_fragmentation                                      "File_system_fragmentation"
+[10]:   https://msdn.microsoft.com/en-us/library/windows/desktop/aa364218(v=vs.85).aspx             "File Caching"
