@@ -1,21 +1,6 @@
-<!DOCTYPE html>
-<html>
-
-  {% include head.html %}
-  <body>
-    
-    {% include header.html %}
-      
-
-    {% include sidebar_tagcloud.html %}
-    <div class="page-content">
-      <div class="wrapper">
-        {{ content }}
-      </div>
-    </div>
-
-    {% include footer.html %}
-
-  </body>
-
-</html>
+---
+theme :
+  name : bootstrap-3
+---
+{% include JB/setup %}
+{% include themes/bootstrap-3/default.html %}
