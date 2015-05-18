@@ -296,7 +296,7 @@ Win32DebuggerLocal类的writeBytesToProcess方法：
 
 to be continued......
 
-[1]:    /blog/2012/06/23/introduction_to_serviceability_overview.html
+[1]:    /blog/2012/06/23/introduction_to_serviceability_overview
 [2]:    http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/tools/Tool.java
 [3]:    http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/tools/JInfo.java#JInfo
 [4]:    http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/tools/FinalizerInfo.java#FinalizerInfo

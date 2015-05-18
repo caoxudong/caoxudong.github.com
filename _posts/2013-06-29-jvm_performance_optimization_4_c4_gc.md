@@ -110,6 +110,6 @@ Eva Andearsson对JVM计数、SOA、云计算和其他企业级中间件解决方
 [1]:    /image/jvmperf4-fig1.png
 [2]:    /image/jvmperf4-fig2.png
 [3]:    /image/jvmperf4-fig3.png
-[4]:    /blog/2013/09/27/jvm_performance_optimization_1_overview.html
-[5]:    /blog/2013/11/10/jvm_performance_optimization_2_compiler.html
-[6]:    /blog/2013/11/10/jvm_performance_optimization_3_gc.html
+[4]:    /blog/2013/09/27/jvm_performance_optimization_1_overview
+[5]:    /blog/2013/11/10/jvm_performance_optimization_2_compiler
+[6]:    /blog/2013/11/10/jvm_performance_optimization_3_gc

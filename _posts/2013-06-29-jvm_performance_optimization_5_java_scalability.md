@@ -200,10 +200,10 @@ Eva Andearsson对JVM计数、SOA、云计算和其他企业级中间件解决方
 
 
 
-[1]:    /blog/2013/09/27/jvm_performance_optimization_1_overview.html
-[2]:    /blog/2013/11/10/jvm_performance_optimization_2_compiler.html
-[3]:    /blog/2013/11/10/jvm_performance_optimization_3_gc.html
-[4]:    /blog/2013/06/29/jvm_performance_optimization_4_c4_gc.html
+[1]:    /blog/2013/09/27/jvm_performance_optimization_1_overview
+[2]:    /blog/2013/11/10/jvm_performance_optimization_2_compiler
+[3]:    /blog/2013/11/10/jvm_performance_optimization_3_gc
+[4]:    /blog/2013/06/29/jvm_performance_optimization_4_c4_gc
 [5]:    http://www.javaworld.com/javaworld/jw-01-2002/jw-0111-hotspotgc.html
 [6]:    http://www.infoq.com/presentations/Understanding-Java-Garbage-Collection
 [7]:    http://www.oracle.com/technetwork/java/hotspotfaq-138619.html#gc_pause

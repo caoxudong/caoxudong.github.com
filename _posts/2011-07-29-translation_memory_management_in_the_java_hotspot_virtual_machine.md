@@ -6,7 +6,7 @@ tags:       [translation, java, hotspot, jvm, memory]
 ---
 
 
-原文地址：<http://caoxudong818.iteye.com/admin/blogs/1135981>
+原文地址：<http://caoxudong818.iteye.com/blog/1135981>
 
 原英文地址：[Memory Management in the Java HotSpot™ Virtual Machine][1] 
 

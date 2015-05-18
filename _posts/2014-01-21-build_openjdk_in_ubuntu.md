@@ -181,4 +181,4 @@ tags:       [java, jvm, openjdk, ubuntu]
 [1]:    http://mail.openjdk.java.net/pipermail/mlvm-dev/2012-July/004821.html
 [2]:    http://mail.openjdk.java.net/pipermail/build-dev/2013-May/008877.html
 [3]:    http://www.java.net/download/openjdk/jdk7u40/promoted/b43/openjdk-7u40-fcs-src-b43-26_aug_2013.zip
-[4]:    /blog/2013/09/26/build_openjdk.html
+[4]:    /blog/2013/09/26/build_openjdk

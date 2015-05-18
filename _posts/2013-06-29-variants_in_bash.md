@@ -93,4 +93,4 @@ tags:       [bash, shell]
 
 
 
-[1]:    /post/bash_miscellaneous_part4_string#substring
+[1]:    /blog/2013/09/13/bash_miscellaneous_part4_string#substring

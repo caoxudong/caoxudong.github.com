@@ -320,10 +320,10 @@ Java HotSpot虚拟机已经成为苹果电脑公司的Macintosh  OS  X操作系�
 
 # 8 资源
 
-[Java HotSpot Home Page][6]
-[Memory Management in the Java HotSpot VM][4]
-[Ergonomics Documentation for the Java HotSpot VM][7]
-[Tuning Garbage Collection with the Java HotSpot VM][5]
+* [Java HotSpot Home Page][6]
+* [Memory Management in the Java HotSpot VM][4]
+* [Ergonomics Documentation for the Java HotSpot VM][7]
+* [Tuning Garbage Collection with the Java HotSpot VM][5]
 
 
 
@@ -333,7 +333,7 @@ Java HotSpot虚拟机已经成为苹果电脑公司的Macintosh  OS  X操作系�
 [1]:    /image/translation_the_java_hotspot_performance_engine_architecture-1.jpg
 [2]:    /image/translation_the_java_hotspot_performance_engine_architecture-2.jpg
 [3]:    http://java.sun.com
-[4]:    /blog/2011/07/29/translation_memory_management_in_the_java_hotspot_virtual_machine.html
+[4]:    /blog/2011/07/29/translation_memory_management_in_the_java_hotspot_virtual_machine
 [5]:    http://www.oracle.com/technetwork/java/gc-tuning-5-138395.html
 [6]:    http://www.oracle.com/technetwork/java/javase/tech/index-jsp-136373.html
 [7]:    http://www.oracle.com/technetwork/java/ergo5-140223.html

@@ -262,7 +262,7 @@ Eva Andearsson对JVM计数、SOA、云计算和其他企业级中间件解决方
 
 
 [1]:   /image/jvmperf2-fig1.png
-[2]:   /blog/2013/09/27/jvm_performance_optimization_1_overview.html            "JVM性能优化， Part 1 ―― 概述"
+[2]:   /blog/2013/09/27/jvm_performance_optimization_1_overview                "JVM性能优化， Part 1 ―― 概述"
 [3]:   http://www.javaworld.com/javaqa/2003-04/01-qa-0411-hotspot.html          "Watch your HotSpot compiler go"
 [4]:   http://www.javaworld.com/javaworld/jw-09-1996/jw-09-bytecodes.html       "Bytecode basics"
 [5]:   http://docs.oracle.com/javase/6/docs/technotes/guides/javac/index.html   "Java编译器"

@@ -59,4 +59,4 @@ Quich Release方法在Pauseless中被引入，后来Compressor做了些许修改
 
 
 [1]:    http://www.azulsystems.com/products/zing/c4-java-garbage-collector-wp
-[2]:    /blog/2013/06/29/jvm_performance_optimization_4_c4_gc.html
+[2]:    /blog/2013/06/29/jvm_performance_optimization_4_c4_gc

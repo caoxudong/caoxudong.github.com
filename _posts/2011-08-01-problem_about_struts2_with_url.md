@@ -6,7 +6,7 @@ tags:       [java, struts2]
 ---
 
 
-原文地址： <http://caoxudong818.iteye.com/admin/blogs/1137571>
+原文地址： <http://caoxudong818.iteye.com/blog/1137571>
 
 今天在同事的应用出了一个小错误，与struts2有关，这里记录一下。
 

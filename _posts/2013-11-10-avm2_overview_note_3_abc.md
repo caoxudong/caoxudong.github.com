@@ -209,106 +209,18 @@ ns\_set\_info中存储的命名空间的集合，其数组ns中的元素是常�
 
 其中`param_count`是该方法的参数个数，同时也是数组`param_type`的长度，数组`param_type`中的元素是指向常量池中`multiname`数组元素的索引。如果数组`param_type`的元素为0，表示可以是任意类型。`return_type`也是指向常量池中`multiname`数组元素的索引，表示返回类型，为0则表示任意类型。值得注意的是，`flags`是一个位向量，用于记载该方法的附加信息。相关位所表示的信息如下（未提及的位都必须为0）：
 
-<table>
-  <tr>
-    <td>
-      Name
-    </td>
-    
-    <td>
-      Value
-    </td>
-    
-    <td>
-      Meaning
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      NEED_ARGUMENTS
-    </td>
-    
-    <td>
-      0x01
-    </td>
-    
-    <td>
-      Suggests to the run-time that an “arguments” object (as specified by the ActionScript 3.0 Language Reference) be created. Must not be used together with NEED_REST. See Chapter 3.
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      NEED_ACTIVATION
-    </td>
-    
-    <td>
-      0x02
-    </td>
-    
-    <td>
-      Must be set if this method uses the newactivation opcode.
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      NEED_REST
-    </td>
-    
-    <td>
-      0x04
-    </td>
-    
-    <td>
-      This flag creates an ActionScript 3.0 rest arguments array. Must not be used with NEED_ARGUMENTS. See Chapter 3.
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      HAS_OPTIONAL
-    </td>
-    
-    <td>
-      0x08
-    </td>
-    
-    <td>
-      Must be set if this method has optional parameters and the options field is present in this method_info structure.
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      SET_DXNS
-    </td>
-    
-    <td>
-      0x40
-    </td>
-    
-    <td>
-      Must be set if this method uses the dxns or dxnslate opcodes.
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      HAS_PARAM_NAMES
-    </td>
-    
-    <td>
-      0x80
-    </td>
-    
-    <td>
-      Must be set when the param_names field is present in this method_info structure.
-    </td>
-  </tr>
-</table>
 
+| Name            | Value | Meaning |
+| --------------- | ----- | ------- |
+| NEED_ARGUMENTS  |  0x01 | Suggests to the run-time that an “arguments” object (as specified by the ActionScript 3.0 Language Reference) be created. Must not be used together with NEED_REST. See Chapter 3. |
+| NEED_ACTIVATION |  0x02 | Must be set if this method uses the newactivation opcode.| 
+| NEED_REST       |  0x04 | This flag creates an ActionScript 3.0 rest arguments array. Must not be used with NEED_ARGUMENTS. See Chapter 3. |
+| HAS_OPTIONAL    |  0x08 | Must be set if this method has optional parameters and the options field is present in this method_info structure.|
+| SET_DXNS        |  0x40 | Must be set if this method uses the dxns or dxnslate opcodes.|
+| HAS_PARAM_NAMES |  0x80 | Must be set when the param_names field is present in this method_info structure.|
+
+  
+  
 ## 可选参数
 
     option_info  
@@ -326,232 +238,25 @@ ns\_set\_info中存储的命名空间的集合，其数组ns中的元素是常�
 
 结构`option_info`用于定义方法的可选参数的默认值，`option_count`表示可选参数的个数，该值不可以为0，也不可以比`method_info`结构中`parameter_count`的值大。`option_detail`结构的`kind`表示该参数的类型，`val`是指向常量池中对应类型数组元素的索引。参数类型定义如下：
 
-<table>
-  <tr>
-    <td>
-      Constant Kind
-    </td>
-    
-    <td>
-      Value
-    </td>
-    
-    <td>
-      Entry
-    </td>
-  </tr>
+| Constant Kind               | Value | Entry     |
+| --------------------------- | ----- | --------- |
+| CONSTANT_Int                |  0x03 | integer   |
+| CONSTANT_Uint               |  0x04 | uinteger  | 
+| CONSTANT_Double             |  0x06 | double    |
+| CONSTANT_Utf8               |  0x01 | string    |
+| CONSTANT_True               |  0x0B | -         |
+| CONSTANT_False              |  0x0A | -         |
+| CONSTANT_Null               |  0x0C | -         |
+| CONSTANT_Undefined          |  0x00 | -         |
+| CONSTANT_Namespace          |  0x08 | namespace |
+| CONSTANT_PackageNamespace   |  0x16 | namespace |
+| CONSTANT_PackageInternalNs  |  0x17 | Namespace |
+| CONSTANT_ProtectedNamespace |  0x18 | Namespace |
+| CONSTANT_ExplicitNamespace  |  0x19 | Namespace |
+| CONSTANT_StaticProtectedNs  |  0x1A | Namespace |
+| CONSTANT_PrivateNs          |  0x05 | namespace |
   
-  <tr>
-    <td>
-      CONSTANT_Int
-    </td>
-    
-    <td>
-      0x03
-    </td>
-    
-    <td>
-      integer
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      CONSTANT_Uint
-    </td>
-    
-    <td>
-      0x04
-    </td>
-    
-    <td>
-      uinteger
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      CONSTANT_Double
-    </td>
-    
-    <td>
-      0x06
-    </td>
-    
-    <td>
-      double
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      CONSTANT_Utf8
-    </td>
-    
-    <td>
-      0x01
-    </td>
-    
-    <td>
-      string
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      CONSTANT_True
-    </td>
-    
-    <td>
-      0x0B
-    </td>
-    
-    <td>
-      -
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      CONSTANT_False
-    </td>
-    
-    <td>
-      0x0A
-    </td>
-    
-    <td>
-      -
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      CONSTANT_Null
-    </td>
-    
-    <td>
-      0x0C
-    </td>
-    
-    <td>
-      -
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      CONSTANT_Undefined
-    </td>
-    
-    <td>
-      0x00
-    </td>
-    
-    <td>
-      -
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      CONSTANT_Namespace
-    </td>
-    
-    <td>
-      0x08
-    </td>
-    
-    <td>
-      namespace
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      CONSTANT_PackageNamespace
-    </td>
-    
-    <td>
-      0x16
-    </td>
-    
-    <td>
-      namespace
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      CONSTANT_PackageInternalNs
-    </td>
-    
-    <td>
-      0x17
-    </td>
-    
-    <td>
-      Namespace
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      CONSTANT_ProtectedNamespace
-    </td>
-    
-    <td>
-      0x18
-    </td>
-    
-    <td>
-      Namespace
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      CONSTANT_ExplicitNamespace
-    </td>
-    
-    <td>
-      0x19
-    </td>
-    
-    <td>
-      Namespace
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      CONSTANT_StaticProtectedNs
-    </td>
-    
-    <td>
-      0x1A
-    </td>
-    
-    <td>
-      Namespace
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      CONSTANT_PrivateNs
-    </td>
-    
-    <td>
-      0x05
-    </td>
-    
-    <td>
-      namespace
-    </td>
-  </tr>
-</table>
-
+ 
 ## 参数名
 
     param_info  
@@ -598,77 +303,12 @@ ns\_set\_info中存储的命名空间的集合，其数组ns中的元素是常�
 
 `instance_info`用于定义AVM2运行时对象（类的实例）的一些特征。其中`name`和`super_name`都是指向常量池中`multiname`数组中元素的索引。`flags`是位向量，记录了在解释`instance_info`时的选项，如下所示（未列出的位必须为0）：
 
-<table>
-  <tr>
-    <td>
-      Name
-    </td>
-    
-    <td>
-      Value
-    </td>
-    
-    <td>
-      Meaning
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      CONSTANT_ClassSealed
-    </td>
-    
-    <td>
-      0x01
-    </td>
-    
-    <td>
-      The class is sealed: properties can not be dynamically added to instances of the class.
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      CONSTANT_ClassFinal
-    </td>
-    
-    <td>
-      0x02
-    </td>
-    
-    <td>
-      The class is final: it cannot be a base class for any other class.
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      CONSTANT_ClassInterface
-    </td>
-    
-    <td>
-      0x04
-    </td>
-    
-    <td>
-      The class is an interface.
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      CONSTANT_ClassProtectedNs
-    </td>
-    
-    <td>
-      0x08
-    </td>
-    
-    <td>
-      The class uses its protected namespace and the protectedNs field is present in the interface_info structure.
-    </td>
-  </tr>
-</table>
+| Name                      | Value | Meaning |
+| ------------------------- | ----- | ------- |
+| CONSTANT_ClassSealed      |  0x01 | The class is sealed: properties can not be dynamically added to instances of the class. |
+| CONSTANT_ClassFinal       |  0x02 | The class is final: it cannot be a base class for any other class. | 
+| CONSTANT_ClassInterface   |  0x04 | The class is an interface.|
+| CONSTANT_ClassProtectedNs |  0x08 | The class uses its protected namespace and the protectedNs field is present in the interface_info structure.|
 
 当`flags`中设置了`CONSTANT_ProtectedNs`标志后，才会有`protectedNs`属性，它是指向常量池中命名空间数组中元素的索引，表示该类中`protected namespace`的值。
 
@@ -692,86 +332,15 @@ ns\_set\_info中存储的命名空间的集合，其数组ns中的元素是常�
 
 属性域`kind`中低4位所表示的类型如下所示：
 
-<table>
-  <tr>
-    <td>
-      Type
-    </td>
-    
-    <td>
-      Value
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      Trait_Slot
-    </td>
-    
-    <td>
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      Trait_Method
-    </td>
-    
-    <td>
-      1
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      Trait_Getter
-    </td>
-    
-    <td>
-      2
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      Trait_Setter
-    </td>
-    
-    <td>
-      3
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      Trait_Class
-    </td>
-    
-    <td>
-      4
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      Trait_Function
-    </td>
-    
-    <td>
-      5
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      Trait_Const
-    </td>
-    
-    <td>
-      6
-    </td>
-  </tr>
-</table>
+| Type            | Value |
+| --------------- | ----- |
+| Trait_Slot      |       |
+| Trait_Method    |     1 |
+| Trait_Getter    |     2 | 
+| Trait_Setter    |     3 | 
+| Trait_Class     |     4 |
+| Trait_Function  |     5 |
+| Trait_Const     |     6 |
 
 当`kind`中低4位的值是`Trait_Slot(0)`或`Trait_Const(6)`时，属性域`data`的中是一个`trait_slot`结构：
 
@@ -821,64 +390,12 @@ ns\_set\_info中存储的命名空间的集合，其数组ns中的元素是常�
 
 前文提到，属性域`kind`的高4位用于确定属性，下面的表格对其作了说明，未在表中列出的会被忽略。
 
-<table>
-  <tr>
-    <td>
-      Attributes
-    </td>
-    
-    <td>
-      Value
-    </td>
-    
-    <td>
-      Description
-    </td>
-  </tr>
+| Attributes    | Value | Description |
+| ------------- | ----- | ----------- |
+| ATTR_Final    |  0x01 | Is used with Trait_Method, Trait_Getter and Trait_Setter. It marks a method that cannot be overridden by a sub-class | 
+| ATTR_Override |  0x02 | Is used with Trait_Method, Trait_Getter and Trait_Setter. It marks a method that has been overridden in this class |
+| ATTR_Metadata |  0x04 | Is used to signal that the fields metadata_count and metadata follow the data field in the traits_info entry |
   
-  <tr>
-    <td>
-      ATTR_Final
-    </td>
-    
-    <td>
-      0x1
-    </td>
-    
-    <td>
-      Is used with Trait_Method, Trait_Getter and Trait_Setter. It marks a method that cannot be overridden by a sub-class
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      ATTR_Override
-    </td>
-    
-    <td>
-      0x2
-    </td>
-    
-    <td>
-      Is used with Trait_Method, Trait_Getter and Trait_Setter. It marks a method that has been overridden in this class
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      ATTR_Metadata
-    </td>
-    
-    <td>
-      0x4
-    </td>
-    
-    <td>
-      Is used to signal that the fields metadata_count and metadata follow the data field in the traits_info entry
-    </td>
-  </tr>
-</table>
-
 # class
 
     class_info  
@@ -948,5 +465,5 @@ to be continued...
 [1]:    http://grouper.ieee.org/groups/754/
 [2]:    http://unicode.org
 [3]:    http://en.wikipedia.org/wiki/IEEE_floating_point
-[4]:    /blog/2013/11/10/avm2_overview_note_1_basic_structure.html
-[5]:    /blog/2013/11/10/avm2_overview_note_2_run.html
+[4]:    /blog/2013/11/10/avm2_overview_note_1_basic_structure
+[5]:    /blog/2013/11/10/avm2_overview_note_2_run

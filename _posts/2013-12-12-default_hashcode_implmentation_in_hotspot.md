@@ -145,4 +145,4 @@ java中，计算对象的默认hashcode的方法主要在[synchronizer.cpp文件
 [2]:    /image/call_hashcode_method.jpg
 [3]:    http://hg.openjdk.java.net/jdk7u/jdk7u/hotspot/file/74d14a44c398/src/share/vm/oops/markOop.hpp
 [4]:    http://hg.openjdk.java.net/jdk7u/jdk7u/hotspot/file/74d14a44c398/src/share/vm/utilities/globalDefinitions.hpp
-[5]:    ./hotspot_source_study_object_part3_mard_word
+[5]:    /blog/2013/06/29/object_mard_word_in_hotspot
