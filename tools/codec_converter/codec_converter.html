@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <title>code converter</title>
+        <script type="text/javascript" scr="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <style type="text/css">
+          div#contentDiv {
+            width: 100%;
+          }
+          span.show {
+            border-style: dashed;
+            width: 45%
+          }
+          span.cmd {
+            width: 10%;
+          }
+        </style>
+    </head>
+    <body>
+        <label>codec:</label>
+        <select id="codecSelect">
+           <option value="base64">Base64</option>
+        </select>
+        <br>
+        <div id="contentDiv">
+            <span class="show">
+                <textarea id="leftTextArea"></textarea>
+            </span>
+            <span>
+                <input type="button" value="->">
+                <br>
+                <input type="button" value="<-">
+            </span>
+            <span>
+                <textarea id="rightTextarea"></textarea>
+            </span>
+        </div>
+    </body>
+</html>

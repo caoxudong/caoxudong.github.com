@@ -72,6 +72,7 @@ JB :
   tags_path : /tags.html
   atom_path : /atom.xml
   rss_path : /rss.xml
+  tools_path : /tools.html
 
   # Settings for comments helper
   # Set 'provider' to the comment provider you want to use.
@@ -98,7 +99,7 @@ JB :
   analytics :
     provider : google 
     google : 
-        tracking_id : 'UA-123-12'
+        tracking_id : 'UA-42095393-1'
     getclicky :
       site_id : 
     mixpanel :

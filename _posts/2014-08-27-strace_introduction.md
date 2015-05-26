@@ -4,5 +4,3 @@ category:   blog
 layout:     post
 tags:       [strace, performance, linux]
 ---
-
-
