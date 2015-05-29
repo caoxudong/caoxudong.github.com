@@ -13,7 +13,7 @@ tags:       [web, authentication, cookie, security]
 
 # 2 token的生成
 
-使用[JWT（JSON Web Token）][2]，在token中附带上[相关信息][4]，使token自身具有了时效性、指向性和保密性。
+使用[JWT（JSON Web Token）][2]，在token中附带上[相关信息][3]，使token自身具有了时效性、指向性和保密性。
 
 * 时效性：JWT中包含了当前token的失效时间和起效时间，应用服务器可以根据相应的时间来判断该token是否有效
 * 指向性：JWT中包含了当前token的颁发者和审计信息，应用服务器可以根据相应的信息来判断当前token与当前用户是否相匹配
@@ -26,6 +26,12 @@ tags:       [web, authentication, cookie, security]
 * 不可直接存储该token，应对token做散列处理（例如使用Bcrypt做散列）
 * 服务器需要将接收到token和自己的保存的token作比较，防止用户使用已废弃但还未过期的token
 
+# 4 其他
+
+## 4.1 多例登录
+
+上面所说的token并不支持用户在多个设备上同时登陆，即每个用户只能有一个token。当用户需要同时在多个设备上保持登陆状态时，就需要针对不同的设备生成不同的token
+
 
 
 
@@ -36,6 +42,7 @@ tags:       [web, authentication, cookie, security]
 
 # 参考文档
 
+1. [Token Based Authentication for Single Page Apps (SPAs)][4]
 
 
 
@@ -44,5 +51,5 @@ tags:       [web, authentication, cookie, security]
 
 [1]:    /blog/2015/03/05/stateless_web_system_authentication_design
 [2]:    http://jwt.io/
-[3]:    http://tools.ietf.org/html/rfc7519
-[4]:    http://tools.ietf.org/html/rfc7519#section-4
+[3]:    http://tools.ietf.org/html/rfc7519#section-4
+[4]:    https://stormpath.com/blog/token-auth-spa/
