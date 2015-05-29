@@ -13,12 +13,18 @@ tags:       [web, authentication, cookie, security]
 
 # 2 token的生成
 
-使用[JWT（JSON Web Token）][2]，在token中附带上[相关信息][4]，使token自身具有了时效性和指向性。
+使用[JWT（JSON Web Token）][2]，在token中附带上[相关信息][4]，使token自身具有了时效性、指向性和保密性。
 
 * 时效性：JWT中包含了当前token的失效时间和起效时间，应用服务器可以根据相应的时间来判断该token是否有效
 * 指向性：JWT中包含了当前token的颁发者和审计信息，应用服务器可以根据相应的信息来判断当前token与当前用户是否相匹配
+* 保密性：JWT中包含了签名字段，该字段是由服务器加密生成的（对称或非对称皆可），应用服务器可以校验该签名来判断当前token是否是伪造的
 
+# 3 token安全性
 
+由于客户端通过token来标明自身身份，对于服务器来说，就相当于客户端的密码。服务器端在存储该token时，也需要认真对待。
+
+* 不可直接存储该token，应对token做散列处理（例如使用Bcrypt做散列）
+* 服务器需要将接收到token和自己的保存的token作比较，防止用户使用已废弃但还未过期的token
 
 
 
