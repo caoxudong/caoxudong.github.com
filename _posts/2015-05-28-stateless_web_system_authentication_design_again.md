@@ -13,7 +13,38 @@ tags:       [web, authentication, cookie, security]
 
 # 2 token的生成
 
+		           +                                       +                          
+		           |                                       |                          
+		+--------+ |                                       | +-----------------------+
+		|        | | (1) login(username, pasword)          | |                       |
+		| client | |                                       | | server                |
+		|        | | ------------------------------------> | |                       |
+		|        | |                                       | |                       |
+		|        | |                                       | |                       |
+		|        | |  (2.1) validate(username, password)   | |                       |
+		|        | |  (2.2) generateAccessToken(userId)    | |                       |
+		|        | |                                       | |                       |
+		|        | | <-----------------------------------+ | |                       |
+		|        | |                                       | |                       |
+		|        | |                                       | |                       |
+		|        | |  (3)requestToURI(userId, accessToken) | |                       |
+		|        | |                                       | |                       |
+		|        | | ------------------------------------> | |                       |
+		|        | |                                       | |                       |
+		+--------+ |                                       | +-----------------------+
+		           +                                       +                          
+
 使用[JWT（JSON Web Token）][2]，在token中附带上[相关信息][3]，使token自身具有了时效性、指向性和保密性。
+
+JWT中自带了几个默认的属性：
+
+* **iss (Issuer)**: token颁发者
+* **sub (Subject)**: token主题
+* **aud (Audience)**: token接受者
+* **exp (Expiration Time): token的超时时间
+* **nbf (Not Before): token的起效时间
+* **iat (Issued At): token的颁发时间
+* **jti (JWT ID): token的唯一标识
 
 * 时效性：JWT中包含了当前token的失效时间和起效时间，应用服务器可以根据相应的时间来判断该token是否有效
 * 指向性：JWT中包含了当前token的颁发者和审计信息，应用服务器可以根据相应的信息来判断当前token与当前用户是否相匹配
@@ -31,8 +62,6 @@ tags:       [web, authentication, cookie, security]
 # 4 其他
 
 上面所说的token并不支持用户在多个设备上同时登陆，即每个用户只能有一个token。当用户需要同时在多个设备上保持登陆状态时，就需要针对不同的设备生成不同的token。由于移动设备的IP经常换，因此就需要使用一些其他可以标识设备的属性来确定token的唯一性。
-
-
 
 
 
