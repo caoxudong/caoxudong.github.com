@@ -1,38 +1,54 @@
 <html>
     <head>
-        <title>code converter</title>
-        <script type="text/javascript" scr="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <title>code converter</title>        
         <style type="text/css">
+          div#cmdDiv {
+            margin-bottom: 1%;
+          }
           div#contentDiv {
             width: 100%;
           }
-          span.show {
-            border-style: dashed;
-            width: 45%
+          textarea#lTextArea {
+            width: 100%;
           }
-          span.cmd {
-            width: 10%;
+          textarea#rTextArea {
+            width: 100%;
+          }
+          table {
+            width: 100%;
+          }
+          td {
+            width: 45%;
           }
         </style>
+        <script type="text/javascript" scr="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript">
+          function convertL2R() {
+            
+          }
+        </script>>
     </head>
     <body>
-        <label>codec:</label>
-        <select id="codecSelect">
-           <option value="base64">Base64</option>
-        </select>
+        <h1>Code converter</h1>
+        <hr>
+        <div id="cmdDiv">
+          <label>codec:</label>
+          <select id="codecSelect">
+             <option value="base64">Base64</option>
+          </select>
+        </div>
         <br>
         <div id="contentDiv">
-            <span class="show">
-                <textarea id="leftTextArea"></textarea>
-            </span>
-            <span>
-                <input type="button" value="->">
-                <br>
-                <input type="button" value="<-">
-            </span>
-            <span>
-                <textarea id="rightTextarea"></textarea>
-            </span>
+          <table>
+            <tr>
+              <td><input id="convertL2R" type="button" value="convert ->" onclick="convertL2R();"></td>
+              <td><input id="convertR2L" type="button" value="<- convert" onclick="convertR2L();"></td>
+            </tr>
+            <tr>
+              <td><textarea id="lTextArea" rows="30"></textarea></td>
+              <td><textarea id="rTextArea" rows="30"></textarea></td>
+            </tr>
+          </table>
         </div>
-    </body>
+    </body>    
 </html>
