@@ -21,12 +21,36 @@
             width: 45%;
           }
         </style>
-        <script type="text/javascript" scr="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
         <script type="text/javascript">
-          function convertL2R() {
-            
-          }
-        </script>>
+          var codecScriptMap = {};
+          codecScriptMap["base64"] = {
+            url: "/scripts/codec/base64.min.js",
+            ready: false
+          };
+
+          $(function() {
+            var convertL2RButton = $("input#convertL2R");
+            var convertR2LButton = $("input#convertR2L");
+
+            $("select#codecSelect").change(function() {
+              convertR2LButton.prop('disabled', true);
+              convertL2RButton.prop('disabled', true);
+              var selectObj = $(this);
+
+              var codec = selectObj.val();
+              if (codec !== "") {
+                if (!codecScriptMap[codec].ready) {
+                  $.getScript(codecScriptMap[codec].url);
+                  codecScriptMap[codec].ready = true;
+                }
+              }
+              
+              convertR2LButton.prop('disabled', false);
+              convertL2RButton.prop('disabled', false);
+            });
+          });
+        </script>
     </head>
     <body>
         <h1>Code converter</h1>
@@ -34,6 +58,7 @@
         <div id="cmdDiv">
           <label>codec:</label>
           <select id="codecSelect">
+             <option></option>
              <option value="base64">Base64</option>
           </select>
         </div>
