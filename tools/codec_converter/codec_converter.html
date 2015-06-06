@@ -1,6 +1,7 @@
 <html>
     <head>
-        <title>code converter</title>        
+        <title>code converter</title>
+        <link rel="stylesheet" href="/style/sweetalert.css">
         <style type="text/css">
           div#cmdDiv {
             margin-bottom: 1%;
@@ -22,23 +23,34 @@
           }
         </style>
         <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="/scripts/sweetalert.min.js"></script>
         <script type="text/javascript">
-          var codecScriptMap = {};
-          codecScriptMap["base64"] = {
-            url: "/scripts/codec/base64.min.js",
-            ready: false
+          var codecScriptMap = {
+            "base64": {
+              url: "/scripts/codec/base64.min.js",
+              ready: false,
+              encode: function(source, ext) {
+                return Base64.encode(source);
+              },
+              decode: function(target, ext) {
+                return Base64.decode(target);
+              }
+            }
           };
+
 
           $(function() {
             var convertL2RButton = $("input#convertL2R");
             var convertR2LButton = $("input#convertR2L");
+            var codecSelect = $("select#codecSelect");
+            var lTextArea = $("textarea#lTextArea");
+            var rTextArea = $("textarea#rTextArea");
 
-            $("select#codecSelect").change(function() {
+            codecSelect.change(function() {
               convertR2LButton.prop('disabled', true);
               convertL2RButton.prop('disabled', true);
-              var selectObj = $(this);
 
-              var codec = selectObj.val();
+              var codec = codecSelect.val();
               if (codec !== "") {
                 if (!codecScriptMap[codec].ready) {
                   $.getScript(codecScriptMap[codec].url);
@@ -49,6 +61,30 @@
               convertR2LButton.prop('disabled', false);
               convertL2RButton.prop('disabled', false);
             });
+
+            
+            var convert = function(codec, operation, sourceTextArea, targetTextArea) {
+              if (codec === "") {
+                sweetAlert("Oops...", "Please select codec at first!", "error");
+                return;
+              }
+              var source = $(sourceTextArea).val();
+              var target = null;
+              if (source !== null) {
+                target = codecScriptMap[codec][operation](source);
+              }
+              $(targetTextArea).val(target);
+            };
+            convertL2RButton.click(function() {
+              var codec = codecSelect.val();
+              convert(codec, "encode", lTextArea, rTextArea);
+            })
+            convertR2LButton.click(function() {
+              var codec = codecSelect.val();
+              convert(codec, "decode", rTextArea, lTextArea);
+            })
+
+            
           });
         </script>
     </head>
@@ -66,8 +102,8 @@
         <div id="contentDiv">
           <table>
             <tr>
-              <td><input id="convertL2R" type="button" value="convert ->" onclick="convertL2R();"></td>
-              <td><input id="convertR2L" type="button" value="<- convert" onclick="convertR2L();"></td>
+              <td><input id="convertL2R" class="converter" type="button" value="encode"></td>
+              <td><input id="convertR2L" class="converter" type="button" value="decode"></td>
             </tr>
             <tr>
               <td><textarea id="lTextArea" rows="30"></textarea></td>
