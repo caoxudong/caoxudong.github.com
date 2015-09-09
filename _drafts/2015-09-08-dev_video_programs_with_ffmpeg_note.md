@@ -16,18 +16,30 @@ tags:       [video, ffmpeg]
     sudo add-apt-repository ppa:mc3man/trusty-media
     sudo apt-get update
     sudo apt-get dist-upgrade
-
-安装ffmpeg
-
-    sudo apt-get install ffmpeg
-
-安装libva
-    
-    sudo apt-get install libva-dev
-
-安装vorbis
-
+    sudo apt-get install ffmpeg       
+    sudo apt-get install libva-dev    
     sudo apt-get install libvorbis-dev
+    sudo apt-get install libx264-dev  
+    sudo apt-get install x264
+    sudo apt-get install libvpx-dev   
+    sudo apt-get install libvorbis-dev
+    sudo apt-get install libvpx-dev
+    sudo apt-get install libfdk-aac-dev
+    sudo apt-get install libmp3lame-dev
+    sudo apt-get install libass-dev
+    sudo apt-get install libsdl1.2-dev
+    sudo apt-get install libtheora-dev
+    sudo apt-get install libtool 
+    sudo apt-get install libva-dev 
+    sudo apt-get install libvdpau-dev 
+    sudo apt-get install libvorbis-dev 
+    sudo apt-get install libxcb1-dev 
+    sudo apt-get install libxcb-shm0-dev 
+    sudo apt-get install libxcb-xfixes0-dev 
+    sudo apt-get install pkg-config 
+    sudo apt-get install texi2html 
+    sudo apt-get install zlib1g-dev
+
 
 刷新动态库
 
