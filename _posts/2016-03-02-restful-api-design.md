@@ -1,5 +1,10 @@
-RESTful API Design
-=========================================
+---
+title:      RESTful API Design
+layout:     post
+category:   blog
+tags:       [api, restful]
+---
+
 
 > 参考文档  [https://pages.apigee.com/rs/apigee/images/api-design-ebook-2012-03.pdf][reference-book]
 
