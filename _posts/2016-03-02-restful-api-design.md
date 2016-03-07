@@ -13,6 +13,10 @@ tags:       [api, restful]
 
 * [核心原则][core-principal]
 * [使用名词而非动词][using-noun-not-verb]
+* [使用复数描述资源][using-plural-nouns]
+* [合理规划资源][using-concrete-names]
+* [响应码][response-codes]
+* [身份校验][authentication]
 
 <a name="core-principal" />
 # 1. 核心原则
@@ -59,8 +63,17 @@ tags:       [api, restful]
 
     GET /dogs?color=red&state=running&location=park
 
-<a name="handling-errors" />
-# 5. 错误处理
+<a name="response-codes" />
+# 5. 响应码
+
+HTTP代码可以代表一些明显的相应结果，大部分情况，可以使用HTTP代码来表示常见的数据操作。
+
+对于某些特殊的业务请求来说，单纯使用HTTP代码不足以完整表达相应的操作结果，这时可以使用自定义的业务代码来表示。
+
+<a name="authentication" />
+# 6 身份校验
+
+使用基于Token的校验方式，方便服务器端实现无状态化处理，便于横向扩展服务器规模。
 
 
 
@@ -77,3 +90,5 @@ tags:       [api, restful]
 [using-noun-not-verb]: #using-noun-not-verb
 [using-plural-nouns]:  #using-plural-nouns
 [handling-errors]: #handling-errors
+[response-codes]: #response-codes
+[authentication]: #authentication
