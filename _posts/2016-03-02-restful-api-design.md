@@ -89,6 +89,6 @@ HTTP代码可以代表一些明显的相应结果，大部分情况，可以使�
 [core-principal]: #core-principal
 [using-noun-not-verb]: #using-noun-not-verb
 [using-plural-nouns]:  #using-plural-nouns
-[handling-errors]: #handling-errors
+[using-concrete-names]: #using-concrete-names
 [response-codes]: #response-codes
 [authentication]: #authentication
