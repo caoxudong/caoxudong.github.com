@@ -13,3 +13,4 @@ tags:       [tomcat, java]
     1. 初始化`catalina.base`
         * 获取参数`catalina.base`，若值不为空，则根据其值设置相应的变量，否则
         * 设置为`catalina.home`的值
+    1. 调用init方法，初始化类加载器
