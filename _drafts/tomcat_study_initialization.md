@@ -5,6 +5,8 @@ category:   blog
 tags:       [tomcat, java]
 ---
 
+>Tomcat版本为8.0.28
+
 1. org.apache.catalina.startup.BootStrap
     1. 初始化`catalina.home` 
         1. 获取参数`catalina.home`，判断相应目录是否存在，若不存在则
@@ -110,3 +112,8 @@ tags:       [tomcat, java]
         1. 通过反射创建`org.apache.catalina.startup.Catalina`实例（startupInstance）
         1. 通过反射，以`sharedLoader`为实参，调用`org.apache.catalina.startup.Catalina`实例（startupInstance）的setParentClassLoader方法
         1. 将`catalinaDaemon`属性设置为`org.apache.catalina.startup.Catalina`实例（startupInstance）
+    1. 加载配置，调用`org.apache.catalina.startup.Catalina#load`方法完成
+1. org.apache.catalina.startup.Catalina
+    1. 使用`Digester`库解析`server.xml`文件
+        1. 创建`org.apache.tomcat.util.digester.Digester`实例
+        
