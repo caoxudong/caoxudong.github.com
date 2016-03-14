@@ -116,4 +116,101 @@ tags:       [tomcat, java]
 1. org.apache.catalina.startup.Catalina
     1. 使用`Digester`库解析`server.xml`文件
         1. 创建`org.apache.tomcat.util.digester.Digester`实例
-        
+        1. 加载各种Rule，根据`server.xml`文件的内容层次结构，设定遇到哪些标签时应该创建哪些实例
+            * Server -> `org.apache.catalina.core.StandardServer`
+                * Server/GlobalNamingResources -> `org.apache.catalina.deploy.NamingResourcesImpl`
+                    * Server/GlobalNamingResources/Ejb -> `org.apache.tomcat.util.descriptor.web.ContextEjb`
+                    * Server/GlobalNamingResources/Environment -> `org.apache.tomcat.util.descriptor.web.ContextEnvironment`
+                    * Server/GlobalNamingResources/LocalEjb -> `org.apache.tomcat.util.descriptor.web.ContextLocalEjb`
+                    * Server/GlobalNamingResources/Resource -> `org.apache.tomcat.util.descriptor.web.ContextResource`
+                    * Server/GlobalNamingResources/ResourceEnvRef -> `org.apache.tomcat.util.descriptor.web.ContextResourceEnvRef`
+                    * Server/GlobalNamingResources/ServiceRef -> `org.apache.tomcat.util.descriptor.web.ContextService`
+                    * Server/GlobalNamingResources/Transaction -> `org.apache.tomcat.util.descriptor.web.ContextTransaction`
+                * Server/Listener -> `org.apache.catalina.LifecycleListener`，监听器的具体类型由`className`属性决定
+                * Server/Service -> `org.apache.catalina.core.StandardService`
+                    * Server/Service/Listener -> `org.apache.catalina.LifecycleListener`，监听器的具体类型由`className`属性决定
+                    * Server/Service/Executor -> `org.apache.catalina.core.StandardThreadExecutor`
+                    * Server/Service/Connector -> `org.apache.catalina.connector.Connector`
+                        * 根据不同协议（`protocol`属性的值）创建协议处理器
+                            * APR available
+                                * HTTP/1.1 -> `org.apache.coyote.http11.Http11AprProtocol`
+                                * AJP/1.3 -> `org.apache.coyote.ajp.AjpAprProtocol`
+                                * 直接以`protocol`的值作为连接器实现类的类名
+                                * protocol is null -> `org.apache.coyote.http11.Http11AprProtocol`
+                            * APR not available
+                                * HTTP/1.1 -> `org.apache.coyote.http11.Http11NioProtocol`
+                                * AJP/1.3 -> `org.apache.coyote.ajp.AjpNioProtocol`
+                                * 直接以`protocol`的值作为连接器实现类的类名
+                        * Server/Service/Connector/Listener -> `org.apache.catalina.LifecycleListener`，监听器的具体类型由`className`属性决定
+                    * Server/Service/Engine -> `org.apache.catalina.core.StandardEngine`
+                        * Server/Service/Engine/Cluster -> `org.apache.catalina.Cluster`，根据属性名确定使用哪种集群管理器
+                            * Server/Service/Engine/Cluster/Manager -> `org.apache.catalina.ha.ClusterManager`，具体类型由`className`属性决定
+                                * Server/Service/Engine/Cluster/Manager/SessionIdGenerator -> `org.apache.catalina.util.StandardSessionIdGenerator`，`JSESSIONID`生成器
+                            * Server/Service/Engine/Cluster/Channel -> `org.apache.catalina.tribes.Channel`，具体类型由`className`属性决定
+                                * Server/Service/Engine/Cluster/Channel/Membership -> `org.apache.catalina.tribes.MembershipService`，具体类型由`className`属性决定
+                                * Server/Service/Engine/Cluster/Channel/Sender -> `org.apache.catalina.tribes.ChannelSender`，具体类型由`className`属性决定
+                                    * Server/Service/Engine/Cluster/Channel/Sender/Transport -> `org.apache.catalina.tribes.transport.MultiPointSender`，具体类型由`className`属性决定
+                                * Server/Service/Engine/Cluster/Channel/Receiver -> `org.apache.catalina.tribes.ChannelReceiver`，具体类型由`className`属性决定
+                                * Server/Service/Engine/Cluster/Channel/Interceptor -> `org.apache.catalina.tribes.ChannelInterceptor`，具体类型由`className`属性决定
+                                    * Server/Service/Engine/Cluster/Channel/Interceptor/Member -> `org.apache.catalina.tribes.Member`，具体类型由`className`属性决定
+                            * Server/Service/Engine/Cluster/Valve -> `org.apache.catalina.Valve`，具体类型由`className`属性决定
+                            * Server/Service/Engine/Cluster/Deployer -> `org.apache.catalina.ha.ClusterDeployer`，具体类型由`className`属性决定
+                            * Server/Service/Engine/Cluster/Listener -> `org.apache.catalina.LifecycleListener`，具体类型由`className`属性决定
+                            * Server/Service/Engine/Cluster/ClusterListener -> `org.apache.catalina.ha.ClusterListener`，具体类型由`className`属性决定
+                        * Server/Service/Engine/Listener -> `org.apache.catalina.LifecycleListener`，监听器的具体类型由`className`属性决定
+                        * Server/Service/Engine/Valve -> `org.apache.catalina.Valve`，具体类型由`className`属性决定
+                        * Server/Service/Engine/Host -> 创建主机
+                            * Server/Service/Engine/Host/Context -> `org.apache.catalina.core.StandardContext`
+                                * Server/Service/Engine/Host/Context/Listener -> `org.apache.catalina.LifecycleListener`， 监听器的具体类型由`className`属性决定
+                                * Server/Service/Engine/Host/Context/Loader -> `org.apache.catalina.loader.WebappLoader`, 监听器的具体类型由`className`属性决定
+                                * Server/Service/Engine/Host/Context/Manager -> `org.apache.catalina.session.StandardManager`
+                                    * Server/Service/Engine/Host/Context/Manager/Store -> `org.apache.catalina.Store`， 具体存储类型由`className`属性决定
+                                    * Server/Service/Engine/Host/Context/Manager/SessionIdGenerator -> `org.apache.catalina.util.StandardSessionIdGenerator`， `JSESSIONID`生成器
+                                * Server/Service/Engine/Host/Context/Parameter -> `org.apache.tomcat.util.descriptor.web.ApplicationParameter`
+                                * Server/Service/Engine/Host/Context/Resources -> `org.apache.catalina.webresources.StandardRoot`
+                                    * Server/Service/Engine/Host/Context/Resources/PreResources -> `org.apache.catalina.WebResourceSet`，具体类型由`className`属性决定
+                                    * Server/Service/Engine/Host/Context/Resources/JarResources -> `org.apache.catalina.WebResourceSet`，具体类型由`className`属性决定
+                                    * Server/Service/Engine/Host/Context/Resources/PostResources -> `org.apache.catalina.WebResourceSet`，具体类型由`className`属性决定
+                                * Server/Service/Engine/Host/Context/ResourceLink -> `org.apache.tomcat.util.descriptor.web.ContextResourceLink`
+                                * Server/Service/Engine/Host/Context/Valve -> `org.apache.catalina.Valve`，具体类型由`className`属性决定
+                                * Server/Service/Engine/Host/Context/JarScanner -> `org.apache.tomcat.util.scan.StandardJarScanner`
+                                    * Server/Service/Engine/Host/Context/JarScanner/JarScanFilter -> `org.apache.tomcat.util.scan.StandardJarScanFilter`
+                                * Server/Service/Engine/Host/Context/CookieProcessor -> `org.apache.tomcat.util.http.LegacyCookieProcessor`
+                                * Server/Service/Engine/Host/Context/Ejb -> `org.apache.tomcat.util.descriptor.web.ContextEjb`
+                                * Server/Service/Engine/Host/Context/Environment -> `org.apache.tomcat.util.descriptor.web.ContextEnvironment`
+                                * Server/Service/Engine/Host/Context/LocalEjb -> `org.apache.tomcat.util.descriptor.web.ContextLocalEjb`
+                                * Server/Service/Engine/Host/Context/Resource -> `org.apache.tomcat.util.descriptor.web.ContextResource`
+                                * Server/Service/Engine/Host/Context/ResourceEnvRef -> `org.apache.tomcat.util.descriptor.web.ContextResourceEnvRef`
+                                * Server/Service/Engine/Host/Context/ServiceRef -> `org.apache.tomcat.util.descriptor.web.ContextService`
+                                * Server/Service/Engine/Host/Context/Transaction -> `org.apache.tomcat.util.descriptor.web.ContextTransaction`
+                            * Server/Service/Engine/Host/Cluster -> 主机集群
+                                * Server/Service/Engine/Host/Cluster/Manager -> `org.apache.catalina.ha.ClusterManager`，具体类型由`className`属性决定
+                                    * Server/Service/Engine/Host/Cluster/Manager/SessionIdGenerator -> `org.apache.catalina.util.StandardSessionIdGenerator`，`JSESSIONID`生成器
+                                * Server/Service/Engine/Host/Cluster/Channel -> `org.apache.catalina.tribes.Channel`，具体类型由`className`属性决定
+                                    * Server/Service/Engine/Host/Cluster/Channel/Membership -> `org.apache.catalina.tribes.MembershipService`，具体类型由`className`属性决定
+                                    * Server/Service/Engine/Host/Cluster/Channel/Sender -> `org.apache.catalina.tribes.ChannelSender`，具体类型由`className`属性决定
+                                        * Server/Service/Engine/Host/Cluster/Channel/Sender/Transport -> `org.apache.catalina.tribes.transport.MultiPointSender`，具体类型由`className`属性决定
+                                    * Server/Service/Engine/Host/Cluster/Channel/Receiver -> `org.apache.catalina.tribes.ChannelReceiver`，具体类型由`className`属性决定
+                                    * Server/Service/Engine/Host/Cluster/Channel/Interceptor -> `org.apache.catalina.tribes.ChannelInterceptor`，具体类型由`className`属性决定
+                                        * Server/Service/Engine/Host/Cluster/Channel/Interceptor/Member -> `org.apache.catalina.tribes.Member`，具体类型由`className`属性决定
+                                * Server/Service/Engine/Host/Cluster/Valve -> `org.apache.catalina.Valve`，具体类型由`className`属性决定
+                                * Server/Service/Engine/Host/Cluster/Deployer -> `org.apache.catalina.ha.ClusterDeployer`，具体类型由`className`属性决定
+                                * Server/Service/Engine/Host/Cluster/Listener -> `org.apache.catalina.LifecycleListener`，具体类型由`className`属性决定
+                                * Server/Service/Engine/Host/Cluster/ClusterListener -> `org.apache.catalina.ha.ClusterListener`，具体类型由`className`属性决定
+    1. 设置`catalinaHome`和`catalinaBase`
+    1. 重定向标准输出和标准错误到系统日志（`SystemLogHandler`）
+    1. 初始化`server`（`org.apache.catalina.core.StandardServer`）
+        1. 注册MBean(`type=StringCache`和`type=MBeanFactory`)
+        1. 初始化`globalNamingResources`(`org.apache.catalina.deploy.NamingResourcesImpl`)
+            * 注册MBean
+        1. 初始化`services`(`org.apache.catalina.Service`)
+            1. 初始化`container`
+                * `org.apache.catalina.core.StandardEngine`
+                * `org.apache.catalina.core.StandardHost`
+                * `org.apache.catalina.core.StandardContext`
+                * `org.apache.catalina.core.StandardWrapper`
+            1. 初始化`executor`(`org.apache.catalina.core.StandardThreadExecutor`)
+                * 注册MBean
+            1. 初始化`mapperListener`(`org.apache.catalina.mapper.MapperListener`)
+                * 注册MBean
+            1. 初始化`connectors`
