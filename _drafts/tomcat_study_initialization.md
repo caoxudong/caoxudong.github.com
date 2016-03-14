@@ -214,3 +214,5 @@ tags:       [tomcat, java]
             1. 初始化`mapperListener`(`org.apache.catalina.mapper.MapperListener`)
                 * 注册MBean
             1. 初始化`connectors`
+                * 注册MBean
+                * 创建
