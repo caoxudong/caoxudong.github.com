@@ -217,3 +217,11 @@ tags:       [tomcat, java]
                 * 注册MBean
                 * 创建`org.apache.catalina.connector.CoyoteAdapter`实例，用于处理接收到的请求
                 * 初始化`protocolHandler`
+                    * `org.apache.coyote.ajp.AjpAprProtocol`
+                    * `org.apache.coyote.ajp.AjpNio2Protocol`
+                    * `org.apache.coyote.ajp.AjpNioProtocol`
+                    * `org.apache.coyote.ajp.AjpProtocol`
+                    * `org.apache.coyote.http11.Http11Nio2Protocol`
+                    * `org.apache.coyote.http11.Http11NioProtocol`
+                    * `org.apache.coyote.http11.Http11Protocol`
+                    * `org.apache.coyote.http11.Http11AprProtocol`
