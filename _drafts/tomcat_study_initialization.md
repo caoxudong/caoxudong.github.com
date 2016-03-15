@@ -215,4 +215,5 @@ tags:       [tomcat, java]
                 * 注册MBean
             1. 初始化`connectors`
                 * 注册MBean
-                * 创建
+                * 创建`org.apache.catalina.connector.CoyoteAdapter`实例，用于处理接收到的请求
+                * 初始化`protocolHandler`
