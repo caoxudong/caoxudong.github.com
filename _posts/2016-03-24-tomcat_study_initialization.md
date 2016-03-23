@@ -1,9 +1,11 @@
 ---
-title:      Tomcat初始化
+title:      Tomcat初始化流水账
 layout:     post
 category:   blog
 tags:       [tomcat, java]
 ---
+
+>TL;DR
 
 >Tomcat版本为8.0.28
 
@@ -225,3 +227,14 @@ tags:       [tomcat, java]
                     * `org.apache.coyote.http11.Http11NioProtocol`
                     * `org.apache.coyote.http11.Http11Protocol`
                     * `org.apache.coyote.http11.Http11AprProtocol`
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
