@@ -6,7 +6,7 @@ tags:       [tomcat, java, spring, springboot]
 ---
 
 
-SpringBoot内嵌Tomcat时，并没有暴露出太多的参数，当项目有特殊需求时，没法做定制化调整。本文列出一些可以定制化Tomcat参数的方法，总体来说，就是通过定制化[`TomcatEmbeddedServletContainerFactory`][1]类来实现对目标参数的修改。用户可以创建自己的`TomcatEmbeddedServletContainerFactory`并在其中调用相关的方法来定制Tomcat。
+SpringBoot内嵌Tomcat时，并没有暴露出太多的参数，当项目有特殊需求时，没法做定制化调整。本文列出一些可以定制化Tomcat参数的方法，总体来说，就是通过定制化[`TomcatEmbeddedServletContainerFactory`][1]类来实现对目标参数的修改。用户可以创建自己的[`TomcatEmbeddedServletContainerFactory`][1]并在其中调用相关的方法来定制Tomcat。
 
 # 1 修改Connector
 
@@ -34,7 +34,7 @@ SpringBoot中的[`TomcatConnectorCustomizer`][2]类可用于对`Connector`进行
       return factory;
     }
 
-# 1.2 添加其他的Connector
+## 1.2 添加其他的Connector
 
 默认情况下，SpringBoot只启用一个Connector，用户可以根据实际需要创建多个Connector。例如：
 
