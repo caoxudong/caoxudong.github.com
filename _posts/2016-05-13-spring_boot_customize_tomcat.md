@@ -13,6 +13,7 @@ SpringBoot内嵌Tomcat时，并没有暴露出太多的参数，当项目有特�
 ## 1.1 设置默认Connector
 
 Tomcat Connector所支持的参数
+
 * [Reference][4]: https://tomcat.apache.org/tomcat-7.0-doc/config/http.html
 * [JavaDoc][3]: https://tomcat.apache.org/tomcat-8.5-doc/api/index.html?org/apache/catalina/connector/Connector.html
 
