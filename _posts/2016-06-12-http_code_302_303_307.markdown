@@ -1,0 +1,75 @@
+---
+title:      HTTP状态码302、303和307的区别
+layout:     post
+category:   blog
+tags:       [http]
+---
+
+相关RFC：
+
+>RFC 1945: [https://tools.ietf.org/html/rfc2068][1]
+>
+>RFC 2068: [https://tools.ietf.org/html/rfc2068][2]
+>
+>RFC 2616: [https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html][3]
+
+其中，响应码302的定义中写道
+
+>若客户端的原始请求方法不是`GET`或`HEAD`，并且接收到302响应码，则在经用户确认之前，是**禁止**自动跳转的，因为这可能会改变请求的发生条件。
+
+这里的原因是，`GET`和`HEAD`方法是幂等的，再次发送请求不应该产生额外影响。
+
+>RFC 2616 9.1.2
+>
+>The methods GET, HEAD, PUT and DELETE share this property. Also, the methods OPTIONS and TRACE SHOULD NOT have side effects, and so are inherently idempotent.
+
+在响应码302的备注中写道
+
+>大部分现有的浏览器都把302当作303来处理，在跳转的时候，会强制使用`GET`方法。响应码303和307的作用就是为了避免混淆，而专门添加的。
+
+响应码303与302类似，但在跳转时，会强制使用`GET`方法，即使原始请求时使用`POST`方法发出的。
+
+响应码307与303类似，区别在于，若原始请求方法不是`GET`或`HEAD`，则在经用户确认之前，`禁止`执行跳转。
+
+
+# Resources
+
+HTTP RFC对302、303和307的定义如下：
+
+>10.3.3 302 Found
+>
+>The requested resource resides temporarily under a different URI. Since the redirection might be altered on occasion, the client SHOULD continue to use the Request-URI for future requests. This response is only cacheable if indicated by a Cache-Control or Expires header field.
+>
+>The temporary URI SHOULD be given by the Location field in the response. Unless the request method was HEAD, the entity of the response SHOULD contain a short hypertext note with a hyperlink to the new URI(s).
+>
+>If the 302 status code is received in response to a request other than GET or HEAD, the user agent MUST NOT automatically redirect the request unless it can be confirmed by the user, since this might change the conditions under which the request was issued.
+
+>**Note: RFC 1945 and RFC 2068 specify that the client is not allowed to change the method on the redirected request.  However, most existing user agent implementations treat 302 as if it were a 303 response, performing a GET on the Location field-value regardless of the original request method. The status codes 303 and 307 have been added for servers that wish to make unambiguously clear which kind of reaction is expected of the client.**
+>
+>10.3.4 303 See Other
+>
+>The response to the request can be found under a different URI and SHOULD be retrieved using a GET method on that resource. This method exists primarily to allow the output of a POST-activated script to redirect the user agent to a selected resource. The new URI is not a substitute reference for the originally requested resource. The 303 response MUST NOT be cached, but the response to the second (redirected) request might be cacheable.
+>
+>The different URI SHOULD be given by the Location field in the response. Unless the request method was HEAD, the entity of the response SHOULD contain a short hypertext note with a hyperlink to the new URI(s).
+>
+>**Note: Many pre-HTTP/1.1 user agents do not understand the 303 status. When interoperability with such clients is a concern, the 302 status code may be used instead, since most user agents react to a 302 response as described here for 303.**
+>
+>10.3.8 307 Temporary Redirect
+>
+>The requested resource resides temporarily under a different URI. Since the redirection MAY be altered on occasion, the client SHOULD continue to use the Request-URI for future requests. This response is only cacheable if indicated by a Cache-Control or Expires header field.
+>
+>The temporary URI SHOULD be given by the Location field in the response. Unless the request method was HEAD, the entity of the response SHOULD contain a short hypertext note with a hyperlink to the new URI(s) , since many pre-HTTP/1.1 user agents do not understand the 307 status. Therefore, the note SHOULD contain the information necessary for a user to repeat the original request on the new URI.
+>
+>If the 307 status code is received in response to a request other than GET or HEAD, the user agent MUST NOT automatically redirect the request unless it can be confirmed by the user, since this might change the conditions under which the request was issued.
+
+
+
+
+
+
+
+
+
+[1]:    https://tools.ietf.org/html/rfc1945
+[2]:    https://tools.ietf.org/html/rfc2068
+[3]:    https://tools.ietf.org/html/rfc2616
