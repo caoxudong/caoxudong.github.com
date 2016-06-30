@@ -9,6 +9,8 @@ tags:       [torrent, p2p, bencode]
 
 # 1 B编码
 
+>B编码解析库: [https://github.com/caoxudong/bencode][4]
+
 torrent文件使用[B编码][2]存储，其内容通常包含多个待下载文件以及目标资源的元信息，可能还会包含一些tracker服务器信息。
 
 >虽然比用纯二进制编码效率低，但由于结构简单而且不受字节存储顺序影响（所有数字以十进制编码）。这对于跨平台性非常重要。而且具有较好的灵活性，即使存在故障的字典键，只要将其忽略并更换新的就能兼容补充。
@@ -52,6 +54,8 @@ B编码的特点
 
 # 2 torrent文件
 
+>torrent文件解析库: [https://github.com/caoxudong/torrent-parser][5]
+
 torrent文件内容格式如下，所有的字符串均使用UTF-8编码：
 
 * announce: tracker服务器的地址
@@ -80,3 +84,5 @@ torrent文件内容格式如下，所有的字符串均使用UTF-8编码：
 [1]:    https://en.wikipedia.org/wiki/Torrent_file
 [2]:    https://en.wikipedia.org/wiki/Bencode
 [3]:    https://en.wikipedia.org/wiki/Bijection
+[4]:    https://github.com/caoxudong/bencode
+[5]:    https://github.com/caoxudong/torrent-parser
