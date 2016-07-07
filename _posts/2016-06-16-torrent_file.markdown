@@ -54,20 +54,22 @@ B编码的特点
 
 # 2 torrent文件
 
->torrent文件解析库: [https://github.com/caoxudong/torrent-parser][5]
+>解析torrent文件: [https://github.com/caoxudong/bencode/blob/master/src/test/java/bencode/parse/ParserTest.java#L252][5]
 
 torrent文件内容格式如下，所有的字符串均使用UTF-8编码：
 
 * announce: tracker服务器的地址
+* announce-list: 
+* created by: 创建者
+* creation date: 创建时间
+* encoding: UTF-8
 * info: 待下载的文件信息
+    * files:
+        * length: 文件长度
+        * path: 文件下载路径
     * name: 下载文件时所使用的文件名
     * piece length: 每个数据块的大小，通常是256KB
-    * pieces:  哈希表，包含了每个数据表的哈希值（SHA-1）。由于SHA-1计算出的哈希值是160位的，因此pieces的值也是160的整数倍。如果torrent文件中包含了多个待下载文件，则这些文件的数据块的哈希值会按顺序排列在pieces中。
-    * length: 待下载文件大小，单位为字节
-    * files: 待下载文件列表，这里可能会包含多个文件
-        * path: 待下载文件路径
-        * length: 待下载文件大小，单位为字节
-
+    * pieces:  哈希列表，包含了每个数据表的哈希值（SHA-1），将每个数据块的哈希值拼接在一起。由于SHA-1计算出的哈希值是160位的，因此pieces的值也是160的整数倍。如果torrent文件中包含了多个待下载文件，则这些文件的数据块的哈希值会按顺序排列在pieces中。
 
 
 # 3 Resources
@@ -85,4 +87,4 @@ torrent文件内容格式如下，所有的字符串均使用UTF-8编码：
 [2]:    https://en.wikipedia.org/wiki/Bencode
 [3]:    https://en.wikipedia.org/wiki/Bijection
 [4]:    https://github.com/caoxudong/bencode
-[5]:    https://github.com/caoxudong/torrent-parser
+[5]:    https://github.com/caoxudong/bencode/blob/master/src/test/java/bencode/parse/ParserTest.java#L252
