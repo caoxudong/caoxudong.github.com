@@ -25,7 +25,7 @@
         <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
         <script type="text/javascript" src="/scripts/sweetalert.min.js"></script>
         <script type="text/javascript">
-          var codecScriptMap = {
+          var codecScriptsMap = {
             "base64": {
               url: "/scripts/codec/base64.min.js",
               ready: false,
@@ -37,7 +37,14 @@
               }
             },
             "crc32": {
-              
+              url: "/scripts/codec/crc32.js",
+              ready: false,
+              encode: function(source, ext) {
+                return CRC32.bstr(source);
+              },
+              decode: function(target, ext) {
+                sweetAlert("Oops...", "Not support decoding CRC32", "error");
+              },
             }
           };
 
@@ -49,15 +56,20 @@
             var lTextArea = $("textarea#lTextArea");
             var rTextArea = $("textarea#rTextArea");
 
+            // porpulate codecSelect options
+            for (key in codecScriptsMap) {
+              codecSelect.append("<option value='" + key + "'>" + key + "</option>");
+            }
+
             codecSelect.change(function() {
               convertR2LButton.prop('disabled', true);
               convertL2RButton.prop('disabled', true);
 
               var codec = codecSelect.val();
               if (codec !== "") {
-                if (!codecScriptMap[codec].ready) {
-                  $.getScript(codecScriptMap[codec].url);
-                  codecScriptMap[codec].ready = true;
+                if ((!codecScriptsMap[codec].ready) && (codecScriptsMap[codec].url !== null)) {
+                  $.getScript(codecScriptsMap[codec].url);
+                  codecScriptsMap[codec].ready = true;
                 }
               }
               
@@ -74,7 +86,7 @@
               var source = $(sourceTextArea).val();
               var target = null;
               if (source !== null) {
-                target = codecScriptMap[codec][operation](source);
+                target = codecScriptsMap[codec][operation](source);
               }
               $(targetTextArea).val(target);
             };
@@ -97,8 +109,6 @@
         <div id="cmdDiv">
           <label>codec:</label>
           <select id="codecSelect">
-             <option></option>
-             <option value="base64">Base64</option>
           </select>
         </div>
         <br>
