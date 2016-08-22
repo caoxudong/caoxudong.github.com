@@ -1,5 +1,9 @@
-Google Java代码规范（中文）
-===============================
+---
+title:      Google Java代码规范（中文）
+layout:     post
+category:   blog
+tags:       [java]
+---
 
 
 # 目录
