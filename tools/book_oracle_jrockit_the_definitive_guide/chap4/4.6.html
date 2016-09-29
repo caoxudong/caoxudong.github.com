@@ -1,0 +1,6074 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <title>4.6.1 检查锁与延迟解锁 · GitBook</title>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.0">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="4.6.html" />
+    
+    
+    <link rel="prev" href="4.5.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../chap1/1.html">
+            
+                <a href="../chap1/1.html#1">
+            
+                    
+                    1 起步
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../chap1/1.1.html">
+            
+                <a href="../chap1/1.1.html#1.1">
+            
+                    
+                    1.1 获得JRockit JVM
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../chap1/1.2.html">
+            
+                <a href="../chap1/1.2.html#1.2">
+            
+                    
+                    1.2 将应用程序迁移到JRockit
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.2.1" data-path="../chap1/1.2.html">
+            
+                <a href="../chap1/1.2.html#1.2.1">
+            
+                    
+                    1.2.1 命令行选项
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.2.1.1" data-path="../chap1/1.2.html">
+            
+                <a href="../chap1/1.2.html#1.2.1.1">
+            
+                    
+                    1.2.1.1 系统属性
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2.1.2" data-path="../chap1/1.2.html">
+            
+                <a href="../chap1/1.2.html#1.2.1.2">
+            
+                    
+                    1.2.1.2 标准命令行选项
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2.1.3" data-path="../chap1/1.2.html">
+            
+                <a href="../chap1/1.2.html#1.2.1.3">
+            
+                    
+                    1.2.1.3 非标准命令行选项
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2.2" data-path="../chap1/1.2.html">
+            
+                <a href="../chap1/1.2.html#1.2.2">
+            
+                    
+                    1.2.2 行为差异
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../chap1/1.3.html">
+            
+                <a href="../chap1/1.3.html#1.3">
+            
+                    
+                    1.3 JRockit版本号的命名规则
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="../chap1/1.4.html">
+            
+                <a href="../chap1/1.4.html#1.4">
+            
+                    
+                    1.4 获取帮助
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.5" data-path="../chap1/1.5.html">
+            
+                <a href="../chap1/1.5.html#1.5">
+            
+                    
+                    1.5 小结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../chap2/2.html">
+            
+                <a href="../chap2/2.html#2">
+            
+                    
+                    2 自适应代码生成
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../chap2/2.1.html">
+            
+                <a href="../chap2/2.1.html#2.1">
+            
+                    
+                    2.1 平台无关性
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="../chap2/2.2.html">
+            
+                <a href="../chap2/2.2.html#2.2">
+            
+                    
+                    2.2 Java虚拟机
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.1" data-path="../chap2/2.2.html">
+            
+                <a href="../chap2/2.2.html#2.2.1">
+            
+                    
+                    2.2.1 基于栈的虚拟机
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.2" data-path="../chap2/2.2.html">
+            
+                <a href="../chap2/2.2.html#2.2.2">
+            
+                    
+                    2.2.2 字节码格式
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.2.1" data-path="../chap2/2.2.html">
+            
+                <a href="../chap2/2.2.html#2.2.2.1">
+            
+                    
+                    2.2.2.1 操作与操作数
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.2.2" data-path="../chap2/2.2.html">
+            
+                <a href="../chap2/2.2.html#2.2.2.2">
+            
+                    
+                    2.2.2.2 常量池
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="../chap2/2.3.html">
+            
+                <a href="../chap2/2.3.html#2.3">
+            
+                    
+                    2.3 代码生成策略
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.3.1" data-path="../chap2/2.3.html">
+            
+                <a href="../chap2/2.3.html#2.3.1">
+            
+                    
+                    2.3.1 纯解释执行
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3.2" data-path="../chap2/2.3.html">
+            
+                <a href="../chap2/2.3.html#2.3.2">
+            
+                    
+                    2.3.2 静态编译
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3.3" data-path="../chap2/2.3.html">
+            
+                <a href="../chap2/2.3.html#2.3.3">
+            
+                    
+                    2.3.3 完全JIT编译
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3.4" data-path="../chap2/2.3.html">
+            
+                <a href="../chap2/2.3.html#2.3.4">
+            
+                    
+                    2.3.4 混合模式
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4" data-path="../chap2/2.4.html">
+            
+                <a href="../chap2/2.4.html#2.4">
+            
+                    
+                    2.4 自适应代码生成
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.4.1" data-path="../chap2/2.4.html">
+            
+                <a href="../chap2/2.4.html#2.4.1">
+            
+                    
+                    2.4.1 判断热方法
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.4.1.1" data-path="../chap2/2.4.html">
+            
+                <a href="../chap2/2.4.html#2.4.1.1">
+            
+                    
+                    2.4.1.1 调用计数器
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.1.2" data-path="../chap2/2.4.html">
+            
+                <a href="../chap2/2.4.html#2.4.1.2">
+            
+                    
+                    2.4.1.2 基于软件的线程采样
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.1.3" data-path="../chap2/2.4.html">
+            
+                <a href="../chap2/2.4.html#2.4.1.3">
+            
+                    
+                    2.4.1.3 硬件采样
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.2" data-path="../chap2/2.4.html">
+            
+                <a href="../chap2/2.4.html#2.4.2">
+            
+                    
+                    2.4.2 优化动态程序
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5" data-path="../chap2/2.5.html">
+            
+                <a href="../chap2/2.5.html#2.5">
+            
+                    
+                    2.5 深入JIT编译器
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.5.1" data-path="../chap2/2.5.html">
+            
+                <a href="../chap2/2.5.html#2.5.1">
+            
+                    
+                    2.5.1 处理字节码
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.5.1.1" data-path="../chap2/2.5.html">
+            
+                <a href="../chap2/2.5.html#2.5.1.1">
+            
+                    
+                    2.5.1.1 字节码混淆
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5.2" data-path="../chap2/2.5.html">
+            
+                <a href="../chap2/2.5.html#2.5.2">
+            
+                    
+                    2.5.2 字节码“优化器”
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.5.2.1" data-path="../chap2/2.5.html">
+            
+                <a href="../chap2/2.5.html#2.5.2.1">
+            
+                    
+                    2.5.2.1 抽象语法树
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5.3" data-path="../chap2/2.5.html">
+            
+                <a href="../chap2/2.5.html#2.5.3">
+            
+                    
+                    2.5.3 优化字节码
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6" data-path="../chap2/2.6.html">
+            
+                <a href="../chap2/2.6.html#2.6">
+            
+                    
+                    2.6 代码流水线
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.6.1" data-path="../chap2/2.6.html">
+            
+                <a href="../chap2/2.6.html#2.6.1">
+            
+                    
+                    2.6.1 为什么JRockit没有字节码解释器
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6.2" data-path="../chap2/2.6.html">
+            
+                <a href="../chap2/2.6.html#2.6.2">
+            
+                    
+                    2.6.2 启动
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6.3" data-path="../chap2/2.6.html">
+            
+                <a href="../chap2/2.6.html#2.6.3">
+            
+                    
+                    2.6.3 运行时代码生成
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.6.3.1" data-path="../chap2/2.6.html">
+            
+                <a href="../chap2/2.6.html#2.6.3.1">
+            
+                    
+                    2.6.3.1 Trampolines
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6.3.2" data-path="../chap2/2.6.html">
+            
+                <a href="../chap2/2.6.html#2.6.3.2">
+            
+                    
+                    2.6.3.2 代码生成请求
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6.3.3" data-path="../chap2/2.6.html">
+            
+                <a href="../chap2/2.6.html#2.6.3.3">
+            
+                    
+                    2.6.3.3 代码优化请求
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6.3.4" data-path="../chap2/2.6.html">
+            
+                <a href="../chap2/2.6.html#2.6.3.4">
+            
+                    
+                    2.6.3.4 栈上替换
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6.3.5" data-path="../chap2/2.6.html">
+            
+                <a href="../chap2/2.6.html#2.6.3.5">
+            
+                    
+                    2.6.3.5 簿记
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6.4" data-path="../chap2/2.6.html">
+            
+                <a href="../chap2/2.6.html#2.6.4">
+            
+                    
+                    2.6.4 代码生成概述
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.6.4.1" data-path="../chap2/2.6.html">
+            
+                <a href="../chap2/2.6.html#2.6.4.1">
+            
+                    
+                    2.6.4.1 代码的中间表示
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6.4.2" data-path="../chap2/2.6.html">
+            
+                <a href="../chap2/2.6.html#2.6.4.2">
+            
+                    
+                    2.6.4.2 JIT编译
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6.4.3" data-path="../chap2/2.6.html">
+            
+                <a href="../chap2/2.6.html#2.6.4.3">
+            
+                    
+                    2.6.4.3 代码优化
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.7" data-path="../chap2/2.7.html">
+            
+                <a href="../chap2/2.7.html#2.7">
+            
+                    
+                    2.7 控制代码生成
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.7.1" data-path="../chap2/2.7.html">
+            
+                <a href="../chap2/2.7.html#2.7.1">
+            
+                    
+                    2.7.1 命令行选项与指导文件
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.7.1.1" data-path="../chap2/2.7.html">
+            
+                <a href="../chap2/2.7.html#2.7.1.1">
+            
+                    
+                    2.7.1.1 命令行选项
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.7.1.2" data-path="../chap2/2.7.html">
+            
+                <a href="../chap2/2.7.html#2.7.1.2">
+            
+                    
+                    2.7.1.2 指导文件
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.8" data-path="../chap2/2.8.html">
+            
+                <a href="../chap2/2.8.html#2.8">
+            
+                    
+                    2.8 小结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../chap3/3.html">
+            
+                <a href="../chap3/3.html#3">
+            
+                    
+                    3 自适应内存管理
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="../chap3/3.1.html">
+            
+                <a href="../chap3/3.1.html#3.1">
+            
+                    
+                    3.1 自动内存管理相关概念
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1.1" data-path="../chap3/3.1.html">
+            
+                <a href="../chap3/3.1.html#3.1.1">
+            
+                    
+                    3.1.1 自适应内存管理
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.1.2" data-path="../chap3/3.1.html">
+            
+                <a href="../chap3/3.1.html#3.1.2">
+            
+                    
+                    3.1.2 自动内存管理的优点
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.1.3" data-path="../chap3/3.1.html">
+            
+                <a href="../chap3/3.1.html#3.1.3">
+            
+                    
+                    3.1.3 自动内存管理的缺点
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="../chap3/3.2.html">
+            
+                <a href="../chap3/3.2.html#3.2">
+            
+                    
+                    3.2 堆管理基础
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.1" data-path="../chap3/3.2.html">
+            
+                <a href="../chap3/3.2.html#3.2.1">
+            
+                    
+                    3.2.1 对象的分配于释放
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2" data-path="../chap3/3.2.html">
+            
+                <a href="../chap3/3.2.html#3.2.2">
+            
+                    
+                    3.2.2 碎片与整理
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3">
+            
+                    
+                    3.3 垃圾回收算法
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.3.1" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3.1">
+            
+                    
+                    3.3.1 引用计数
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.2" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3.2">
+            
+                    
+                    3.3.2 引用跟踪
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.3.2.1" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3.2.1">
+            
+                    
+                    3.3.2.1 标记-清理
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.2.2" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3.2.2">
+            
+                    
+                    3.3.2.2 暂停-拷贝
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.3" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3.3">
+            
+                    
+                    3.3.3 STW(stop-the-world)
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.3.3.1" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3.3.1">
+            
+                    
+                    3.3.3.1 保守式 vs. 准确式
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.3.2" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3.3.2">
+            
+                    
+                    3.3.3.2 livemap
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.4" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3.4">
+            
+                    
+                    3.3.4 分代垃圾回收
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.3.4.1" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3.4.1">
+            
+                    
+                    3.3.4.1 多个新生代的内存排布
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.4.2" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3.4.2">
+            
+                    
+                    3.3.4.2 写屏障
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.5" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3.5">
+            
+                    
+                    3.3.5 吞吐量 vs. 延迟
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.3.5.1" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3.5.1">
+            
+                    
+                    3.3.5.1 优化吞吐量
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.5.2" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3.5.2">
+            
+                    
+                    3.3.5.2 优化延迟
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.6" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3.6">
+            
+                    
+                    3.3.6 JRockit中的垃圾回收
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.3.6.1" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3.6.1">
+            
+                    
+                    3.3.6.1 老年代垃圾回收
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.6.2" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3.6.2">
+            
+                    
+                    3.3.6.2 新生代垃圾回收
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.6.3" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3.6.3">
+            
+                    
+                    3.3.6.3 永生代垃圾回收
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.7" data-path="../chap3/3.3.html">
+            
+                <a href="../chap3/3.3.html#3.3.6.4">
+            
+                    
+                    3.3.6.4 内存整理
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="../chap3/3.4.html">
+            
+                <a href="../chap3/3.4.html#3.4">
+            
+                    
+                    3.4 性能与伸缩性
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.4.1" data-path="../chap3/3.4.html">
+            
+                <a href="../chap3/3.4.html#3.4.1">
+            
+                    
+                    3.4.1 线程局部分配
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.2" data-path="../chap3/3.4.html">
+            
+                <a href="../chap3/3.4.html#3.4.2">
+            
+                    
+                    3.4.2 更大的堆内存
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.4.2.1" data-path="../chap3/3.4.html">
+            
+                <a href="../chap3/3.4.html#3.4.2.1">
+            
+                    
+                    3.4.2.1 32位架构下的4GB内存限制
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.2.2" data-path="../chap3/3.4.html">
+            
+                <a href="../chap3/3.4.html#3.4.2.2">
+            
+                    
+                    3.4.2.2 64位架构
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.3" data-path="../chap3/3.4.html">
+            
+                <a href="../chap3/3.4.html#3.4.3">
+            
+                    
+                    3.4.3 缓存友好性
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.4.3.1" data-path="../chap3/3.4.html">
+            
+                <a href="../chap3/3.4.html#3.4.3.1">
+            
+                    
+                    3.4.3.1 预抓取
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.3.2" data-path="../chap3/3.4.html">
+            
+                <a href="../chap3/3.4.html#3.4.3.2">
+            
+                    
+                    3.4.3.2 数据存放
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.4" data-path="../chap3/3.4.html">
+            
+                <a href="../chap3/3.4.html#3.4.4">
+            
+                    
+                    3.4.4 NUMA
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.5" data-path="../chap3/3.4.html">
+            
+                <a href="../chap3/3.4.html#3.4.5">
+            
+                    
+                    3.4.5 大内存页（Large pages）
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.6" data-path="../chap3/3.4.html">
+            
+                <a href="../chap3/3.4.html#3.4.6">
+            
+                    
+                    3.4.6 自适应（Adaptability）
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5" data-path="../chap3/3.5.html">
+            
+                <a href="../chap3/3.5.html#3.5">
+            
+                    
+                    3.5 近实时垃圾回收
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.5.1" data-path="../chap3/3.5.html">
+            
+                <a href="../chap3/3.5.html#3.5.1">
+            
+                    
+                    3.5.1 软实时与硬实时
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5.2" data-path="../chap3/3.5.html">
+            
+                <a href="../chap3/3.5.html#3.5.2">
+            
+                    
+                    3.5.2 JRockit Real Time
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.5.2.1" data-path="../chap3/3.5.html">
+            
+                <a href="../chap3/3.5.html#3.5.2.1">
+            
+                    
+                    3.5.2.1 软实时有效么？
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5.2.2" data-path="../chap3/3.5.html">
+            
+                <a href="../chap3/3.5.html#3.5.2.2">
+            
+                    
+                    3.5.2.2 工作原理
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6" data-path="../chap3/3.6.html">
+            
+                <a href="../chap3/3.6.html#3.6">
+            
+                    
+                    3.6 内存操作相关的API
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.6.1" data-path="../chap3/3.6.html">
+            
+                <a href="../chap3/3.6.html#3.6.1">
+            
+                    
+                    3.6.1 析构函数
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6.2" data-path="../chap3/3.6.html">
+            
+                <a href="../chap3/3.6.html#3.6.2">
+            
+                    
+                    3.6.2 Java中的引用
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.6.2.1" data-path="../chap3/3.6.html">
+            
+                <a href="../chap3/3.6.html#3.6.2.1">
+            
+                    
+                    3.6.2.1 弱引用
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6.2.2" data-path="../chap3/3.6.html">
+            
+                <a href="../chap3/3.6.html#3.6.2.2">
+            
+                    
+                    3.6.2.2 软引用
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6.2.3" data-path="../chap3/3.6.html">
+            
+                <a href="../chap3/3.6.html#3.6.2.3">
+            
+                    
+                    3.6.2.3 虚引用
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6.3" data-path="../chap3/3.6.html">
+            
+                <a href="../chap3/3.6.html#3.6.3">
+            
+                    
+                    3.6.3 JVM的行为差异
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7" data-path="../chap3/3.7.html">
+            
+                <a href="../chap3/3.7.html#3.7">
+            
+                    
+                    3.7 陷阱与伪优化
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.7.1" data-path="../chap3/3.7.html">
+            
+                <a href="../chap3/3.7.html#3.7.1">
+            
+                    
+                    3.7.1 Java不是C++
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8" data-path="../chap3/3.8.html">
+            
+                <a href="../chap3/3.8.html#3.8">
+            
+                    
+                    3.8 JRockit中的内存管理
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.8.1" data-path="../chap3/3.8.html">
+            
+                <a href="../chap3/3.8.html#3.8.1">
+            
+                    
+                    3.8.1 基本参数
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.8.1.1" data-path="../chap3/3.8.html">
+            
+                <a href="../chap3/3.8.html#3.8.1.1">
+            
+                    
+                    3.8.1.1 打印垃圾回收日志
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8.1.2" data-path="../chap3/3.8.html">
+            
+                <a href="../chap3/3.8.html#3.8.1.2">
+            
+                    
+                    3.8.1.2 设置堆的初始值和最大值
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8.1.3" data-path="../chap3/3.8.html">
+            
+                <a href="../chap3/3.8.html#3.8.1.3">
+            
+                    
+                    3.8.1.3 设置垃圾回收器的执行目标
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8.1.4" data-path="../chap3/3.8.html">
+            
+                <a href="../chap3/3.8.html#3.8.1.4">
+            
+                    
+                    3.8.1.4 指定垃圾回收策略
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8.2" data-path="../chap3/3.8.html">
+            
+                <a href="../chap3/3.8.html#3.8.2">
+            
+                    
+                    3.8.2 压缩引用
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8.3" data-path="../chap3/3.8.html">
+            
+                <a href="../chap3/3.8.html#3.8.3">
+            
+                    
+                    3.8.3 高级选项
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.9" data-path="../chap3/3.9.html">
+            
+                <a href="../chap3/3.9.html#3.9">
+            
+                    
+                    3.9 小结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="4.html">
+            
+                <a href="4.html#4">
+            
+                    
+                    4 线程与同步
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.1" data-path="4.1.html">
+            
+                <a href="4.1.html#4.1">
+            
+                    
+                    4.1 基本概念
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.1.1" data-path="../cgap4/4.1.md">
+            
+                <span>
+            
+                    
+                    4.1.1 难以调试
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.1.2" data-path="4.1.html">
+            
+                <a href="4.1.html#4.1.2">
+            
+                    
+                    4.1.2 难以优化
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.1.2.1" data-path="4.1.html">
+            
+                <a href="4.1.html#4.1.2.1">
+            
+                    
+                    4.1.2.1 延迟性分析
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.2" data-path="4.2.html">
+            
+                <a href="4.2.html#4.2">
+            
+                    
+                    4.2 Java API
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.2.1" data-path="4.2.html">
+            
+                <a href="4.2.html#4.2.1">
+            
+                    
+                    4.2.1 synchromized关键字
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.2.2" data-path="4.2.html">
+            
+                <a href="4.2.html#4.2.2">
+            
+                    
+                    4.2.2 java.lang.Thread类
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.2.3" data-path="4.2.html">
+            
+                <a href="4.2.html#4.2.3">
+            
+                    
+                    4.2.3 java.util.concurrent包
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.2.4" data-path="4.2.html">
+            
+                <a href="4.2.html#4.2.4">
+            
+                    
+                    4.2.4 信号量
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.2.5" data-path="4.2.html">
+            
+                <a href="4.2.html#4.2.5">
+            
+                    
+                    4.2.5 volatile关键字
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3" data-path="4.3.html">
+            
+                <a href="4.3.html#4.3">
+            
+                    
+                    4.3 Java中线程与同步机制的实现
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.3.1" data-path="4.3.html">
+            
+                <a href="4.3.html#4.3.1">
+            
+                    
+                    4.3.1 Java内存模型
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.3.1.1" data-path="4.3.html">
+            
+                <a href="4.3.html#4.3.1.1">
+            
+                    
+                    4.3.1.1 早期内存模型中的问题
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3.1.2" data-path="4.3.html">
+            
+                <a href="4.3.html#4.3.1.2">
+            
+                    
+                    4.3.1.2 JSR-133
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3.2" data-path="4.3.html">
+            
+                <a href="4.3.html#4.3.2">
+            
+                    
+                    4.3.2 同步的实现
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.3.2.1" data-path="4.3.html">
+            
+                <a href="4.3.html#4.3.2.1">
+            
+                    
+                    4.3.2.1 原生机制
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3.2.2" data-path="4.3.html">
+            
+                <a href="4.3.html#4.3.2.2">
+            
+                    
+                    4.3.2.2 锁(Lock)
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3.3" data-path="4.3.html">
+            
+                <a href="4.3.html#4.3.3">
+            
+                    
+                    4.3.3 同步在字节码中的实现
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.3.3.1" data-path="4.3.html">
+            
+                <a href="4.3.html#4.3.3.1">
+            
+                    
+                    4.3.3.1 匹配的锁操作
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3.4" data-path="4.3.html">
+            
+                <a href="4.3.html#4.3.4">
+            
+                    
+                    4.3.4 线程的实现
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.3.4.1" data-path="4.3.html">
+            
+                <a href="4.3.html#4.3.4.1">
+            
+                    
+                    4.3.4.1 绿色线程（green thread）
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3.4.2" data-path="4.3.html">
+            
+                <a href="4.3.html#4.3.4.2">
+            
+                    
+                    4.3.4.2 操作系统线程
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4" data-path="4.4.html">
+            
+                <a href="4.4.html#4.4">
+            
+                    
+                    4.4 对于线程与同步的优化
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.4.1" data-path="4.4.html">
+            
+                <a href="4.4.html#4.4.1">
+            
+                    
+                    4.4.1 锁膨胀与锁收缩
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4.2" data-path="4.4.html">
+            
+                <a href="4.4.html#4.4.2">
+            
+                    
+                    4.4.2 递归锁
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4.3" data-path="4.4.html">
+            
+                <a href="4.4.html#4.4.3">
+            
+                    
+                    4.4.3 锁融合
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4.4" data-path="4.4.html">
+            
+                <a href="4.4.html#4.4.4">
+            
+                    
+                    4.4.4 延迟解锁
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.4.4.1" data-path="4.4.html">
+            
+                <a href="4.4.html#4.4.4.1">
+            
+                    
+                    4.4.4.1 实现
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4.4.2" data-path="4.4.html">
+            
+                <a href="4.4.html#4.4.4.2">
+            
+                    
+                    4.4.4.2 禁用对象
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4.4.3" data-path="4.4.html">
+            
+                <a href="4.4.html#4.4.4.3">
+            
+                    
+                    4.4.4.3 禁用类
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4.4.4" data-path="4.4.html">
+            
+                <a href="4.4.html#4.4.4.4">
+            
+                    
+                    4.4.4.4 结论
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.5" data-path="4.5.html">
+            
+                <a href="4.5.html#4.5">
+            
+                    
+                    4.5 陷阱与伪优化
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.5.1" data-path="4.5.html">
+            
+                <a href="4.5.html#4.5.1">
+            
+                    
+                    4.5.1 问题方法：`Thread.stop` `Thread.resume` `Thread.suspend`
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.5.2" data-path="4.5.html">
+            
+                <a href="4.5.html#4.5.2">
+            
+                    
+                    4.5.2 双检查锁
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.5.3" data-path="4.6.html">
+            
+                <a href="4.6.html#4.6.1">
+            
+                    
+                    4.6.1 检查锁与延迟解锁
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.5.3.1" data-path="4.6.html">
+            
+                <a href="4.6.html#4.6.1.1">
+            
+                    
+                    4.6.1.1 使用`-Xverbose:locks`参数分析锁的行为
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.5.3.2" data-path="4.6.html">
+            
+                <a href="4.6.html#4.6.1.2">
+            
+                    
+                    4.6.1.2 使用参数`-XX:UseLazyUnlocking`
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.5.4" data-path="4.6.html">
+            
+                <a href="4.6.html#4.6.2">
+            
+                    
+                    4.6.2 输出调用栈信息
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.5.5" data-path="4.6.html">
+            
+                <a href="4.6.html#4.6.3">
+            
+                    
+                    4.6.3 锁分析
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.5.5.1" data-path="4.6.html">
+            
+                <a href="4.6.html#4.6.3.1">
+            
+                    
+                    4.6.3.1 使用参数`-XX:UseLockProfiling`进行所分析
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.5.6" data-path="4.6.html">
+            
+                <a href="4.6.html#4.6.4">
+            
+                    
+                    4.6.4 设置线程栈的大小
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.5.7" data-path="4.6.html">
+            
+                <a href="4.6.html#4.6.5">
+            
+                    
+                    4.6.5 使用命令行参数控制锁的行为
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.6" data-path="4.7.html">
+            
+                <a href="4.7.html#4.7">
+            
+                    
+                    4.7 小结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="../chap5/5.html">
+            
+                <a href="../chap5/5.html#5">
+            
+                    
+                    5 基准测试与性能调优
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.1" data-path="../chap5/5.1.html">
+            
+                <a href="../chap5/5.1.html#5.1">
+            
+                    
+                    5.1 为何要进行基准测试
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.1.1" data-path="../chap5/5.1.html">
+            
+                <a href="../chap5/5.1.html#5.1.1">
+            
+                    
+                    5.1.1 制定性能目标
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.1.2" data-path="../chap5/5.1.html">
+            
+                <a href="../chap5/5.1.html#5.1.2">
+            
+                    
+                    5.1.2 对性能进行回归测试
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.1.3" data-path="../chap5/5.1.html">
+            
+                <a href="../chap5/5.1.html#5.1.3">
+            
+                    
+                    5.1.3 确定优化方向
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.1.4" data-path="../chap5/5.1.html">
+            
+                <a href="../chap5/5.1.html#5.1.4">
+            
+                    
+                    5.1.4 商业应用
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2" data-path="../chap5/5.2.html">
+            
+                <a href="../chap5/5.2.html#5.2">
+            
+                    
+                    5.2 如何构建基准测试
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.2.1" data-path="../chap5/5.2.html">
+            
+                <a href="../chap5/5.2.html#5.2.1">
+            
+                    
+                    5.2.1 "置身事外（outside the system）"
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.2" data-path="../chap5/5.2.html">
+            
+                <a href="../chap5/5.2.html#5.2.2">
+            
+                    
+                    5.2.2 测量时间
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.3" data-path="../chap5/5.2.html">
+            
+                <a href="../chap5/5.2.html#5.2.3">
+            
+                    
+                    5.2.3 微基准测试（micro benchmark）
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.2.3.1" data-path="../chap5/5.2.html">
+            
+                <a href="../chap5/5.2.html#5.2.3.1">
+            
+                    
+                    5.2.3.1 基准测试与栈上替换
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.3.2" data-path="../chap5/5.2.html">
+            
+                <a href="../chap5/5.2.html#5.2.3.2">
+            
+                    
+                    5.2.3.2 基准测试与启动时间
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2.4" data-path="../chap5/5.2.html">
+            
+                <a href="../chap5/5.2.html#5.2.4">
+            
+                    
+                    5.2.4 测试前要热身
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3" data-path="../chap5/5.3.html">
+            
+                <a href="../chap5/5.3.html#5.3">
+            
+                    
+                    5.3 确定测试目标
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.3.1" data-path="../chap5/5.3.html">
+            
+                <a href="../chap5/5.3.html#5.3.1">
+            
+                    
+                    5.3.1 吞吐量
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.2" data-path="../chap5/5.3.html">
+            
+                <a href="../chap5/5.3.html#5.3.2">
+            
+                    
+                    5.3.2 兼顾吞吐量、响应时间和延迟
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.3" data-path="../chap5/5.3.html">
+            
+                <a href="../chap5/5.3.html#5.3.3">
+            
+                    
+                    5.3.3 伸缩性
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.4" data-path="../chap5/5.3.html">
+            
+                <a href="../chap5/5.3.html#5.3.4">
+            
+                    
+                    5.3.4 能源消耗
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3.5" data-path="../chap5/5.3.html">
+            
+                <a href="../chap5/5.3.html#5.3.5">
+            
+                    
+                    5.3.5 其他方面
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.4" data-path="../chap5/5.4.html">
+            
+                <a href="../chap5/5.4.html#5.4">
+            
+                    
+                    5.4 工业级基准测试
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.4.1" data-path="../chap5/5.4.html">
+            
+                <a href="../chap5/5.4.html#5.4.1">
+            
+                    
+                    5.4.1 SPEC基准测试套件
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.4.1.1" data-path="../chap5/5.4.html">
+            
+                <a href="../chap5/5.4.html#5.4.1.1">
+            
+                    
+                    5.4.1.1 SPECjvm基准测试套件
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.4.1.2" data-path="../chap5/5.4.html">
+            
+                <a href="../chap5/5.4.html#5.4.1.2">
+            
+                    
+                    5.4.1.2 SPECjAppServer套件/SPECjEnterprise2010套件
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.4.1.3" data-path="../chap5/5.4.html">
+            
+                <a href="../chap5/5.4.html#5.4.1.3">
+            
+                    
+                    5.4.1.3 SPECjbb套件
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.4.2" data-path="../chap5/5.4.html">
+            
+                <a href="../chap5/5.4.html#5.4.2">
+            
+                    
+                    5.4.2 SipStone基准测试
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.4.3" data-path="../chap5/5.4.html">
+            
+                <a href="../chap5/5.4.html#5.4.3">
+            
+                    
+                    5.4.3 DaCapo基准测试
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.4.4" data-path="../chap5/5.4.html">
+            
+                <a href="../chap5/5.4.html#5.4.4">
+            
+                    
+                    5.4.4 真实场景下的应用程序
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.5" data-path="../chap5/5.5.html">
+            
+                <a href="../chap5/5.5.html#5.5">
+            
+                    
+                    5.5 基准测试的潜在风险
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.6" data-path="../chap5/5.6.html">
+            
+                <a href="../chap5/5.6.html#5.6">
+            
+                    
+                    5.6 性能调优
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.6.1" data-path="../chap5/5.6.html">
+            
+                <a href="../chap5/5.6.html#5.6.1">
+            
+                    
+                    5.6.1 非规范化行为（Out of the box behavior）
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.6.2" data-path="../chap5/5.6.html">
+            
+                <a href="../chap5/5.6.html#5.6.2">
+            
+                    
+                    5.6.2 调优目标
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.6.2.1" data-path="../chap5/5.6.html">
+            
+                <a href="../chap5/5.6.html#5.6.2.1">
+            
+                    
+                    5.6.2.1 内存管理调优
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.6.2.2" data-path="../chap5/5.6.html">
+            
+                <a href="../chap5/5.6.html#5.6.2.2">
+            
+                    
+                    5.6.2.2 代码生成调优
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.6.2.3" data-path="../chap5/5.6.html">
+            
+                <a href="../chap5/5.6.html#5.6.2.3">
+            
+                    
+                    5.6.2.3 锁与线程调优
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.6.2.4" data-path="../chap5/5.6.html">
+            
+                <a href="../chap5/5.6.html#5.6.2.4">
+            
+                    
+                    5.6.2.4 其他相关调优
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.7" data-path="../chap5/5.7.html">
+            
+                <a href="../chap5/5.7.html#5.7">
+            
+                    
+                    5.7 常见性能瓶颈与规避方法
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.7.1" data-path="../chap5/5.7.html">
+            
+                <a href="../chap5/5.7.html#5.7.1">
+            
+                    
+                    5.7.1 命令行参数`–XXaggressive`
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.7.2" data-path="../chap5/5.7.html">
+            
+                <a href="../chap5/5.7.html#5.7.2">
+            
+                    
+                    5.7.2 析构函数
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.7.3" data-path="../chap5/5.7.html">
+            
+                <a href="../chap5/5.7.html#5.7.3">
+            
+                    
+                    5.7.3 引用对象
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.7.4" data-path="../chap5/5.7.html">
+            
+                <a href="../chap5/5.7.html#5.7.4">
+            
+                    
+                    5.7.4 对象池
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.7.5" data-path="../chap5/5.7.html">
+            
+                <a href="../chap5/5.7.html#5.7.5">
+            
+                    
+                    5.7.5 算法与数据结构
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.7.5.1" data-path="../chap5/5.7.html">
+            
+                <a href="../chap5/5.7.html#5.7.5.1">
+            
+                    
+                    5.7.5.1 典型问题
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.7.5.2" data-path="../chap5/5.7.html">
+            
+                <a href="../chap5/5.7.html#5.7.5.2">
+            
+                    
+                    5.7.5.2 意料之外的性质
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.7.6" data-path="../chap5/5.7.html">
+            
+                <a href="../chap5/5.7.html#5.7.6">
+            
+                    
+                    5.7.6 误用`System.gc()`
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.7.7" data-path="../chap5/5.7.html">
+            
+                <a href="../chap5/5.7.html#5.7.7">
+            
+                    
+                    5.7.7 线程数太多
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.7.8" data-path="../chap5/5.7.html">
+            
+                <a href="../chap5/5.7.html#5.7.8">
+            
+                    
+                    5.7.8 锁竞争导致性能瓶颈
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.7.9" data-path="../chap5/5.7.html">
+            
+                <a href="../chap5/5.7.html#5.7.9">
+            
+                    
+                    5.7.9 不必要的异常
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.7.10" data-path="../chap5/5.7.html">
+            
+                <a href="../chap5/5.7.html#5.7.10">
+            
+                    
+                    5.7.10 大对象
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.7.11" data-path="../chap5/5.7.html">
+            
+                <a href="../chap5/5.7.html#5.7.11">
+            
+                    
+                    5.7.11 本地内存 vs. 堆内存
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.8" data-path="../chap5/5.8.html">
+            
+                <a href="../chap5/5.8.html#5.8">
+            
+                    
+                    5.8 `wait/notify`方法与胖锁
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.8.1" data-path="../chap5/5.8.html">
+            
+                <a href="../chap5/5.8.html#5.8.1">
+            
+                    
+                    5.8.1 堆的大小设置不当
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.8.2" data-path="../chap5/5.8.html">
+            
+                <a href="../chap5/5.8.html#5.8.2">
+            
+                    
+                    5.8.2 存活对象过多
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.8.3" data-path="../chap5/5.8.html">
+            
+                <a href="../chap5/5.8.html#5.8.3">
+            
+                    
+                    5.8.3 Java并非银弹
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.9" data-path="../chap5/5.9.html">
+            
+                <a href="../chap5/5.9.html#5.9">
+            
+                    
+                    5.9 小结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" data-path="../chap6/6.html">
+            
+                <a href="../chap6/6.html#6">
+            
+                    
+                    6 JRockit Mission Control
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.1" data-path="../chap6/6.1.html">
+            
+                <a href="../chap6/6.1.html#6.1">
+            
+                    
+                    6.1 相关背景
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.1.1" data-path="../chap6/6.1.html">
+            
+                <a href="../chap6/6.1.html#6.1.1">
+            
+                    
+                    6.1.1 采样分析 vs. 准确分析
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.1.2" data-path="../chap6/6.1.html">
+            
+                <a href="../chap6/6.1.html#6.1.2">
+            
+                    
+                    6.1.2 用途广泛
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.2" data-path="../chap6/6.2.html">
+            
+                <a href="../chap6/6.2.html#6.2">
+            
+                    
+                    6.2 概述
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.2.1" data-path="../chap6/6.2.html">
+            
+                <a href="../chap6/6.2.html#6.2.1">
+            
+                    
+                    6.2.1 JRockit Mission Control的服务器端组件
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.2.2" data-path="../chap6/6.2.html">
+            
+                <a href="../chap6/6.2.html#6.2.2">
+            
+                    
+                    6.2.2 JRockit Mission Control的客户端组件
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.2.3" data-path="../chap6/6.2.html">
+            
+                <a href="../chap6/6.2.html#6.2.3">
+            
+                    
+                    6.2.3 术语介绍
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.2.4" data-path="../chap6/6.2.html">
+            
+                <a href="../chap6/6.2.html#6.2.4">
+            
+                    
+                    6.2.4 单独运行JRockit Mission Control
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.2.5" data-path="../chap6/6.2.html">
+            
+                <a href="../chap6/6.2.html#6.2.5">
+            
+                    
+                    6.2.5 在Eclipse中运行JRockit Mission Control
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.2.6" data-path="../chap6/6.2.html">
+            
+                <a href="../chap6/6.2.html#6.2.6">
+            
+                    
+                    6.2.6 远程管理JRockit
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.2.6.1" data-path="../chap6/6.2.html">
+            
+                <a href="../chap6/6.2.html#6.2.6.1">
+            
+                    
+                    6.2.6.1 JRockit发现协议（JRockit Discovery Protocol）
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.2.7" data-path="../chap6/6.2.html">
+            
+                <a href="../chap6/6.2.html#6.2.7">
+            
+                    
+                    6.2.7 安全限制
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.3" data-path="../chap6/6.3.html">
+            
+                <a href="../chap6/6.3.html#6.3">
+            
+                    
+                    6.3 处理连接问题
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.3.1" data-path="../chap6/6.3.html">
+            
+                <a href="../chap6/6.3.html#6.3.1">
+            
+                    
+                    6.3.1 主机名解析失败的问题
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.4" data-path="../chap6/6.4.html">
+            
+                <a href="../chap6/6.4.html#6.4">
+            
+                    
+                    6.4 Experimental Update Site
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.5" data-path="../chap6/6.5.html">
+            
+                <a href="../chap6/6.5.html#6.5">
+            
+                    
+                    6.5 调试JRockit Mission Control
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.6" data-path="../chap6.6.6.md">
+            
+                <span>
+            
+                    
+                    6.6 小结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8" data-path="../chap7/7.html">
+            
+                <a href="../chap7/7.html#7">
+            
+                    
+                    7 Management Console
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.8.1" data-path="../chap7/7.1.html">
+            
+                <a href="../chap7/7.1.html#7.1">
+            
+                    
+                    7.1 JMX Management Console
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.2" data-path="../chap7/7.2.html">
+            
+                <a href="../chap7/7.2.html#7.2">
+            
+                    
+                    7.2 Management Console
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.8.2.1" data-path="../chap7/7.2.html">
+            
+                <a href="../chap7/7.2.html#7.2.1">
+            
+                    
+                    7.2.1 一般信息
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.8.2.1.1" data-path="../chap7/7.2.html">
+            
+                <a href="../chap7/7.2.html#7.2.1.1">
+            
+                    
+                    7.2.1.1 概览
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.2.2" data-path="../chap7/7.2.html">
+            
+                <a href="../chap7/7.2.html#7.2.2">
+            
+                    
+                    7.2.2 MBean
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.8.2.2.1" data-path="../chap7/7.2.html">
+            
+                <a href="../chap7/7.2.html#7.2.2.1">
+            
+                    
+                    7.2.2.1 MBean浏览器
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.2.2.2" data-path="../chap7/7.2.html">
+            
+                <a href="../chap7/7.2.html#7.2.2.2">
+            
+                    
+                    7.2.2.2 触发器
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.2.3" data-path="../chap7/7.2.html">
+            
+                <a href="../chap7/7.2.html#7.2.3">
+            
+                    
+                    7.2.3 运行时
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.8.2.3.1" data-path="../chap7/7.2.html">
+            
+                <a href="../chap7/7.2.html#7.2.3.1">
+            
+                    
+                    7.2.3.1 系统标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.2.3.2" data-path="../chap7/7.2.html">
+            
+                <a href="../chap7/7.2.html#7.2.3.2">
+            
+                    
+                    7.2.3.2 内存标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.2.3.3" data-path="../chap7/7.2.html">
+            
+                <a href="../chap7/7.2.html#7.2.3.3">
+            
+                    
+                    7.2.3.3 线程标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.2.4" data-path="../chap7/7.2.html">
+            
+                <a href="../chap7/7.2.html#7.2.4">
+            
+                    
+                    7.2.4 高级标签组
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.8.2.4.1" data-path="../chap7/7.2.html">
+            
+                <a href="../chap7/7.2.html#7.2.4.1">
+            
+                    
+                    7.2.4.1 方法概要分析
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.2.4.2" data-path="../chap7/7.2.html">
+            
+                <a href="../chap7/7.2.html#7.2.4.2">
+            
+                    
+                    7.2.4.2 异常标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.2.4.3" data-path="../chap7/7.2.html">
+            
+                <a href="../chap7/7.2.html#7.2.4.3">
+            
+                    
+                    7.2.4.3 诊断命令标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.2.5" data-path="../chap7/7.2.html">
+            
+                <a href="../chap7/7.2.html#7.2.5">
+            
+                    
+                    7.2.5 其他标签组
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.8.2.5.1" data-path="../chap7/7.2.html">
+            
+                <a href="../chap7/7.2.html#7.2.5.1">
+            
+                    
+                    7.2.5.1 JConsole
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.3" data-path="../chap7/7.3.html">
+            
+                <a href="../chap7/7.3.html#7.3">
+            
+                    
+                    7.3 扩展JRockit Mission Control Console
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.4" data-path="../chap7/7.4.html">
+            
+                <a href="../chap7/7.4.html#7.4">
+            
+                    
+                    7.4 小结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9" data-path="../chap8/8.html">
+            
+                <a href="../chap8/8.html#8">
+            
+                    
+                    8 运行时分析器
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.9.1" data-path="../chap8/8.1.html">
+            
+                <a href="../chap8/8.1.html#8.1">
+            
+                    
+                    8.1 反馈信息的必要性
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.9.1.1" data-path="../chap8/8.1.html">
+            
+                <a href="../chap8/8.1.html#8.1.1">
+            
+                    
+                    8.1.1 记录
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2">
+            
+                    
+                    8.2 分析JRA记录
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.9.2.1" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.1">
+            
+                    
+                    8.2.1 General标签组
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.9.2.1.1" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.1.1">
+            
+                    
+                    8.2.1.1 Overview标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.1.2" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.1.2">
+            
+                    
+                    8.2.1.2 Recoding标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.1.3" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.1.3">
+            
+                    
+                    8.2.1.3 System标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.2" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.2">
+            
+                    
+                    8.2.2 Memory标签组
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.9.2.2.1" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.2.1">
+            
+                    
+                    8.2.2.1 Overview标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.2.2" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.2.2">
+            
+                    
+                    8.2.2.2 GC标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.2.3" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.2.3">
+            
+                    
+                    8.2.2.3 GC统计信息标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.2.4" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.2.4">
+            
+                    
+                    8.2.2.4 内存分配标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.2.5" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.2.5">
+            
+                    
+                    8.2.2.5 堆信息标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.2.6" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.2.6">
+            
+                    
+                    8.2.2.6 对象统计标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.3" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.3">
+            
+                    
+                    8.2.3 代码标签组
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.9.2.3.1" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.3.1">
+            
+                    
+                    8.2.3.1 概览标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.3.2" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.3.2">
+            
+                    
+                    8.2.3.2 热点方法标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.3.3" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.3.3">
+            
+                    
+                    8.2.3.3 优化标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.4" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.4">
+            
+                    
+                    8.2.4 线程/锁标签组
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.9.2.4.1" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.4.1">
+            
+                    
+                    8.2.4.1 概览标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.4.2" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.4.2">
+            
+                    
+                    8.2.4.2 线程标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.4.3" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.4.3">
+            
+                    
+                    8.2.4.3 Java锁标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.4.4" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.4.4">
+            
+                    
+                    8.2.4.4 JVM锁标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.4.5" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.4.5">
+            
+                    
+                    8.2.4.5 线程转储标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.5" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.5">
+            
+                    
+                    8.2.5 延迟标签组
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.9.2.5.1" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.5.1">
+            
+                    
+                    8.2.5.1 概览标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.5.2" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.5.2">
+            
+                    
+                    8.2.5.2 日志标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.5.3" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.5.3">
+            
+                    
+                    8.2.5.3 图形标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.5.4" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.5.4">
+            
+                    
+                    8.2.5.4 线程标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.5.5" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.5.5">
+            
+                    
+                    8.2.5.5 堆栈跟踪标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.5.6" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.5.6">
+            
+                    
+                    8.2.5.6 直方图标签页
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2.6" data-path="../chap8/8.2.html">
+            
+                <a href="../chap8/8.2.html#8.2.6">
+            
+                    
+                    8.2.6 使用操作集
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.3" data-path="../chap8/8.3.html">
+            
+                <a href="../chap8/8.3.html#8.3">
+            
+                    
+                    8.3 故障排除
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.4" data-path="../chap8/8.4.html">
+            
+                <a href="../chap8/8.4.html#8.4">
+            
+                    
+                    8.4 小结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10" data-path="../chap9/9.html">
+            
+                <a href="../chap9/9.html#9">
+            
+                    
+                    9 飞行记录仪
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.10.1" data-path="../chap9/9.1.html">
+            
+                <a href="../chap9/9.1.html#9.1">
+            
+                    
+                    9.1 JRA进化
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.10.1.1" data-path="../chap9/9.1.html">
+            
+                <a href="../chap9/9.1.html#9.1.1">
+            
+                    
+                    9.1.1 关于事件
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.1.2" data-path="../chap9/9.1.html">
+            
+                <a href="../chap9/9.1.html#9.1.2">
+            
+                    
+                    9.1.2 记录引擎
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.1.3" data-path="../chap9/9.1.html">
+            
+                <a href="../chap9/9.1.html#9.1.3">
+            
+                    
+                    9.1.3 启动参数
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.10.1.3.1" data-path="../chap9/9.1.html">
+            
+                <a href="../chap9/9.1.html#9.1.3.1">
+            
+                    
+                    9.1.3.1 开启基于时间的记录
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.2" data-path="../chap9/9.2.html">
+            
+                <a href="../chap9/9.2.html#9.2">
+            
+                    
+                    9.2 在JRockit Mission Control中使用JFR
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.10.2.1" data-path="../chap9/9.2.html">
+            
+                <a href="../chap9/9.2.html#9.2.1">
+            
+                    
+                    9.2.1 自定义JFR记录
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.3" data-path="../chap9/9.3.html">
+            
+                <a href="../chap9/9.3.html#9.3">
+            
+                    
+                    9.3 与JRA的区别
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.10.3.1" data-path="../chap9/9.3.html">
+            
+                <a href="../chap9/9.3.html#9.3.1">
+            
+                    
+                    9.3.1 范围选择器
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.3.2" data-path="../chap9/9.3.html">
+            
+                <a href="../chap9/9.3.html#9.3.2">
+            
+                    
+                    9.3.2 操作集（Operative Set）
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.3.3" data-path="../chap9/9.3.html">
+            
+                <a href="../chap9/9.3.html#9.3.3">
+            
+                    
+                    9.3.3 关联键
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.3.4" data-path="../chap9/9.3.html">
+            
+                <a href="../chap9/9.3.html#9.3.4">
+            
+                    
+                    9.3.4 延迟分析
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.3.5" data-path="../chap9/9.3.html">
+            
+                <a href="../chap9/9.3.html#9.3.5">
+            
+                    
+                    9.3.5 异常分析
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.3.6" data-path="../chap9/9.3.html">
+            
+                <a href="../chap9/9.3.html#9.3.6">
+            
+                    
+                    9.3.6 内存分析
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.4" data-path="../chap9/9.4.html">
+            
+                <a href="../chap9/9.4.html#9.4">
+            
+                    
+                    9.4 自定义事件
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.5" data-path="../chap9/9.5.html">
+            
+                <a href="../chap9/9.5.html#9.5">
+            
+                    
+                    9.5 扩展JFR
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.6" data-path="../chap9/9.6.html">
+            
+                <a href="../chap9/9.6.html#9.6">
+            
+                    
+                    9.6 小结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.11" data-path="../chap10/10.html">
+            
+                <a href="../chap10/10.html#10">
+            
+                    
+                    10 Memory Leak Detector
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.11.1" data-path="../chap10/10.1.html">
+            
+                <a href="../chap10/10.1.html#10.1">
+            
+                    
+                    10.1 Java内存泄漏
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.11.1.1" data-path="../chap10/10.1.html">
+            
+                <a href="../chap10/10.1.html#10.1.1">
+            
+                    
+                    10.1.1 静态编程语言中的内存泄漏
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.11.1.2" data-path="../chap10/10.1.html">
+            
+                <a href="../chap10/10.1.html#10.1.2">
+            
+                    
+                    10.1.2 自动内存管理中的内存泄漏
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.11.2" data-path="../chap10/10.2.html">
+            
+                <a href="../chap10/10.2.html#10.2">
+            
+                    
+                    10.2 检测Java中的内存泄漏
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.11.3" data-path="../chap10/10.3.html">
+            
+                <a href="../chap10/10.3.html#10.3">
+            
+                    
+                    10.3 Memleak简介
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.11.4" data-path="../chap10/10.4.html">
+            
+                <a href="../chap10/10.4.html#10.4">
+            
+                    
+                    10.4 追踪内存泄漏
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.11.4.1" data-path="../chap10/10.4.html">
+            
+                <a href="../chap10/10.4.html#10.4.1">
+            
+                    
+                    10.4.1 与类载入器相关的信息
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.11.5" data-path="../chap10/10.5.html">
+            
+                <a href="../chap10/10.5.html#10.5">
+            
+                    
+                    10.5 交互式追踪内存泄漏
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.11.6" data-path="../chap10/10.6.html">
+            
+                <a href="../chap10/10.6.html#10.6">
+            
+                    
+                    10.6 通用堆分析器
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.11.7" data-path="../chap10/10.7.html">
+            
+                <a href="../chap10/10.7.html#10.7">
+            
+                    
+                    10.7 追踪内存分配
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.11.8" data-path="../chap10/10.8.html">
+            
+                <a href="../chap10/10.8.html#10.8">
+            
+                    
+                    10.8 问题排查
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.11.9" data-path="../chap10/10.9.html">
+            
+                <a href="../chap10/10.9.html#10.9">
+            
+                    
+                    10.9 小结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12" data-path="../chap11/11.html">
+            
+                <a href="../chap11/11.html#11">
+            
+                    
+                    11 JRCMD
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.12.1" data-path="../chap11/11.1.html">
+            
+                <a href="../chap11/11.1.html#11.1">
+            
+                    
+                    11.1 介绍
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.2" data-path="../chap11/11.2.html">
+            
+                <a href="../chap11/11.2.html#11.2">
+            
+                    
+                    11.2 覆盖`SIGQUIT`信号处理句柄
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.12.2.1" data-path="../chap11/11.2.html">
+            
+                <a href="../chap11/11.2.html#11.2.1">
+            
+                    
+                    11.2.1 特殊命令
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.3" data-path="../chap11/11.3.html">
+            
+                <a href="../chap11/11.3.html#11.3">
+            
+                    
+                    11.3 JRCMD的限制
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4">
+            
+                    
+                    11.4 JRCMD命令参考
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.12.4.1" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.1">
+            
+                    
+                    11.4.1 check_flightrecording (R28)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.2" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.2">
+            
+                    
+                    11.4.2 checkjrarecording (R28)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.3" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.3">
+            
+                    
+                    11.4.3 command_line
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.4" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.4">
+            
+                    
+                    11.4.4 dump_flightrecording (R28)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.5" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.5">
+            
+                    
+                    11.4.5 heap_diagnostics (R28)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.6" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.6">
+            
+                    
+                    11.4.6 hprofdump (R28)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.7" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.7">
+            
+                    
+                    11.4.7 kill_management_server
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.8" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.8">
+            
+                    
+                    11.4.8 list_vmflags (R28)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.9" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.9">
+            
+                    
+                    11.4.9 lockprofile_print
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.10" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.10">
+            
+                    
+                    11.4.10 lockprofile_reset
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.11" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.11">
+            
+                    
+                    11.4.11 memleakserver
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.12" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.12">
+            
+                    
+                    11.4.12 oom_diagnostics (R27)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.13" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.13">
+            
+                    
+                    11.4.13 print_class_summary
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.14" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.14">
+            
+                    
+                    11.4.14 print_codegen_list
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.15" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.15">
+            
+                    
+                    11.4.15 print_memusage (R27)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.16" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.16">
+            
+                    
+                    11.4.16 print_memusage (R28)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.17" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.17">
+            
+                    
+                    11.4.17 print_object_summary
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.18" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.18">
+            
+                    
+                    11.4.18 print_properties
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.19" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.19">
+            
+                    
+                    11.4.19 print_threads
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.20" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.20">
+            
+                    
+                    11.4.20 print_utf8pool
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.21" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.21">
+            
+                    
+                    11.4.21 print_vm_state
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.22" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.22">
+            
+                    
+                    11.4.22 run_optfile (R27)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.23" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.23">
+            
+                    
+                    11.4.23 run_optfile (R28)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.24" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.24">
+            
+                    
+                    11.4.24 runfinalization
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.25" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.25">
+            
+                    
+                    11.4.25 runsystemgc
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.26" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.26">
+            
+                    
+                    11.4.26 set_vmflag (R28)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.27" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.27">
+            
+                    
+                    11.4.27 start_flightrecording (R28)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.28" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.28">
+            
+                    
+                    11.4.28 start_management_server
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.29" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.29">
+            
+                    
+                    11.4.29 startjrarecording (R27)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.30" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.30">
+            
+                    
+                    11.4.30 stop_flightrecording (R28)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.31" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.31">
+            
+                    
+                    11.4.31 timestamp
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.32" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.32">
+            
+                    
+                    11.4.32 verbosity
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4.33" data-path="../chap11/11.4.html">
+            
+                <a href="../chap11/11.4.html#11.4.33">
+            
+                    
+                    11.4.33 version
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.5" data-path="../chap11/11.5.html">
+            
+                <a href="../chap11/11.5.html#11.5">
+            
+                    
+                    11.5 小结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.13" data-path="../chap12/12.html">
+            
+                <a href="../chap12/12.html#12">
+            
+                    
+                    12 JRockit Management API
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.13.1" data-path="../chap12/12.1.html">
+            
+                <a href="../chap12/12.1.html#12.1">
+            
+                    
+                    12.1 JMAPI
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.13.1.1" data-path="../chap12/12.1.html">
+            
+                <a href="../chap12/12.1.html#12.1.1">
+            
+                    
+                    12.1.1 JMAPI示例
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.13.2" data-path="../chap12/12.2.html">
+            
+                <a href="../chap12/12.2.html#12.2">
+            
+                    
+                    12.2 JMXMAPI
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.13.2.1" data-path="../chap12/12.2.html">
+            
+                <a href="../chap12/12.2.html#12.2.1">
+            
+                    
+                    12.2.1 JRockit内部性能计数器
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.13.2.2" data-path="../chap12/12.2.html">
+            
+                <a href="../chap12/12.2.html#12.2.2">
+            
+                    
+                    12.2.2 使用JMXMAPI构建可远程操作的JRCMD
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.13.3" data-path="../chap12/12.3.html">
+            
+                <a href="../chap12/12.3.html#12.3">
+            
+                    
+                    12.3 小结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14" data-path="../chap13/13.html">
+            
+                <a href="../chap13/13.html#13">
+            
+                    
+                    13 JRockit Virtual Edition
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.14.1" data-path="../chap13/13.1.html">
+            
+                <a href="../chap13/13.1.html#13.1">
+            
+                    
+                    13.1 虚拟化简介
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.14.1.1" data-path="../chap13/13.1.html">
+            
+                <a href="../chap13/13.1.html#13.1.1">
+            
+                    
+                    13.1.1 全虚拟化
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.1.2" data-path="../chap13/13.1.html">
+            
+                <a href="../chap13/13.1.html#13.1.2">
+            
+                    
+                    13.1.2 半虚拟化
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.1.3" data-path="../chap13/13.1.html">
+            
+                <a href="../chap13/13.1.html#13.1.3">
+            
+                    
+                    13.1.3 其他虚拟化术语
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.1.4" data-path="../chap13/13.1.html">
+            
+                <a href="../chap13/13.1.html#13.1.4">
+            
+                    
+                    13.1.4 虚拟机管理程序
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.14.1.4.1" data-path="../chap13/13.1.html">
+            
+                <a href="../chap13/13.1.html#13.1.4.1">
+            
+                    
+                    13.1.4.1 托管型虚拟机管理程序
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.1.4.2" data-path="../chap13/13.1.html">
+            
+                <a href="../chap13/13.1.html#13.1.4.2">
+            
+                    
+                    13.1.4.2 本地型虚拟机管理程序
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.1.4.3" data-path="../chap13/13.1.html">
+            
+                <a href="../chap13/13.1.html#13.1.4.3">
+            
+                    
+                    13.1.4.3 市面上其他虚拟机管理程序
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.1.5" data-path="../chap13/13.1.html">
+            
+                <a href="../chap13/13.1.html#13.1.5">
+            
+                    
+                    13.1.5 虚拟化的优势
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.1.6" data-path="../chap13/13.1.html">
+            
+                <a href="../chap13/13.1.html#13.1.6">
+            
+                    
+                    13.1.6 虚拟化的劣势
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.2" data-path="../chap13/13.2.html">
+            
+                <a href="../chap13/13.2.html#13.2">
+            
+                    
+                    13.2 Java虚拟化
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.14.2.1" data-path="../chap13/13.2.html">
+            
+                <a href="../chap13/13.2.html#13.2.1">
+            
+                    
+                    13.2.1 JRockit Virtual Edition
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.14.2.1.1" data-path="../chap13/13.2.html">
+            
+                <a href="../chap13/13.2.html#13.2.1.1">
+            
+                    
+                    13.2.1.1 JRockit VE内核
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.2.2" data-path="../chap13/13.2.html">
+            
+                <a href="../chap13/13.2.html#13.2.2">
+            
+                    
+                    13.2.2 虚拟机镜像与管理框架
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.2.3" data-path="../chap13/13.2.html">
+            
+                <a href="../chap13/13.2.html#13.2.3">
+            
+                    
+                    13.2.3 JRockit VE的优势
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.14.2.3.1" data-path="../chap13/13.2.html">
+            
+                <a href="../chap13/13.2.html#13.2.3.1">
+            
+                    
+                    13.2.3.1 性能与资源利用率
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.14.2.3.1.1" data-path="../chap13/13.2.html">
+            
+                <a href="../chap13/13.2.html#13.2.3.1.1">
+            
+                    
+                    13.2.3.1.1 移除"虚拟三件套"
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.2.3.1.2" data-path="../chap13/13.2.html">
+            
+                <a href="../chap13/13.2.html#13.2.3.1.2">
+            
+                    
+                    13.2.3.1.2 内存使用量
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.2.3.2" data-path="../chap13/13.2.html">
+            
+                <a href="../chap13/13.2.html#13.2.3.2">
+            
+                    
+                    13.2.3.2 可管理性
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.2.3.3" data-path="../chap13/13.2.html">
+            
+                <a href="../chap13/13.2.html#13.2.3.3">
+            
+                    
+                    13.2.3.3 简单又安全
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.2.4" data-path="../chap13/13.2.html">
+            
+                <a href="../chap13/13.2.html#13.2.4">
+            
+                    
+                    13.2.4 JRockit VE的不足
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.3" data-path="../chap13/13.3.html">
+            
+                <a href="../chap13/13.3.html#13.3">
+            
+                    
+                    13.3 虚拟化能媲美真实环境吗？
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.14.3.1" data-path="../chap13/13.3.html">
+            
+                <a href="../chap13/13.3.html#13.3.1">
+            
+                    
+                    13.3.1 高质量的热点代码采样
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.3.2" data-path="../chap13/13.3.html">
+            
+                <a href="../chap13/13.3.html#13.3.2">
+            
+                    
+                    13.3.2 自适应堆大小
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.3.3" data-path="../chap13/13.3.html">
+            
+                <a href="../chap13/13.3.html#13.3.3">
+            
+                    
+                    13.3.3 线程间的页保护
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.14.3.3.1" data-path="../chap13/13.3.html">
+            
+                <a href="../chap13/13.3.html#13.3.3.1">
+            
+                    
+                    13.3.3.1 改进垃圾回收
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.3.3.2" data-path="../chap13/13.3.html">
+            
+                <a href="../chap13/13.3.html#13.3.3.2">
+            
+                    
+                    13.3.3.2 并发内存整理
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.14.4" data-path="../chap13/13.4.html">
+            
+                <a href="../chap13/13.4.html#13.4">
+            
+                    
+                    13.4 小结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.15" data-path="../appendix_a_bibliography.html">
+            
+                <a href="../appendix_a_bibliography.html#appendix_a_bibliography">
+            
+                    
+                    参考文献
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.16" data-path="../appendix_a_bibliography.html">
+            
+                <a href="../appendix_a_bibliography.html#appendix_b_glossary">
+            
+                    
+                    术语汇编
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >4.6.1 检查锁与延迟解锁</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <p><a name="4.6"></a></p><h1 id="46-&#x76F8;&#x5173;&#x547D;&#x4EE4;&#x884C;&#x53C2;&#x6570;">4.6 &#x76F8;&#x5173;&#x547D;&#x4EE4;&#x884C;&#x53C2;&#x6570;</h1><p>&#x672C;&#x8282;&#x5C06;&#x4F1A;&#x5BF9;&#x4E0E;&#x63A7;&#x5236;&#x3001;&#x5206;&#x6790;JRockit&#x4E2D;&#x9501;&#x7684;&#x884C;&#x4E3A;&#x76F8;&#x5173;&#x7684;&#x547D;&#x4EE4;&#x884C;&#x53C2;&#x6570;&#x505A;&#x4ECB;&#x7ECD;&#x3002;</p><p>&#x5C3D;&#x7BA1;&#x4F7F;&#x7528;&#x8FD9;&#x4E9B;&#x53C2;&#x6570;&#x540E;&#x53EF;&#x4EE5;&#x4ECE;&#x76F8;&#x5173;&#x7684;&#x65E5;&#x5FD7;&#x6587;&#x4EF6;&#x4E2D;&#x5F97;&#x5230;&#x5927;&#x91CF;&#x4FE1;&#x606F;&#xFF0C;&#x4F46;&#x540C;&#x6B65;&#x64CD;&#x4F5C;&#x8FD8;&#x662F;&#x6BD4;&#x8F83;&#x590D;&#x6742;&#x7684;&#xFF0C;&#x63A8;&#x8350;&#x4F7F;&#x7528;JRockit Mission Control&#x5957;&#x4EF6;&#x6765;&#x8FDB;&#x884C;&#x53EF;&#x89C6;&#x5316;&#x7684;&#x5206;&#x6790;&#x3002;</p><p><a name="4.6.1"></a></p><h2 id="461-&#x68C0;&#x67E5;&#x9501;&#x4E0E;&#x5EF6;&#x8FDF;&#x89E3;&#x9501;">4.6.1 &#x68C0;&#x67E5;&#x9501;&#x4E0E;&#x5EF6;&#x8FDF;&#x89E3;&#x9501;</h2><p>&#x672C;&#x8282;&#x5C06;&#x4F1A;&#x5BF9;&#x63A7;&#x5236;&#x76F8;&#x5173;&#x9501;&#x7684;&#x884C;&#x4E3A;&#x7684;&#x547D;&#x4EE4;&#x884C;&#x53C2;&#x6570;&#x505A;&#x4ECB;&#x7ECD;&#x3002;</p><p><a name="4.6.1.1"></a></p><h3 id="4611-&#x4F7F;&#x7528;-xverboselocks&#x53C2;&#x6570;&#x5206;&#x6790;&#x9501;&#x7684;&#x884C;&#x4E3A;">4.6.1.1 &#x4F7F;&#x7528;<code>-Xverbose:locks</code>&#x53C2;&#x6570;&#x5206;&#x6790;&#x9501;&#x7684;&#x884C;&#x4E3A;</h3><p>&#x4F7F;&#x7528;&#x53C2;&#x6570;<code>-Xverbose:locks</code>&#x53EF;&#x4EE5;&#x8BA9;JRockit&#x6253;&#x5370;&#x51FA;&#x4E0E;&#x540C;&#x6B65;&#x64CD;&#x4F5C;&#x76F8;&#x5173;&#x7684;&#x4FE1;&#x606F;&#xFF0C;&#x5176;&#x4E2D;&#x5927;&#x90E8;&#x5206;&#x4FE1;&#x606F;&#x4E0E;&#x5EF6;&#x8FDF;&#x89E3;&#x9501;&#x76F8;&#x5173;&#xFF0C;&#x4F8B;&#x5982;&#x53EF;&#x4EE5;&#x770B;&#x5230;&#x54EA;&#x4E2A;&#x7C7B;&#x6216;&#x54EA;&#x4E9B;&#x5BF9;&#x8C61;&#x88AB;&#x4E34;&#x65F6;&#x6216;&#x6C38;&#x4E45;&#x7684;&#x7981;&#x7528;&#x4E86;&#xFF0C;&#x8FD8;&#x53EF;&#x4EE5;&#x770B;&#x5230;&#x5EF6;&#x8FDF;&#x89E3;&#x9501;&#x662F;&#x5426;&#x4E00;&#x76F4;&#x6309;&#x7167;&#x6700;&#x521D;&#x8BBE;&#x60F3;&#x8FD0;&#x8F6C;&#x6B63;&#x5E38;&#x3002;</p><p>&#x4E0B;&#x9762;&#x4F7F;&#x7528;&#x53C2;&#x6570;<code>-Xverbose:locks</code>&#x6253;&#x5370;&#x51FA;&#x4E86;&#x4E00;&#x4E9B;&#x793A;&#x4F8B;&#x5185;&#x5BB9;&#xFF0C;&#x5728;&#x5176;&#x4E2D;&#x53EF;&#x4EE5;&#x770B;&#x5230;&#xFF0C;&#x67D0;&#x4E9B;&#x7C7B;&#x4E0D;&#x9002;&#x5B9C;&#x4F7F;&#x7528;&#x5EF6;&#x8FDF;&#x89E3;&#x9501;&#xFF0C;&#x56E0;&#x6B64;&#x5728;&#x540E;&#x7EED;&#x7684;&#x6267;&#x884C;&#x4E2D;&#x4F1A;&#x88AB;&#x7981;&#x7528;&#xFF1A;</p><pre><code>hastur:SPECjbb2005 marcus$ java -Xverbose:locks -cp jbb.jar:check.jar spec.jbb.JBBmain -propfile SPECjbb.props &gt;/dev/null
+[INFO ][locks ] Lazy unlocking enabled
+[INFO ][locks ] No of CPUs: 8
+[INFO ][locks ] Banning spec/jbb/Customer for lazy unlocking.(forbidden 6 times, limit is 5)
+[INFO ][locks ] Banning spec/jbb/Address for lazy unlocking.(forbidden 6 times, limit is 5)
+[INFO ][locks ] Banning java/lang/Object for lazy unlocking.(forbidden 5 times, limit is 5)
+[INFO ][locks ] Banning spec/jbb/TimerData for lazy unlocking.(forbidden 6 times, limit is 5)
+[INFO ][locks ] Banning spec/jbb/District for lazy unlocking.(forbidden 6 times, limit is 5)</code></pre>
+<p><a name="4.6.1.2"></a></p><h3 id="4612-&#x4F7F;&#x7528;&#x53C2;&#x6570;-xxuselazyunlocking">4.6.1.2 &#x4F7F;&#x7528;&#x53C2;&#x6570;<code>-XX:UseLazyUnlocking</code></h3><p>&#x5728;&#x4E0D;&#x540C;&#x7684;&#x5E73;&#x53F0;&#x548C;&#x4E0D;&#x540C;JRockit&#x7248;&#x672C;&#x4E2D;&#xFF0C;&#x9ED8;&#x8BA4;&#x662F;&#x5426;&#x662F;&#x542F;&#x7528;&#x5EF6;&#x8FDF;&#x89E3;&#x9501;&#x7684;&#x8BBE;&#x5B9A;&#x4E0D;&#x5C3D;&#x76F8;&#x540C;&#xFF0C;&#x8BF7;&#x4F9D;&#x636E;JRockit&#x6587;&#x6863;&#x6216;&#x6839;&#x636E;<code>-Xverbose:locks</code>&#x53C2;&#x6570;&#x7684;&#x8F93;&#x51FA;&#x6765;&#x5224;&#x65AD;&#x3002;&#x867D;&#x7136;&#x5EF6;&#x8FDF;&#x89E3;&#x9501;&#x6709;&#x65F6;&#x4F1A;&#x81EA;&#x884C;&#x9000;&#x5316;&#x4E3A;&#x666E;&#x901A;&#x7684;&#x9501;&#x64CD;&#x4F5C;&#xFF0C;&#x4F46;&#x5927;&#x90E8;&#x5206;&#x60C5;&#x51B5;&#x4E0B;&#xFF0C;&#x542F;&#x7528;&#x5EF6;&#x8FDF;&#x89E3;&#x9501;&#x786E;&#x5B9E;&#x662F;&#x53EF;&#x4EE5;&#x63D0;&#x5347;&#x7CFB;&#x7EDF;&#x6027;&#x80FD;&#x7684;&#x3002;</p><p>&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x547D;&#x4EE4;&#x884C;&#x53C2;&#x6570;<code>-XX:UseLazyUnlocking=false</code>&#x6216;<code>&#x2013;XX:UseLazyUnlocking=true</code>&#x6765;&#x663E;&#x5F0F;&#x63A7;&#x5236;&#x662F;&#x5426;&#x542F;&#x7528;&#x5EF6;&#x8FDF;&#x89E3;&#x9501;&#x3002;</p><p>&#x6700;&#x540E;&#xFF0C;&#x4F7F;&#x7528;&#x547D;&#x4EE4;&#x884C;&#x53C2;&#x6570;<code>-Xverbose:codegen</code>&#x53EF;&#x4EE5;&#x6253;&#x5370;&#x51FA;&#x6709;&#x54EA;&#x4E9B;&#x65B9;&#x6CD5;&#x51FA;&#x73B0;&#x4E86;&#x9501;&#x64CD;&#x4F5C;&#x4E0D;&#x5339;&#x914D;&#x7684;&#x60C5;&#x51B5;&#x3002;</p><p><a name="4.6.2"></a></p><h2 id="462-&#x8F93;&#x51FA;&#x8C03;&#x7528;&#x6808;&#x4FE1;&#x606F;">4.6.2 &#x8F93;&#x51FA;&#x8C03;&#x7528;&#x6808;&#x4FE1;&#x606F;</h2><p>&#x5411;JRockit&#x8FDB;&#x7A0B;&#x53D1;&#x9001;<code>SIGQUIT</code>&#x4FE1;&#x53F7;&#x53EF;&#x4EE5;&#x4F7F;JRockit&#x6253;&#x5370;&#x51FA;JVM&#x4E2D;&#x6240;&#x6709;&#x7EBF;&#x7A0B;&#xFF08;&#x5305;&#x62EC;Java&#x7EBF;&#x7A0B;&#x548C;&#x672C;&#x5730;&#x7EBF;&#x7A0B;&#xFF09;&#x7684;&#x5B8C;&#x6574;&#x8C03;&#x7528;&#x6808;&#x4FE1;&#x606F;&#xFF0C;&#x5728;&#x7C7B;Unix&#x7CFB;&#x7EDF;&#x4E0A;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;<code>kill -QIUT &lt;PID&gt;</code>&#x547D;&#x4EE4;&#x6216;<code>kill -3 &lt;PID&gt;</code>&#x547D;&#x4EE4;&#x53D1;&#x9001;<code>SIGQUIT</code>&#x4FE1;&#x53F7;&#xFF0C;&#x5728;Windows&#x7CFB;&#x7EDF;&#x4E0A;&#x53EF;&#x4EE5;&#x5728;&#x63A7;&#x5236;&#x53F0;&#x4E2D;&#x6309;<code>Ctrl-Break</code>&#x7EC4;&#x5408;&#x952E;&#x53D1;&#x9001;<code>SIGQUIT</code>&#x4FE1;&#x53F7;&#x3002;&#x5728;&#x6253;&#x5370;&#x51FA;&#x7684;&#x7EBF;&#x7A0B;&#x8C03;&#x7528;&#x6808;&#x4FE1;&#x606F;&#x4E2D;&#xFF0C;&#x4F1A;&#x5E26;&#x6709;&#x76F8;&#x5173;&#x9501;&#x7684;&#x9501;&#x7B26;&#x53F7;&#x53CA;&#x7C7B;&#x578B;&#x4FE1;&#x606F;&#xFF0C;&#x4EE5;&#x4FBF;&#x53EF;&#x4EE5;&#x5FEB;&#x901F;&#x5224;&#x65AD;&#x662F;&#x5426;&#x51FA;&#x73B0;&#x4E86;&#x6B7B;&#x9501;&#x3002;</p><p>&#x4E0B;&#x9762;&#x662F;&#x7EBF;&#x7A0B;&#x8C03;&#x7528;&#x6808;&#x7684;&#x793A;&#x4F8B;&#x5185;&#x5BB9;&#xFF0C;&#x5176;&#x4E2D;&#x5305;&#x62EC;&#x4E86;&#x9501;&#x7684;&#x6301;&#x6709;&#x8005;&#x3001;&#x9501;&#x7684;&#x7C7B;&#x578B;&#xFF0C;&#x4EE5;&#x53CA;&#x9501;&#x5728;&#x4F55;&#x5904;&#x88AB;&#x83B7;&#x5F97;&#x7B49;&#x4FE1;&#x606F;&#xFF1A;</p><pre><code>===== FULL THREAD DUMP ===============
+Tue Jun 02 14:36:39 2009
+BEA JRockit(R) R27.6.3-40_o-112056-1.6.0_11-20090318-2104-windows-ia32
+
+&quot;Main Thread&quot; id=1 idx=0x4 tid=4220 prio=5 alive, in native, sleeping, native_waiting
+    at java/lang/Thread.sleep(J)V(Native Method)
+    at spec/jbb/JBButil.SecondsToSleep(J)V(Unknown Source)
+    at spec/jbb/Company.displayResultTotals(Z)V(Unknown Source)
+    at spec/jbb/JBBmain.DoARun(Lspec/jbb/Company;SII)V(Unknown Source)
+    at spec/jbb/JBBmain.runWarehouse(IIF)Z(Unknown Source)
+    at spec/jbb/JBBmain.doIt()V(Unknown Source)
+    at spec/jbb/JBBmain.main([Ljava/lang/String;)V(Unknown Source)
+    at jrockit/vm/RNI.c2java(IIIII)V(Native Method)
+    -- end of trace
+
+&quot;(Signal Handler)&quot; id=2 idx=0x8 tid=1236 prio=5 alive, in native, daemon
+&quot;(GC Main Thread)&quot; id=3 idx=0xc tid=5956 prio=5 alive, in native, native_waiting, daemon
+&quot;(GC Worker Thread 1)&quot; id=? idx=0x10 tid=5884 prio=5 alive, in native, daemon
+&quot;(GC Worker Thread 2)&quot; id=? idx=0x14 tid=3440 prio=5 alive, in native, daemon
+&quot;(GC Worker Thread 3)&quot; id=? idx=0x18 tid=4744 prio=5 alive, in native, daemon
+&quot;(GC Worker Thread 4)&quot; id=? idx=0x1c tid=5304 prio=5 alive, in native, daemon
+&quot;(GC Worker Thread 5)&quot; id=? idx=0x20 tid=5024 prio=5 alive, in native, daemon
+&quot;(GC Worker Thread 6)&quot; id=? idx=0x24 tid=3632 prio=5 alive, in native, daemon
+&quot;(GC Worker Thread 7)&quot; id=? idx=0x28 tid=1924 prio=5 alive, in native, daemon
+&quot;(GC Worker Thread 8)&quot; id=? idx=0x2c tid=5144 prio=5 alive, in native, daemon
+&quot;(Code Generation Thread 1)&quot; id=4 idx=0x30 tid=3956 prio=5 alive, in native, native_waiting, daemon
+&quot;(Code Optimization Thread 1)&quot; id=5 idx=0x34 tid=4268 prio=5 alive, in native, native_waiting, daemon
+&quot;(VM Periodic Task)&quot; id=6 idx=0x38 tid=6068 prio=10 alive, in native, native_blocked, daemon
+&quot;(Attach Listener)&quot; id=7 idx=0x3c tid=6076 prio=5 alive, in native, daemon
+...
+
+&quot;Thread-7&quot; id=18 idx=0x64 tid=4428 prio=5 alive
+    at spec/jbb/infra/Util/TransactionLogBuffer.privText(Ljava/lang/String;IIIS)V(UnknownSource)[optimized]
+    at spec/jbb/infra/Util/TransactionLogBuffer.putText(Ljava/lang/String;IIIS)V(Unknown Source)[inlined]
+    at spec/jbb/infra/Util/TransactionLogBuffer.putDollars(Ljava/math/BigDecimal;III)V(Unknown Source)[optimized]
+    at spec/jbb/NewOrderTransaction.processTransactionLog()V(Unknown Source)[optimized]
+    ^-- Holding lock: spec/jbb/NewOrderTransaction@0x0D674030[biased lock]
+    at spec/jbb/TransactionManager.runTxn(Lspec/jbb/Transaction;JJD)J(Unknown Source)[inlined]
+    at spec/jbb/TransactionManager.goManual(ILspec/jbb/TimerData;)J(Unknown Source)[optimized]
+    at spec/jbb/TransactionManager.go()V(Unknown Source)[optimized]
+    at spec/jbb/JBBmain.run()V(Unknown Source)[optimized]
+    at java/lang/Thread.run(Thread.java:619)[optimized]
+    at jrockit/vm/RNI.c2java(IIIII)V(Native Method)
+    -- end of trace
+
+&quot;Thread-8&quot; id=19 idx=0x68 tid=5784 prio=5 alive, in native, native_blocked
+    at jrockit/vm/Locks.checkLazyLocked(Ljava/lang/Object;)I(Native Method)
+    at jrockit/vm/Locks.monitorEnterSecondStage(Locks.java:1225)
+    at spec/jbb/Stock.getQuantity()I(Unknown Source)[inlined]
+    at spec/jbb/Orderline.process(Lspec/jbb/Item;Lspec/jbb/Stock;)V(Unknown Source)[optimized]
+    at spec/jbb/Orderline.validateAndProcess(Lspec/jbb/Warehouse;)Z(Unknown Source)[inlined]
+    at spec/jbb/Order.processLines(Lspec/jbb/Warehouse;SZ)Z(Unknown Source)[inlined]
+    at spec/jbb/NewOrderTransaction.process()Z(Unknown Source)[optimized]
+    ^-- Holding lock: spec/jbb/Orderline@0x09575D00[biased lock]
+    ^-- Holding lock: spec/jbb/Order@0x05DDB4E8[biased lock]
+    at spec/jbb/TransactionManager.runTxn(Lspec/jbb/Transaction;JJD)J(Unknown Source)[inlined]
+    at spec/jbb/TransactionManager.goManual(ILspec/jbb/TimerData;)J(Unknown Source)[optimized]
+    at spec/jbb/TransactionManager.go()V(Unknown Source)[optimized]
+    at spec/jbb/JBBmain.run()V(Unknown Source)[optimized]
+    at java/lang/Thread.run(Thread.java:619)[optimized]
+    at jrockit/vm/RNI.c2java(IIIII)V(Native Method)
+    -- end of trace
+
+&quot;Thread-9&quot; id=20 idx=0x6c tid=3296 prio=5 alive, in native, native_blocked
+    at jrockit/vm/Locks.checkLazyLocked(Ljava/lang/Object;)I(Native Method)
+    at jrockit/vm/Locks.monitorEnterSecondStage(Locks.java:1225)
+    at spec/jbb/Stock.getQuantity()I(Unknown Source)[inlined]
+    at spec/jbb/Orderline.process(Lspec/jbb/Item;Lspec/jbb/Stock;)V(Unknown Source)[optimized]
+    at spec/jbb/Orderline.validateAndProcess(Lspec/jbb/Warehouse;)Z(Unknown Source)[inlined]
+    at spec/jbb/Order.processLines(Lspec/jbb/Warehouse;SZ)Z(Unknown Source)[inlined]
+    at spec/jbb/NewOrderTransaction.process()Z(Unknown Source)[optimized]
+    ^-- Holding lock: spec/jbb/Orderline@0x09736E10[biased lock]
+    ^-- Holding lock: spec/jbb/Order@0x09736958[biased lock]
+    at spec/jbb/TransactionManager.runTxn(Lspec/jbb/Transaction;JJD)J(Unknown Source)[inlined]
+    at spec/jbb/TransactionManager.goManual(ILspec/jbb/TimerData;)J(Unknown Source)[optimized]
+    at spec/jbb/TransactionManager.go()V(Unknown Source)[optimized]
+    at spec/jbb/JBBmain.run()V(Unknown Source)[optimized]
+    at java/lang/Thread.run(Thread.java:619)[optimized]
+
+===== END OF THREAD DUMP ===============</code></pre>
+<p><a name="4.6.3"></a></p><h2 id="463-&#x9501;&#x5206;&#x6790;">4.6.3 &#x9501;&#x5206;&#x6790;</h2><p>JRockit&#x53EF;&#x4EE5;&#x5BF9;&#x8FD0;&#x884C;&#x4E2D;&#x7684;&#x7A0B;&#x5E8F;&#x5185;&#x7684;&#x9501;&#x505A;&#x8BE6;&#x7EC6;&#x7684;&#x5206;&#x6790;&#xFF0C;&#x4F46;&#x4F1A;&#x4EA7;&#x751F;&#x4E00;&#x4E9B;&#x6027;&#x80FD;&#x5F00;&#x9500;&#xFF0C;&#x6839;&#x636E;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x7684;&#x5177;&#x4F53;&#x60C5;&#x51B5;&#x4E0D;&#x540C; &#xFF0C;&#x4E00;&#x822C;&#x4F1A;&#x589E;&#x52A0;3%&#x6216;&#x66F4;&#x591A;&#x7684;&#x5F00;&#x9500;&#x3002;</p><p>For more information about analyzing lock profiling info, please see the chapters on
+JRockit Mission Control.</p><p>&#x66F4;&#x591A;&#x6709;&#x5173;&#x5206;&#x6790;&#x9501;&#x4FE1;&#x606F;&#x7684;&#x8BE6;&#x7EC6;&#x5185;&#x5BB9;&#xFF0C;&#x8BF7;&#x68C0;&#x67E5;<a href="../chap5/5.html#5">&#x7B2C;6&#x7AE0; JRockit Mission Control</a>&#x4E2D;&#x7684;&#x5185;&#x5BB9;&#x3002;</p><p><a name="4.6.3.1"></a></p><h3 id="4631-&#x4F7F;&#x7528;&#x53C2;&#x6570;-xxuselockprofiling&#x8FDB;&#x884C;&#x6240;&#x5206;&#x6790;">4.6.3.1 &#x4F7F;&#x7528;&#x53C2;&#x6570;<code>-XX:UseLockProfiling</code>&#x8FDB;&#x884C;&#x6240;&#x5206;&#x6790;</h3><p>&#x4F7F;&#x7528;&#x547D;&#x4EE4;&#x884C;&#x53C2;&#x6570;<code>-XX:UseLockProfiling=true</code>&#x53EF;&#x4EE5;&#x8BA9;JRockit&#x6253;&#x5370;&#x51FA;Java&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x5C06;&#x65F6;&#x95F4;&#x90FD;&#x82B1;&#x5728;&#x4E86;&#x54EA;&#x91CC;&#xFF0C;JRockit&#x4F1A;&#x5BF9;Java&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x4E2D;&#x7684;&#x52A0;&#x9501;&#x548C;&#x89E3;&#x9501;&#x64CD;&#x4F5C;&#x8FDB;&#x884C;&#x76D1;&#x63A7;&#xFF0C;&#x8BB0;&#x5F55;&#x4E0B;&#x4F55;&#x79CD;&#x6761;&#x4EF6;&#x4E0B;&#x53D1;&#x751F;&#xFF0C;&#x4EE5;&#x53CA;&#x53D1;&#x751F;&#x7684;&#x6B21;&#x6570;&#x3002;&#x4F7F;&#x7528;&#x547D;&#x4EE4;&#x884C;&#x53C2;&#x6570;<code>-XX:UseNativeLockProfiling=true</code>&#x53EF;&#x4EE5;&#x6253;&#x5370;&#x51FA;JVM&#x5185;&#x5BB9;&#x5BF9;&#x672C;&#x5730;&#x9501;&#x7684;&#x4F7F;&#x7528;&#x60C5;&#x51B5;&#xFF0C;&#x4F8B;&#x5982;&#x4EE3;&#x7801;&#x7F13;&#x51B2;&#x533A;&#x7684;&#x9501;&#x548C;&#x5783;&#x573E;&#x56DE;&#x6536;&#x5668;&#x9501;&#x83B7;&#x53D6;&#x5230;&#x7684;&#x9501;&#x3002;</p><p>JRockit Mission Control&#x53EF;&#x4EE5;&#x7528;&#x6765;&#x5206;&#x6790;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x8FD0;&#x884C;&#x8FC7;&#x7A0B;&#x4E2D;&#x9501;&#x7684;&#x4F7F;&#x7528;&#x60C5;&#x51B5;&#xFF0C;Java&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x548C;JVM&#x5185;&#x90E8;&#x7684;&#x9501;&#x90FD;&#x4F1A;&#x6709;&#x8BB0;&#x5F55;&#xFF0C;&#x8BB0;&#x5F55;&#x5185;&#x5BB9;&#x5305;&#x62EC;&#x4F5C;&#x4E3A;&#x7626;&#x9501;/&#x80D6;&#x9501;/&#x4F7F;&#x7528;&#x7684;&#x6B21;&#x6570;&#xFF0C;&#x88AB;&#x4E0D;&#x540C;&#x7EBF;&#x7A0B;&#x7ADE;&#x4E89;&#x7684;&#x60C5;&#x51B5;&#xFF0C;&#x5EF6;&#x8FDF;&#x89E3;&#x9501;&#x7684;&#x4F7F;&#x7528;&#x60C5;&#x51B5;&#x7B49;&#x7B49;&#x3002;</p><p>&#x4E0B;&#x56FE;&#x662F;JRockit Mission Control&#x4E2D;&#x6240;&#x5206;&#x6790;&#x6807;&#x7B7E;&#x9875;&#x7684;&#x622A;&#x56FE;&#xFF1A;</p><p><img src="../images/4-8.jpg"></p><blockquote><p>&#x8BD1;&#x8005;&#x6CE8;&#xFF1A;&#x4E66;&#x4E2D;&#x7684;&#x56FE;&#x5B9E;&#x5728;&#x770B;&#x4E0D;&#x6E05;&#xFF0C;&#x81EA;&#x5DF1;&#x6574;&#x4E86;&#x4E00;&#x4E2A;&#x3002;</p></blockquote><p>&#x6709;&#x5173;&#x5982;&#x4F55;&#x83B7;&#x5F97;&#x66F4;&#x591A;&#x76F8;&#x4FE1;&#x5185;&#x5BB9;&#xFF0C;&#x8BF7;&#x53C2;&#x89C1;JRockit&#x6587;&#x6863;&#x3002;</p><p><a name="4.6.3.1.1"></a></p><h4 id="46311-jrcmd">4.6.3.1.1 JRCMD</h4><p>&#x4F5C;&#x4E3A;JRockit JDK&#x7684;&#x4E00;&#x90E8;&#x5206;&#xFF0C;&#x547D;&#x4EE4;&#x884C;&#x5DE5;&#x5177;JRCMD&#x4E5F;&#x53EF;&#x4EE5;&#x7528;&#x6765;&#x63A7;&#x5236;&#x9501;&#x7684;&#x76F8;&#x5173;&#x5206;&#x6790;&#x3002;&#x5F53;&#x542F;&#x7528;&#x4E86;<code>-XX:UseLockProfiling=true</code>&#x53C2;&#x6570;&#x540E;&#xFF0C;JRCMD&#x53EF;&#x4EE5;&#x5BF9;<code>lockprofile_print</code>&#x548C;<code>lockprofile_reset</code>&#x547D;&#x4EE4;&#x505A;&#x51FA;&#x54CD;&#x5E94;&#xFF0C;&#x5206;&#x6765;&#x7528;&#x6765;&#x6253;&#x5370;&#x9501;&#x6027;&#x80FD;&#x8BA1;&#x6570;&#x5668;&#x548C;&#x6E05;&#x7A7A;&#x63A7;&#x5236;&#x53F0;&#x8F93;&#x51FA;&#x3002;</p><p>&#x66F4;&#x591A;&#x6709;&#x5173;&#x5982;&#x4F55;&#x4F7F;&#x7528;JRCMD&#x7684;&#x5185;&#x5BB9;&#x8BF7;&#x53C2;&#x89C1;<a href="../chap11/11.html#11">&#x7B2C;11&#x7AE0;</a>&#x3002;</p><p><a name="4.6.4"></a></p><h2 id="464-&#x8BBE;&#x7F6E;&#x7EBF;&#x7A0B;&#x6808;&#x7684;&#x5927;&#x5C0F;">4.6.4 &#x8BBE;&#x7F6E;&#x7EBF;&#x7A0B;&#x6808;&#x7684;&#x5927;&#x5C0F;</h2><p>&#x547D;&#x4EE4;&#x884C;&#x53C2;&#x6570;<code>-Xss</code>&#x53EF;&#x7528;&#x4E8E;&#x6307;&#x5B9A;&#x7EBF;&#x7A0B;&#x6808;&#x7684;&#x5927;&#x5C0F;&#xFF0C;&#x4F8B;&#x5982;&#x53C2;&#x6570;<code>-Xss:256k</code>&#x7528;&#x4E8E;&#x5C06;&#x6808;&#x7684;&#x5927;&#x5C0F;&#x8BBE;&#x7F6E;&#x4E3A;256KB&#x3002;&#x7EBF;&#x7A0B;&#x6808;&#x662F;&#x6BCF;&#x4E2A;Java&#x7EBF;&#x7A0B;&#x5185;&#x90E8;&#x4E13;&#x7528;&#x7684;&#x5185;&#x5B58;&#x533A;&#x57DF;&#xFF0C;&#x7EBF;&#x7A0B;&#x53EF;&#x5728;&#x5176;&#x4E2D;&#x5B58;&#x50A8;&#x7A0B;&#x5E8F;&#x6267;&#x884C;&#x72B6;&#x6001;&#x3002;&#x589E;&#x52A0;&#x7EBF;&#x7A0B;&#x6808;&#x7684;&#x5927;&#x5C0F;&#x6CA1;&#x4EC0;&#x4E48;&#x5B9E;&#x9645;&#x610F;&#x4E49;&#xFF0C;&#x9664;&#x975E;&#x662F;&#x7A0B;&#x5E8F;&#x4E2D;&#x6709;&#x9012;&#x5F52;&#x8C03;&#x7528;&#x6216;&#x8005;&#x6709;&#x5927;&#x91CF;&#x7684;&#x6808;&#x5185;&#x5C40;&#x90E8;&#x4FE1;&#x606F;&#x5B58;&#x5728;&#x3002;</p><p>&#x4E0D;&#x540C;&#x7684;&#x5E73;&#x53F0;&#x4E0A;&#xFF0C;&#x7EBF;&#x7A0B;&#x6808;&#x7684;&#x9ED8;&#x8BA4;&#x5927;&#x5C0F;&#x4E0D;&#x5C3D;&#x76F8;&#x540C;&#xFF0C;&#x5177;&#x4F53;&#x6307;&#x8BF7;&#x53C2;&#x89C1;JRockit&#x6587;&#x6863;&#x8BF4;&#x660E;&#x3002;&#x5F53;&#x7A0B;&#x5E8F;&#x8FD0;&#x884C;&#x65F6;&#x629B;&#x51FA;<code>StackOverflowError</code>&#x9519;&#x8BEF;&#x65F6;&#xFF0C;&#x9664;&#x975E;&#x662F;&#x7A0B;&#x5E8F;&#x4E2D;&#x5B58;&#x5728;&#x65E0;&#x9650;&#x9012;&#x5F52;&#xFF0C;&#x5426;&#x5219;&#x4E00;&#x822C;&#x60C5;&#x51B5;&#x4E0B;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x8C03;&#x5927;&#x7EBF;&#x7A0B;&#x6808;&#x6765;&#x89E3;&#x51B3;&#x3002;</p><p><a name="4.6.5"></a></p><h2 id="465-&#x4F7F;&#x7528;&#x547D;&#x4EE4;&#x884C;&#x53C2;&#x6570;&#x63A7;&#x5236;&#x9501;&#x7684;&#x884C;&#x4E3A;">4.6.5 &#x4F7F;&#x7528;&#x547D;&#x4EE4;&#x884C;&#x53C2;&#x6570;&#x63A7;&#x5236;&#x9501;&#x7684;&#x884C;&#x4E3A;</h2><p>&#x5728;JRockit&#x4E2D;&#xFF0C;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x547D;&#x4EE4;&#x884C;&#x53C2;&#x6570;&#x6765;&#x63A7;&#x5236;&#x9501;&#x7684;&#x542F;&#x53D1;&#x5F0F;&#x7B97;&#x6CD5;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x4F7F;&#x7528;&#x53C2;&#x6570;<code>-XX:UseFatSpin=false</code>&#x53EF;&#x4EE5;&#x7981;&#x6B62;&#x5728;&#x80D6;&#x9501;&#x4E2D;&#x4F7F;&#x7528;&#x81EA;&#x65CB;&#x9501;&#xFF0C;&#x5426;&#x5219;&#x9ED8;&#x8BA4;&#x662F;&#x542F;&#x7528;&#x7684;&#xFF1B;&#x4F7F;&#x7528;&#x53C2;&#x6570;<code>-XX:UseAdaptiveFatSpin=true</code>&#x53EF;&#x4EE5;&#x542F;&#x7528;&#x81EA;&#x9002;&#x5E94;&#x8FD0;&#x884C;&#x65F6;&#x53CD;&#x9988;&#xFF0C;&#x4EE5;&#x4FBF;&#x8C03;&#x8282;&#x80D6;&#x9501;&#x4E2D;&#x81EA;&#x65CB;&#x9501;&#x7684;&#x884C;&#x4E3A;&#xFF0C;&#x5426;&#x5219;&#x9ED8;&#x8BA4;&#x662F;&#x7981;&#x7528;&#x7684;&#x3002;</p><p>&#x8FD8;&#x6709;&#x4E00;&#x4E9B;&#x53C2;&#x6570;&#x53EF;&#x7528;&#x6765;&#x8C03;&#x6574;&#x5EF6;&#x8FDF;&#x89E3;&#x9501;&#x3001;&#x9501;&#x81A8;&#x80C0;&#x548C;&#x9501;&#x6536;&#x7F29;&#x7684;&#x884C;&#x4E3A;&#xFF0C;&#x901A;&#x5E38;&#x6765;&#x8BF4;&#x4E0D;&#x5FC5;&#x4F7F;&#x7528;&#x8FD9;&#x4E9B;&#x53C2;&#x6570;&#x3002;&#x4E3A;&#x6EE1;&#x8DB3;&#x8BFB;&#x8005;&#x7684;&#x597D;&#x5947;&#x5FC3;&#xFF0C;&#x5728;&#x7B2C;5&#x7AE0;&#x4E2D;&#x4F1A;&#x5BF9;JRockit&#x4E2D;&#x8C03;&#x8282;&#x9501;&#x7684;&#x5C0F;&#x6280;&#x5DE7;&#x505A;&#x8BE6;&#x7EC6;&#x4ECB;&#x7ECD;&#xFF0C;JRockit&#x6587;&#x6863;&#x4E2D;&#x4E5F;&#x5305;&#x542B;&#x4E86;&#x6240;&#x6709;&#x53EF;&#x7528;&#x7684;&#x547D;&#x4EE4;&#x884C;&#x53C2;&#x6570;&#x3002;</p>
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="4.5.html#4.5.2" class="navigation navigation-prev " aria-label="Previous page: 4.5.2 双检查锁">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="4.6.html#4.6.1.1" class="navigation navigation-next " aria-label="Next page: 4.6.1.1 使用`-Xverbose:locks`参数分析锁的行为">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"4.6.1 检查锁与延迟解锁","level":"1.5.5.3","depth":3,"next":{"title":"4.6.1.1 使用`-Xverbose:locks`参数分析锁的行为","level":"1.5.5.3.1","depth":4,"anchor":"#4.6.1.1","path":"chap4/4.6.md","ref":"./chap4/4.6.md#4.6.1.1","articles":[]},"previous":{"title":"4.5.2 双检查锁","level":"1.5.5.2","depth":3,"anchor":"#4.5.2","path":"chap4/4.5.md","ref":"./chap4/4.5.md#4.5.2","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["livereload"],"pluginsConfig":{"livereload":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"chap4/4.6.md","mtime":"2016-09-14T06:12:13.000Z","type":"markdown"},"gitbook":{"version":"3.2.0","time":"2016-09-28T10:02:40.488Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-livereload/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
