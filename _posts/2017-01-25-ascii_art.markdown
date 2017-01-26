@@ -63,7 +63,7 @@ from: [http://www.freebuf.com/][2]
 
 # Resource
 
-Text to ASCII Art Generator: http://www.patorjk.com/software/taag/#p=display&f=Graffiti&t=Type%20Something%20
+Text to ASCII Art Generator: [http://www.patorjk.com/software/taag/#p=display&f=Graffiti&t=Type%20Something%20][3]
 
 
 
@@ -71,3 +71,4 @@ Text to ASCII Art Generator: http://www.patorjk.com/software/taag/#p=display&f=G
 
 [1]:    https://github.com/ottomao/bugfreejs/blob/master/comment_default.txt
 [2]:    http://www.freebuf.com/
+[3]:    http://www.patorjk.com/software/taag/#p=display&f=Graffiti&t=Type%20Something%20
