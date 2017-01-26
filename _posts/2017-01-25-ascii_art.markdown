@@ -26,7 +26,7 @@ tags:       [miscellaneous]
                =====`-.____`.___ \_____/ ___.`____.-`=====
                                  `=---=`
 
-from:  https://github.com/ottomao/bugfreejs/blob/master/comment_default.txt
+from:  [https://github.com/ottomao/bugfreejs/blob/master/comment_default.txt][1]
 
 # we weed you
 
@@ -58,9 +58,16 @@ from:  https://github.com/ottomao/bugfreejs/blob/master/comment_default.txt
                      '           |      /
                                  `      |
 
-from: http://www.freebuf.com/
+from: [http://www.freebuf.com/][2]
 
 
 # Resource
 
 Text to ASCII Art Generator: http://www.patorjk.com/software/taag/#p=display&f=Graffiti&t=Type%20Something%20
+
+
+
+
+
+[1]:    https://github.com/ottomao/bugfreejs/blob/master/comment_default.txt
+[2]:    http://www.freebuf.com/
