@@ -28,6 +28,31 @@ tags:       [miscellaneous]
 
 from:  [https://github.com/ottomao/bugfreejs/blob/master/comment_default.txt][1]
 
+java code
+
+    private static void printBuddha() {
+        String banner = "\n" 
+                + "                                 _oo8oo_\n"
+                + "                                o8888888o\n"
+                + "                                88' . '88\n"
+                + "                                (| -_- |)\n"
+                + "                                0\\  =  /0\n"
+                + "                              ___/'==='\\___\n"
+                + "                            .' \\\\|     |// '.\n"
+                + "                           / \\\\|||  :  |||// \\\n"
+                + "                          / _||||| -:- |||||_ \\\n"
+                + "                         |   | \\\\\\  -  /// |   |\n"
+                + "                         | \\_|  ''\\---/''  |_/ |\n"
+                + "                         \\  .-\\__  '-'  __/-.  /\n"
+                + "                       ___'. .'  /--.--\\  '. .'___\n"
+                + "                    .'' '<  '.___\\_<|>_/___.'  >' ''.\n"
+                + "                   | | :  `- \\`.:`\\ _ /`:.`/ -`  : | |\n"
+                + "                   \\  \\ `-.   \\_ __\\ /__ _/   .-` /  /\n"
+                + "               =====`-.____`.___ \\_____/ ___.`____.-`=====\n"
+                + "                      Buddha Bless. No Bug Forever.\n";
+        LOGGER.info(banner);
+    }
+
 # we weed you
 
 
