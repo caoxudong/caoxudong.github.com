@@ -48,7 +48,6 @@
             }
           };
 
-
           $(function() {
             var convertL2RButton = $("input#convertL2R");
             var convertR2LButton = $("input#convertR2L");
@@ -57,6 +56,7 @@
             var rTextArea = $("textarea#rTextArea");
 
             // porpulate codecSelect options
+              codecSelect.append("<option value='' selected>""</option>");
             for (key in codecScriptsMap) {
               codecSelect.append("<option value='" + key + "'>" + key + "</option>");
             }
