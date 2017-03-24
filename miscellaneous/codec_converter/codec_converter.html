@@ -9,10 +9,10 @@
           div#contentDiv {
             width: 100%;
           }
-          textarea#sourceTextArea {
+          textarea#codeTextArea {
             width: 100%;
           }
-          textarea#targetTextArea {
+          textarea#decodeTextArea {
             width: 100%;
           }
           table {
@@ -93,7 +93,7 @@
               var codec = codecSelect.val();
               convert(codec, "encode", sourceTextArea, targetTextArea);
             })
-            convertDeode2CodeButton.click(function() {
+            convertDecode2CodeButton.click(function() {
               var codec = codecSelect.val();
               convert(codec, "decode", targetTextArea, sourceTextArea);
             })
