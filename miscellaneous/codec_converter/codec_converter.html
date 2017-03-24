@@ -9,10 +9,10 @@
           div#contentDiv {
             width: 100%;
           }
-          textarea#lTextArea {
+          textarea#sourceTextArea {
             width: 100%;
           }
-          textarea#rTextArea {
+          textarea#targetTextArea {
             width: 100%;
           }
           table {
@@ -76,7 +76,6 @@
               convertDecode2CodeButton.prop('disabled', false);
               convertCode2DecodeButton.prop('disabled', false);
             });
-
             
             var convert = function(codec, operation, sourceTextArea, targetTextArea) {
               if (codec === "") {
@@ -90,16 +89,14 @@
               }
               $(targetTextArea).val(target);
             };
-            convertL2RButton.click(function() {
+            convertCode2DecodeButton.click(function() {
               var codec = codecSelect.val();
-              convert(codec, "encode", lTextArea, rTextArea);
+              convert(codec, "encode", sourceTextArea, targetTextArea);
             })
-            convertR2LButton.click(function() {
+            convertDeode2CodeButton.click(function() {
               var codec = codecSelect.val();
-              convert(codec, "decode", rTextArea, lTextArea);
+              convert(codec, "decode", targetTextArea, sourceTextArea);
             })
-
-            
           });
         </script>
     </head>
