@@ -91,11 +91,11 @@
             };
             convertCode2DecodeButton.click(function() {
               var codec = codecSelect.val();
-              convert(codec, "encode", sourceTextArea, targetTextArea);
+              convert(codec, "encode", codeTextArea, decodeTextArea);
             })
             convertDecode2CodeButton.click(function() {
               var codec = codecSelect.val();
-              convert(codec, "decode", targetTextArea, sourceTextArea);
+              convert(codec, "decode", decodeTextArea, codeTextArea);
             })
           });
         </script>
