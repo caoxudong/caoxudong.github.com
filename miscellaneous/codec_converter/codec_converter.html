@@ -49,21 +49,21 @@
           };
 
           $(function() {
-            var convertL2RButton = $("input#convertL2R");
-            var convertR2LButton = $("input#convertR2L");
+            var convertCode2DecodeButton = $("input#convertCode2Decode");
+            var convertDeode2CodeButton = $("input#convertDecode2Code");
             var codecSelect = $("select#codecSelect");
-            var lTextArea = $("textarea#lTextArea");
-            var rTextArea = $("textarea#rTextArea");
+            var codeTextArea = $("textarea#codeTextArea");
+            var decodeTextArea = $("textarea#decodeTextArea");
 
             // porpulate codecSelect options
-              codecSelect.append("<option value='' selected>''</option>");
+            codecSelect.append("<option value='' selected></option>");
             for (key in codecScriptsMap) {
               codecSelect.append("<option value='" + key + "'>" + key + "</option>");
             }
 
             codecSelect.change(function() {
-              convertR2LButton.prop('disabled', true);
-              convertL2RButton.prop('disabled', true);
+              convertDecode2CodeButton.prop('disabled', true);
+              convertCode2DecodeButton.prop('disabled', true);
 
               var codec = codecSelect.val();
               if (codec !== "") {
@@ -73,8 +73,8 @@
                 }
               }
               
-              convertR2LButton.prop('disabled', false);
-              convertL2RButton.prop('disabled', false);
+              convertDecode2CodeButton.prop('disabled', false);
+              convertCode2DecodeButton.prop('disabled', false);
             });
 
             
@@ -115,12 +115,12 @@
         <div id="contentDiv">
           <table>
             <tr>
-              <td><input id="convertL2R" class="converter" type="button" value="encode"></td>
-              <td><input id="convertR2L" class="converter" type="button" value="decode"></td>
+              <td><input id="convertCode2Decode" class="converter" type="button" value="encode"></td>
+              <td><input id="convertDecode2Code" class="converter" type="button" value="decode"></td>
             </tr>
             <tr>
-              <td><textarea id="lTextArea" rows="30"></textarea></td>
-              <td><textarea id="rTextArea" rows="30"></textarea></td>
+              <td><textarea id="codeTextArea" rows="30"></textarea></td>
+              <td><textarea id="decodeTextArea" rows="30"></textarea></td>
             </tr>
           </table>
         </div>
