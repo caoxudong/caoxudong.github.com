@@ -212,6 +212,9 @@ int sum = list.map(e -> e.size())
 * [Implementing lambda expressions in Java][7]
 * [OpenJDK Lambda Project][8]
 * [State of the Lambda][9]
+* [State of the Lambda: Libraries Edition][10]
+* [State of the Lambda - final][11]
+* [State of the Lambda: Libraries Edition - final][12]
 
 
 
@@ -226,3 +229,6 @@ int sum = list.map(e -> e.size())
 [7]:    http://wiki.jvmlangsummit.com/images/7/7b/Goetz-jvmls-lambda.pdf
 [8]:    http://openjdk.java.net/projects/lambda/
 [9]:    http://cr.openjdk.java.net/~briangoetz/lambda/lambda-state-4.html
+[10]:   http://cr.openjdk.java.net/~briangoetz/lambda/sotc3.html
+[11]:   http://cr.openjdk.java.net/~briangoetz/lambda/lambda-state-final.html
+[12]:   http://cr.openjdk.java.net/~briangoetz/lambda/lambda-libraries-final.html
