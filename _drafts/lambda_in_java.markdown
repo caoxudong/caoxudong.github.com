@@ -1,13 +1,17 @@
 ---
-title:      Lambda表达式
+title:      Java中的Lambda表达式
 layout:     post
 category:   blog
 tags:       [lambda, java, jvm]
 ---
 
+# 什么是lambda表达式
+
+wiki, [匿名函数][14]
+
 # 目标类型
 
-相同的lambda表达式可以由不同的目标类型，例如
+相同的lambda表达式可以有不同的目标类型，例如
 
 * Callable<String> c = () -> "done";
 * PrivilegedAction<String> a = () -> "done";
@@ -86,6 +90,21 @@ int sum = list.map(e -> e.size())
 * 并发性不好，容易出现竞争
 
 ## 副作用
+
+
+## 对比
+
+    pointList.forEach(System.out::print);
+
+
+    (TransPoint pt) -> { pt.transpose(); }
+    pointList.forEach(TransPoint::transpose);
+
+TransPoint::transpose，这里transpose是实例方法，这种方式会被编译器翻译为
+
+    (T  t) -> { t.transpose(); }
+
+
 
 # translation
 
@@ -215,6 +234,8 @@ int sum = list.map(e -> e.size())
 * [State of the Lambda: Libraries Edition][10]
 * [State of the Lambda - final][11]
 * [State of the Lambda: Libraries Edition - final][12]
+* [Lambda FAQ][13]
+* [Anonymous function][14]
 
 
 
@@ -232,3 +253,5 @@ int sum = list.map(e -> e.size())
 [10]:   http://cr.openjdk.java.net/~briangoetz/lambda/sotc3.html
 [11]:   http://cr.openjdk.java.net/~briangoetz/lambda/lambda-state-final.html
 [12]:   http://cr.openjdk.java.net/~briangoetz/lambda/lambda-libraries-final.html
+[13]:   http://www.lambdafaq.org/
+[14]:   https://en.wikipedia.org/wiki/Anonymous_function
