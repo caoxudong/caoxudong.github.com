@@ -207,6 +207,12 @@ test.c
 
 这里面值得注意的是，从上面的运行结果看到，运行c程序的时候，调用了10000次gettimeofday系统调用，而运行java程序的时候，却没有调用gettimeofday。原因待查。
 
+# 参考资料
+
+* [The slow currentTimeMillis()][9]
+* [Java的System.currentTimeMillis()会调用系统gettimeofday吗?][10]
+* [How does ltrace work?][11]
+* [System.nanoTime()的实现分析][12]
 
 
 
@@ -219,3 +225,7 @@ test.c
 [6]:    http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os/windows/vm/os_windows.cpp#l843
 [7]:    https://github.com/torvalds/linux/blob/597f03f9d133e9837d00965016170271d4f87dcf/kernel/time/time.c#L102
 [8]:    https://sourceware.org/git/?p=glibc.git;a=blob;f=sysdeps/unix/sysv/linux/x86/gettimeofday.c;h=36f7c26ffb0e818709d032c605fec8c4bd22a14e;hb=fdfc9260b61d3d72541f18104d24c7bcb0ce5ca2
+[9]:    http://pzemtsov.github.io/2017/07/23/the-slow-currenttimemillis.html
+[10]:   https://www.zhihu.com/question/51023490
+[11]:   https://blog.packagecloud.io/eng/2016/03/14/how-does-ltrace-work/
+[12]:   http://feiyang21687.github.io/SystemNano/
