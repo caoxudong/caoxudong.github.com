@@ -11,7 +11,7 @@ tags:       [java]
 
 这个错误是jvm本身报的，它对线程栈的大小做了最小值的限制。报错位置在[os_linux.cpp][1]
 
-    '''c++
+    ```c++
     // Check minimum allowable stack size for thread creation and to initialize
     // the java system classes, including StackOverflowError - depends on page
     // size.  Add a page for compiler2 recursion in main thread.
@@ -29,14 +29,20 @@ tags:       [java]
                         os::Linux::min_stack_allowed/ K);
             return JNI_ERR;
     }
-    '''
+    ```
 
 这里首先计算了变量`threadStackSizeInBytes`的值，然后与`os::Linux::min_stack_allowed`的值进行比较，若小于`os::Linux::min_stack_allowed`的值，则会在标准错误中打印错误信息"The stack size specified is too small, Specify at least XXk"，并返回错误，标识启动失败。
 
 
-变量`os::Linux::min_stack_allowed`的值由以下3个值决定
+变量`os::Linux::min_stack_allowed`的值由以下几个值决定
 
-* 
+* `StackYellowPages`
+* `StackRedPages`
+* `StackShadowPages`
+* 操作系统中页面的值
+    * `Linux::page_size()`
+    * `Linux::vm_default_page_size()`
+* `BytesPerWord`
 
 关于`StackShadowPages`，Oracle的文档[<Troubleshooting Guide for Java SE 6 with HotSpot VM>][2]有如下说明
 

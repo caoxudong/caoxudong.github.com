@@ -12,7 +12,7 @@ tags:       [jvm, openjdk, hotspot, marco]
 
 [interfaceSupport.hpp][1]
 
-    '''c++
+    ```c++
     // Debug class instantiated in JRT_ENTRY and ITR_ENTRY macro.
     // Can be used to verify properties on enter/exit of the VM.
 
@@ -268,7 +268,7 @@ tags:       [jvm, openjdk, hotspot, marco]
     #define JVM_END } }
 
     #endif // SHARE_VM_RUNTIME_INTERFACESUPPORT_HPP
-    '''
+    ```
 
 
 
