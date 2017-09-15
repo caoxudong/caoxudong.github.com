@@ -1,5 +1,5 @@
 ---
-title:      awk
+title:      在awk程序中使用单引号
 category:   blog
 layout:     post
 tags:       [awk, bash, shell]

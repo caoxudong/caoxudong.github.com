@@ -40,9 +40,12 @@ tags:       [java]
 * `StackRedPages`
 * `StackShadowPages`
 * 操作系统中页面的值
-    * `Linux::page_size()`
-    * `Linux::vm_default_page_size()`
+    * `Linux::page_size()`: 通过`sysconf(_SC_PAGESIZE)`获取到系统当前页面大小
+    * `Linux::vm_default_page_size()`: 默认值为`8K`，如下所示
+        * `const int os::Linux::_vm_default_page_size = (8 * K);`，[os::Linux::_vm_default_page_size][3]
 * `BytesPerWord`
+
+hotspot中java线程是使用操作系统实现的，java代码和本地代码公用一个线程栈，而在线程执行过程中，除了运行java代码外，还有一些jvm本身的代码要运行，为了防止java代码过多，而没有足够的线程栈来运行jvm本身的代码，因此设置了`StackYellowPages`和`StackRedPages`，作为报警页面，
 
 关于`StackShadowPages`，Oracle的文档[<Troubleshooting Guide for Java SE 6 with HotSpot VM>][2]有如下说明
 
@@ -52,5 +55,10 @@ tags:       [java]
 >
 >If you increase the value of `StackShadowPages`, you might also need to increase the default thread stack size using the `-Xss` parameter. Increasing the default thread stack size might decrease the number of threads that can be created, so be careful in choosing a value for the thread stack size. The thread stack size varies by platform from 256k to 1024k.
 
+
+
+
+
 [1]:    http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os/linux/vm/os_linux.cpp#l4990
 [2]:    http://www.oracle.com/technetwork/java/javase/crashes-137240.html
+[3]:    http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os/linux/vm/os_linux.cpp#l141
