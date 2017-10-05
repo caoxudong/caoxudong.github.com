@@ -30,7 +30,40 @@ tags:       [java, jni, jvm]
     * [3.3 属性和方法ID][22]
     * [3.4 值类型][23]
     * [3.5 类型签名][24]
-    * [3.6 UTF-8字符串][25]
+    * [3.6 自定义UTF-8编码][25]
+* [4 JNI函数][26]
+    * [4.1 接口函数表][27]
+    * [4.2 版本信息][28]
+        * [4.2.1 GetVersion][29]
+        * [4.2.2 Constant][30]
+    * [4.3 类操作][31]
+        * [4.3.1 DefineClass][32]
+        * [4.3.2 FindClass][33]
+        * [4.3.3 GetSuperclass][34]
+        * [4.3.4 IsAssignableFrom][35]
+    * [4.4 异常][36]
+        * [4.4.1 Throw][37]
+        * [4.4.2 ThrowNew][38]
+        * [4.4.3 ExceptionOccurred][39]
+        * [4.4.4 ExceptionDescribe][40]
+        * [4.4.5 ExceptionClear][41]
+        * [4.4.6 FatalError][42]
+        * [4.4.7 ExceptionCheck][43]
+    * [4.5 全局引用和局部引用][44]
+        * [4.5.1 全局引用][45]
+            * [4.5.1.1 NewGlobalRef][46]
+            * [4.5.1.2 DeleteGlobalRef][47]
+        * [4.5.2 局部引用][48]
+            * [4.5.2.1 DeleteLocalRef][49]
+            * [4.5.2.2 EnsureLocalCapacity][50]
+            * [4.5.2.3 PushLocalFrame][51]
+            * [4.5.2.4 PopLocalFrame][52]
+            * [4.5.2.5 NewLocalRef][53]
+        * [4.5.3 弱全局引用][54]
+            * [4.5.3.1 NewWeakGlobalRef][55]
+            * [4.5.3.2 DeleteWeakGlobalRef][56]
+            
+
 
 <a name="1"></a>
 # 1 简介
@@ -470,9 +503,9 @@ JNI沿用了JVM内部类型签名表示方法，如下所示：
     (ILjava/lang/String;[I)J
 
 <a name="3.6"></a>
-## 3.6 UTF-8字符串
+## 3.6 自定义UTF-8编码
 
-JNI使用UTF-8编码来表示各种字符串类型，这与JVM所使用的编码相同。使用UTF-8编码，确保只包含非空的ASCII字符的字符串可以只用一个字节来存储一个字符，而且所有的Unicode字符都可以正确表示。
+JNI使用自定义UTF-8编码来表示各种字符串类型，这与JVM所使用的编码相同。使用自定义UTF-8编码，确保只包含非空的ASCII字符的字符串可以只用一个字节来存储一个字符，而且所有的Unicode字符都可以正确表示。
 
 在` \u0001`到`\u007F`范围内的字符，可以只用一个字节表示，其中的低7位用来表示字符的编码值，例如：
 
@@ -493,10 +526,818 @@ JNI使用UTF-8编码来表示各种字符串类型，这与JVM所使用的编码
 
 对于那些需要使用多个字节来存储的字符来说，他们在class文件中是以大端序(big-endian)来存储的。
 
-这种表示方式与b标准UTF-8格式有些区别：
+这种表示方式与标准UTF-8格式有些区别：
 
-* 空白符`0`使用两个字节来存储，因此JNI中的UTF-8字符串永远不会内嵌空白符
+* 空白符`0`使用两个字节来存储，因此JNI中的自定义UTF-8编码永远不会内嵌空白符
 * JNI只使用了标准UTF-8格式中的1字节、2字节和3字节这3种格式，JVM无法识别4字节格式的标准UTF-8编码，而是使用2倍的3字节编码格式( two-times-three-byte format)
+
+<a name="4"></a>
+# 4 JNI函数
+
+<a name="4.1"></a>
+## 4.1 接口函数表
+
+开发者可以通过本地方法的参数`JNIEnv`来访问JNI函数，参数`JNIEnv`是一个指针，其指向的数据结构包含了所有的JNI函数，参数的定义如下：
+
+    ```c++
+    typedef const struct JNINativeInterface *JNIEnv;
+    ```
+
+JVM会以下面的代码初始化接口函数表，其中需要注意的是，前几个为`NULL`的参数值是为了能够与**COM**兼容所预留的，之所以将这些参数值放在初始化列表的最前面，这样以后再添加与类操作相关的JNI函数时，可以放到`FindClass`后面，而不必放到函数表的末尾。
+
+    ```c++
+    const struct JNINativeInterface ... = {
+
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        GetVersion,
+
+        DefineClass,
+        FindClass,
+
+        FromReflectedMethod,
+        FromReflectedField,
+        ToReflectedMethod,
+
+        GetSuperclass,
+        IsAssignableFrom,
+
+        ToReflectedField,
+
+        Throw,
+        ThrowNew,
+        ExceptionOccurred,
+        ExceptionDescribe,
+        ExceptionClear,
+        FatalError,
+
+        PushLocalFrame,
+        PopLocalFrame,
+
+        NewGlobalRef,
+        DeleteGlobalRef,
+        DeleteLocalRef,
+        IsSameObject,
+        NewLocalRef,
+        EnsureLocalCapacity,
+
+        AllocObject,
+        NewObject,
+        NewObjectV,
+        NewObjectA,
+
+        GetObjectClass,
+        IsInstanceOf,
+
+        GetMethodID,
+
+        CallObjectMethod,
+        CallObjectMethodV,
+        CallObjectMethodA,
+        CallBooleanMethod,
+        CallBooleanMethodV,
+        CallBooleanMethodA,
+        CallByteMethod,
+        CallByteMethodV,
+        CallByteMethodA,
+        CallCharMethod,
+        CallCharMethodV,
+        CallCharMethodA,
+        CallShortMethod,
+        CallShortMethodV,
+        CallShortMethodA,
+        CallIntMethod,
+        CallIntMethodV,
+        CallIntMethodA,
+        CallLongMethod,
+        CallLongMethodV,
+        CallLongMethodA,
+        CallFloatMethod,
+        CallFloatMethodV,
+        CallFloatMethodA,
+        CallDoubleMethod,
+        CallDoubleMethodV,
+        CallDoubleMethodA,
+        CallVoidMethod,
+        CallVoidMethodV,
+        CallVoidMethodA,
+
+        CallNonvirtualObjectMethod,
+        CallNonvirtualObjectMethodV,
+        CallNonvirtualObjectMethodA,
+        CallNonvirtualBooleanMethod,
+        CallNonvirtualBooleanMethodV,
+        CallNonvirtualBooleanMethodA,
+        CallNonvirtualByteMethod,
+        CallNonvirtualByteMethodV,
+        CallNonvirtualByteMethodA,
+        CallNonvirtualCharMethod,
+        CallNonvirtualCharMethodV,
+        CallNonvirtualCharMethodA,
+        CallNonvirtualShortMethod,
+        CallNonvirtualShortMethodV,
+        CallNonvirtualShortMethodA,
+        CallNonvirtualIntMethod,
+        CallNonvirtualIntMethodV,
+        CallNonvirtualIntMethodA,
+        CallNonvirtualLongMethod,
+        CallNonvirtualLongMethodV,
+        CallNonvirtualLongMethodA,
+        CallNonvirtualFloatMethod,
+        CallNonvirtualFloatMethodV,
+        CallNonvirtualFloatMethodA,
+        CallNonvirtualDoubleMethod,
+        CallNonvirtualDoubleMethodV,
+        CallNonvirtualDoubleMethodA,
+        CallNonvirtualVoidMethod,
+        CallNonvirtualVoidMethodV,
+        CallNonvirtualVoidMethodA,
+
+        GetFieldID,
+
+        GetObjectField,
+        GetBooleanField,
+        GetByteField,
+        GetCharField,
+        GetShortField,
+        GetIntField,
+        GetLongField,
+        GetFloatField,
+        GetDoubleField,
+        SetObjectField,
+        SetBooleanField,
+        SetByteField,
+        SetCharField,
+        SetShortField,
+        SetIntField,
+        SetLongField,
+        SetFloatField,
+        SetDoubleField,
+
+        GetStaticMethodID,
+
+        CallStaticObjectMethod,
+        CallStaticObjectMethodV,
+        CallStaticObjectMethodA,
+        CallStaticBooleanMethod,
+        CallStaticBooleanMethodV,
+        CallStaticBooleanMethodA,
+        CallStaticByteMethod,
+        CallStaticByteMethodV,
+        CallStaticByteMethodA,
+        CallStaticCharMethod,
+        CallStaticCharMethodV,
+        CallStaticCharMethodA,
+        CallStaticShortMethod,
+        CallStaticShortMethodV,
+        CallStaticShortMethodA,
+        CallStaticIntMethod,
+        CallStaticIntMethodV,
+        CallStaticIntMethodA,
+        CallStaticLongMethod,
+        CallStaticLongMethodV,
+        CallStaticLongMethodA,
+        CallStaticFloatMethod,
+        CallStaticFloatMethodV,
+        CallStaticFloatMethodA,
+        CallStaticDoubleMethod,
+        CallStaticDoubleMethodV,
+        CallStaticDoubleMethodA,
+        CallStaticVoidMethod,
+        CallStaticVoidMethodV,
+        CallStaticVoidMethodA,
+
+        GetStaticFieldID,
+
+        GetStaticObjectField,
+        GetStaticBooleanField,
+        GetStaticByteField,
+        GetStaticCharField,
+        GetStaticShortField,
+        GetStaticIntField,
+        GetStaticLongField,
+        GetStaticFloatField,
+        GetStaticDoubleField,
+
+        SetStaticObjectField,
+        SetStaticBooleanField,
+        SetStaticByteField,
+        SetStaticCharField,
+        SetStaticShortField,
+        SetStaticIntField,
+        SetStaticLongField,
+        SetStaticFloatField,
+        SetStaticDoubleField,
+
+        NewString,
+
+        GetStringLength,
+        GetStringChars,
+        ReleaseStringChars,
+
+        NewStringUTF,
+        GetStringUTFLength,
+        GetStringUTFChars,
+        ReleaseStringUTFChars,
+
+        GetArrayLength,
+
+        NewObjectArray,
+        GetObjectArrayElement,
+        SetObjectArrayElement,
+
+        NewBooleanArray,
+        NewByteArray,
+        NewCharArray,
+        NewShortArray,
+        NewIntArray,
+        NewLongArray,
+        NewFloatArray,
+        NewDoubleArray,
+
+        GetBooleanArrayElements,
+        GetByteArrayElements,
+        GetCharArrayElements,
+        GetShortArrayElements,
+        GetIntArrayElements,
+        GetLongArrayElements,
+        GetFloatArrayElements,
+        GetDoubleArrayElements,
+
+        ReleaseBooleanArrayElements,
+        ReleaseByteArrayElements,
+        ReleaseCharArrayElements,
+        ReleaseShortArrayElements,
+        ReleaseIntArrayElements,
+        ReleaseLongArrayElements,
+        ReleaseFloatArrayElements,
+        ReleaseDoubleArrayElements,
+
+        GetBooleanArrayRegion,
+        GetByteArrayRegion,
+        GetCharArrayRegion,
+        GetShortArrayRegion,
+        GetIntArrayRegion,
+        GetLongArrayRegion,
+        GetFloatArrayRegion,
+        GetDoubleArrayRegion,
+        SetBooleanArrayRegion,
+        SetByteArrayRegion,
+        SetCharArrayRegion,
+        SetShortArrayRegion,
+        SetIntArrayRegion,
+        SetLongArrayRegion,
+        SetFloatArrayRegion,
+        SetDoubleArrayRegion,
+
+        RegisterNatives,
+        UnregisterNatives,
+
+        MonitorEnter,
+        MonitorExit,
+
+        GetJavaVM,
+
+        GetStringRegion,
+        GetStringUTFRegion,
+
+        GetPrimitiveArrayCritical,
+        ReleasePrimitiveArrayCritical,
+
+        GetStringCritical,
+        ReleaseStringCritical,
+
+        NewWeakGlobalRef,
+        DeleteWeakGlobalRef,
+
+        ExceptionCheck,
+
+        NewDirectByteBuffer,
+        GetDirectBufferAddress,
+        GetDirectBufferCapacity,
+
+        GetObjectRefType
+    };
+    ```
+
+<a name="4.2"></a>
+## 4.2 版本信息
+
+<a name="4.2.1"></a>
+### 4.2.1 GetVersion
+
+    ```c++
+    jint GetVersion(JNIEnv *env);
+    ```
+
+函数返回当前本地方法接口的版本号。
+
+该函数在`JNIEnv`接口函数表的索引位置为`4`。
+
+参数：
+
+    env         JNI接口指针
+
+返回值：
+
+    函数返回值的高16位是主版本号，低16位是次版本号
+    In JDK/JRE 1.1, GetVersion() returns 0x00010001
+    In JDK/JRE 1.2, GetVersion() returns 0x00010002
+    In JDK/JRE 1.4, GetVersion() returns 0x00010004
+    In JDK/JRE 1.6, GetVersion() returns 0x00010006
+
+<a name="4.2.2"></a>
+## 4.2.2 Constants
+
+自JDK/JRE 1.2其，版本信息定义如下
+
+    ```c++
+    #define JNI_VERSION_1_1 0x00010001
+    #define JNI_VERSION_1_2 0x00010002
+
+    #define JNI_EDETACHED    (-2)              /* thread detached from the VM */
+    #define JNI_EVERSION     (-3)              /* JNI version error 
+    ```
+
+自JDK/JRE 1.4之后，增加版本信息如下：
+
+    ```c++
+    #define JNI_VERSION_1_4 0x00010004
+    ```
+
+自JDK/JRE 1.4之后，增加版本信息如下：
+
+    ```c++
+    #define JNI_VERSION_1_6 0x00010006
+    ```
+
+<a name="4.3"></a>
+## 4.3 类操作
+
+<a name="4.3.1"></a>
+### 4.3.1 DefineClass
+
+    ```c++
+    jclass DefineClass(JNIEnv *env, const char *name, jobject loader, const jbyte *buf, jsize bufLen);
+    ```
+
+从字节数组中载入一个类。在调用函数`DefineClass`之后，参数`buf`所指向的字节数组可能会释放掉。
+
+该函数在`JNIEnv`接口函数表的索引位置为`5`。
+
+参数：
+
+    env         JNI接口指针
+    name        待载入的类或接口的名字，字符串使用自定义UTF-8编码存储
+    loader      指定用来载入类的加载器对象
+    buf         包含了待载入的类信息的字节数组
+    bufLen      包含了待载入的类信息的字节数组的长度
+
+返回值：
+
+    返回载入的Java类对象；如果发生错误，则返回NULL
+
+异常：
+
+    ClassFormatError        参数buf中存储的不是有效的类数据，抛出此异常
+    ClassCircularityError   若类或接口被定义为自己的父类或父接口时，抛出此异常
+    OutOfMemoryError        内存不足时，抛出此异常
+    SecurityException       若待载入的异常位于"java"包下时，抛出此异常
+
+<a name="4.3.2"></a>
+### 4.3.2 FindClass
+
+    ```c++
+    jclass FindClass(JNIEnv *env, const char *name);
+    ```
+
+在JDK 1.1中，该方法用于载入一个局部定义的类(locally-defined class)，它会在环境变量`CLASSPATH`所指定的目录和压缩包中搜索待载入的类。
+
+从JDK 1.2起，Java的安全模型运行非系统类(non-system classes)载入和调用本地方法。`FindClass`方法会使用声明了当前本地方法的类的类加载器来加载目标类。如果当前的本地方法属于一个系统类，则无需使用用户自定义的类加载器；否则会调用对应的类加载来加载目标类。
+
+从JDK 1.2起，当通过调用接口(Invocation Interface)来调用`FindClass`时，是没有当前本地方法及其关联的类加载器的。这种情况下，会调用`ClassLoader.getSystemClassLoader`方法获取类加载器，可以加载`java.class.path`属性中指定的类。
+
+参数`name`指定了待加载类的完整名字，或是数组的类型签名。
+
+若需要载入`java.lang.String`类，则参数`name`的值为：
+
+    java/lang/String
+
+若需要载入`java.lang.Object[]`类，则参数`name`的值为
+
+    [Ljava/lang/Object;
+
+该函数在`JNIEnv`接口函数表的索引位置为`6`。
+
+参数：
+
+    env         JNI接口指针
+    name        指定了待加载类的完整名字，或是数组的类型签名。包名的分隔符使用"/"表示，若name以"["开头，则表示要载入的是一个数组类型。name的值使用自定义UTF-8编码。
+
+返回值：
+
+    返回载入了的Java类对象；若发生错误，则返回NULL
+
+异常：
+
+    ClassFormatError        类数据格式错误，抛出此异常
+    ClassCircularityError   若类或接口被定义为自己的父类或父接口时，抛出此异常
+    OutOfMemoryError        内存不足时，抛出此异常
+    NoClassDefFoundError    找不到指定的类型数据时，抛出此异常
+
+<a name="4.3.3"></a>
+### 4.3.3 GetSuperclass
+
+    ```c++
+    jclass GetSuperclass(JNIEnv *env, jclass clazz);
+    ```
+
+若参数`clazz`表示的是非`Object`的其他类对象，则该函数返回目标类的父类。
+
+若参数`clazz`表示的`Object`类或是接口类，则该函数返回`NULL`。
+
+该函数在`JNIEnv`接口函数表的索引位置为`10`。
+
+参数：
+
+    env         JNI接口指针
+    clazz       Java类对象
+
+返回值：
+
+    返回目标类的父类或"NULL"
+
+<a name="4.3.4"></a>
+### 4.3.4 IsAssignableFrom
+
+    ```c++
+    jboolean IsAssignableFrom(JNIEnv *env, jclass clazz1, jclass clazz2);
+    ```
+
+判断参数`clazz1`所指定的类型是否可以安全的扩展为`clazz2`参数所指定的类型。
+
+该函数在`JNIEnv`接口函数表的索引位置为`11`。
+
+参数：
+
+    env         JNI接口指针
+    clazz1      源Java类型对象
+    clazz2      目标Java类型对象
+
+返回值：
+
+    当满足以下任意条件时，返回"JNI_TRUE"，否则返回"JNI_FALSE"
+
+    * clazz1和clazz2指向相同的Java类
+    * clazz1是clazz2的父类
+    * clazz1是clazz2的接口之一
+
+<a name="4.4"></a>
+### 4.4 异常
+
+<a name="4.4.1"></a>
+### 4.4.1 Throw
+
+    ```c++
+    jint Throw(JNIEnv *env, jthrowable obj);
+    ```
+
+抛出一个`java.lang.Throwable`类型的异常对象。
+
+该函数在`JNIEnv`接口函数表的索引位置为`13`。
+
+参数：
+
+    env         JNI接口指针
+    obj         类型为"java.lang.Throwable"的对象
+
+返回值：
+
+    函数调用成功返回0，否则返回负数。
+
+异常：
+
+    抛出一个`java.lang.Throwable`类型的异常对象。
+
+<a name="4.4.2"></a>
+### 4.4.2 ThrowNew
+
+    ```c++
+    jint ThrowNew(JNIEnv *env, jclass clazz, const char *message);
+    ```
+
+从已有的信息中构造一个新的异常对象并抛出，异常对象的类型由参数`clazz`指定，异常的错误信息由参数`message`指定。
+
+该函数在`JNIEnv`接口函数表的索引位置为`14`。
+
+参数：
+
+    env         JNI接口指针
+    clazz       待创建异常对象的类型，必须为"java.lang.Throwable"的自雷
+    message     异常信息，使用自定义UTF-8进行编码
+
+返回值：
+
+    函数调用成功返回0，否则返回负数。
+
+异常：
+
+    抛出新创建的异常对象
+
+<a name="4.4.3"></a>
+### 4.4.3 ExceptionOccurred
+
+    ```c++
+    jthrowable ExceptionOccurred(JNIEnv *env);
+    ```
+
+该函数用于判断当前是否有被抛出的异常。除非是通过本地方法调用`ExceptionClear()`函数，或是在Java代码中捕获了异常对象，否则异常对象会一直处于被抛出的状态。
+
+该函数在`JNIEnv`接口函数表的索引位置为`15`。
+
+参数：
+
+    env         JNI接口指针
+
+返回值：
+
+    返回当前正处于被抛出状态的异常；果没有异常被抛出，返回"NULL"
+
+<a name="4.4.4"></a>
+### 4.4.4 ExceptionDescribe
+
+    ```c++
+    void ExceptionDescribe(JNIEnv *env);
+    ```
+
+在系统错误报告通道(system error-reporting channel，例如标准错误`stderr`)打印异常和调用栈信息。该方法可用于调试目标代码。
+
+该函数在`JNIEnv`接口函数表的索引位置为`16`。
+
+参数：
+
+    env         JNI接口指针
+
+<a name="4.4.5"></a>
+### 4.4.5 ExceptionClear
+
+    ```c++
+    void ExceptionClear(JNIEnv *env);
+    ```
+
+清除当前正处于被抛出状态的异常。若当前没有异常被抛出，则啥也不做。
+
+该函数在`JNIEnv`接口函数表的索引位置为`17`。
+
+参数：
+
+    env         JNI接口指针
+
+<a name="4.4.6"></a>
+### 4.4.6 FatalError
+
+    ```c++
+    void FatalError(JNIEnv *env, const char *msg);
+    ```
+
+抛出一个致命错误(fatal error)，且并不期望JVM能够同错误中恢复。该函数不会返回。
+
+该函数在`JNIEnv`接口函数表的索引位置为`18`。
+
+参数：
+
+    env         JNI接口指针
+    msg         错误信息，使用自定义UTF-8编码
+
+<a name="4.4.7"></a>
+### 4.4.7 ExceptionCheck
+
+该函数用于检查是否有被抛出的异常，且无需为异常对象创建新的局部引用。
+
+若当前有被抛出的异常，函数返回`JNI_TRUE`，否则返回`JNI_FALSE`。
+
+该函数在`JNIEnv`接口函数表的索引位置为`228`。
+
+参数：
+
+    env         JNI接口指针
+
+返回值：
+
+    若当前有被抛出的异常，函数返回`JNI_TRUE`，否则返回`JNI_FALSE`。
+
+该方法自JDK/JRE 1.2之后引入。
+
+<a name="4.5"></a>
+## 4.5 全局引用和局部引用
+
+<a name="4.5.1"></a>
+### 4.5.1 全局引用
+
+<a name="4.5.1.1"></a>
+#### 4.5.1.1 NewGlobalRef
+
+    ```c++
+    jobject NewGlobalRef(JNIEnv *env, jobject obj);
+    ```
+创建一个新的全局引用来指向参数`obj`所指定的对象。参数`obj`可能是全局引用或局部引用。全局引用必须显式调用`DeleteGlobalRef()`来释放内存。
+
+该函数在`JNIEnv`接口函数表的索引位置为`21`。
+
+参数：
+
+    env         JNI接口指针
+    obj         全局引用或局部引用
+
+返回值：
+
+    返回新创建的全局引用；若系统内存不足，则返回"NULL"
+
+<a name="4.5.1.2"></a>
+#### 4.5.1.2 DeleteGlobalRef
+
+    ```c++
+    void DeleteGlobalRef(JNIEnv *env, jobject globalRef);
+    ```
+
+删除全局引用。
+
+该函数在`JNIEnv`接口函数表的索引位置为`22`。
+
+参数：
+    env         JNI接口指针
+    globalRef   待删除的全局引用
+
+<a name="4.5.2"></a>
+### 4.5.2 局部引用
+
+局部引用只在本地方法的作用域内有效，在退出本地方法后，会自动释放掉局部引用。每个局部引用都会消耗一定量的JVM资源，因此开发者不能创建太多的局部引用，否则可能会导致系统内存不足。
+
+<a name="4.5.2.1"></a>
+#### 4.5.2.1 DeleteLocalRef
+
+    ```c++
+    void DeleteLocalRef(JNIEnv *env, jobject localRef);
+    ```
+
+删除局部引用。
+
+该函数在`JNIEnv`接口函数表的索引位置为`23`。
+
+参数：
+    env         JNI接口指针
+    localRef    待删除的局部引用
+
+注意： 自JDK/JRE 1.1起，就提供了函数`DeleteLocalRef`供开发者手动删除局部引用。如果本地代码需要遍历很大的数组，那么及时删除无用的本地引用是非常必要的，否则可能会造成系统内存不足。
+
+从JDK/JRE 1.2起，JNI提供另外4个函数来管理局部引用的生命周期。
+
+<a name="4.5.2.2"></a>
+#### 4.5.2.2 EnsureLocalCapacity
+
+    ```c++
+    jint EnsureLocalCapacity(JNIEnv *env, jint capacity);
+    ```
+
+该函数用于确认在当前线程中是否还能创建足够数量的本地引用。若可以，则函数返回0，否则返回负数，并抛出异常。
+
+在进入本地方法前，JVM默认会确保本地方法可以创建16个局部引用。
+
+为了支持向后兼容，JVM会额外多创建一些局部引用，超过参数`capacity`所指定的范围。(为了支持调试，JVM可能提示开发者，创建了过多的局部引用。在JDK中，开发者可以添加参数`-verbose:jni`来打开这种信息提示)。如果JVM无法创建由参数`capacity`所指定的那么多的局部引用，则JVM会调用`FatalError`函数强制退出。
+
+该函数在`JNIEnv`接口函数表的索引位置为`26`。
+
+参数：
+    env         JNI接口指针
+    capacity    局部引用的个数
+
+该函数自JDK/JRE 1.2起可以使用。
+
+<a name="4.5.2.3"></a>
+#### 4.5.2.3  PushLocalFrame
+
+    ```c++
+    jint PushLocalFrame(JNIEnv *env, jint capacity);
+    ```
+
+创建一个局部引用帧，在其中可以创建指定数量的局部引用，具体数量由参数`capacity`指定。若函数调用成功，则返回0；否则返回负数，并抛出`OutOfMemoryError`异常。
+
+注意，已经在前一个局部引用帧中创建的局部引用在当前栈帧中仍然有效。
+
+该函数在`JNIEnv`接口函数表的索引位置为`19`。
+
+参数：
+    env         JNI接口指针
+    capacity    局部引用的个数
+
+该函数自JDK/JRE 1.2起可以使用。
+
+<a name="4.5.2.4"></a>
+#### 4.5.2.4 PopLocalFrame
+
+    ```c++
+    jobject PopLocalFrame(JNIEnv *env, jobject result);
+    ```
+
+弹出当前的局部引用帧，释放所有局部引用，返回在前一个局部引用帧需要使用的目标对象的局部引用。
+
+若不希望给前一个局部引用帧返回引用，则参数`result`传入`NULL`即可。
+
+该函数在`JNIEnv`接口函数表的索引位置为`20`。
+
+参数：
+    env         JNI接口指针
+    result      需要返回给上层局部引用帧的局部引用
+
+该函数自JDK/JRE 1.2起可以使用。
+
+<a name="4.5.2.5"></a>
+#### 4.5.2.5 NewLocalRef
+
+    ```c++
+    jobject NewLocalRef(JNIEnv *env, jobject ref);
+    ```
+
+为参数`ref`所指向的对象引用创建一个新的局部引用，目标对象引用可能是局部引用或全局引用。如果参数`ref`的值为`NULL`，则函数返回`NULL`。
+
+该函数在`JNIEnv`接口函数表的索引位置为`25`。
+
+参数：
+    env         JNI接口指针
+    ref         指向目标对象的引用
+
+该函数自JDK/JRE 1.2起可以使用。
+
+<a name="4.5.3"></a>
+### 4.5.3 弱全局引用
+
+弱全局引用是一种特殊的全局引用，区别在于被弱全局引用所指向的对象是可以被垃圾回收器回收掉的。当实际对象被回收掉时，弱全局引用实际上就指向了`NULL`。开发者需要调用`IsSameObject`函数来比较弱全局引用和`NULL`，以此判断弱全局引用所指向的对象是否已经被回收掉了。弱全局引用与Java中的弱引用作用相似。
+
+2001.06新增声明
+
+由于垃圾回收可能会在运行本地方法的时候发生，因此弱全局引用所指向的对象可能会在任意时刻被回收掉，开发者在使用的时候，需要注意此点。
+
+尽管函数`IsSameObject`可用来判断弱全局引用是否指向了一个被回收掉的对象，但不能防止该对象在调用`IsSameObject`之后被释放掉。因此，函数`IsSameObject`的检查结果并不能确保以后再调用其他JNI函数的时候，目标对象没有被回收掉。
+
+为了克服这个缺陷，推荐通过函数`NewLocalRef`或`NewGlobalRef`来访问目标对象，防止该对象被回收掉。在调用这些函数时，若目标对象已经被回收掉，则函数返回`NULL`，否则会返回一个强引用。在完成对目标对象的访问后，应立即显式删除新创建的引用对象。
+
+弱全局引用比其他类型的弱引用(Java中的软引用或弱引用)更"弱"。若弱全局引用和软引用(或弱引用)指向了同一个对象，则在软引用(或引用)清除对目标对象的引用之前，弱全局引用都不会等同于`NULL`。
+
+弱全局引用比Java内部需要执行`finalize`方法的对象的引用更"弱"。在目标对象执行完`finalize`方法之前，弱全局引用都不会等同于`NULL`。
+
+交叉使用弱全局引用和虚引用(`PhantomReferences`)的结果是未定义的。就JVM的实现来说，既可以在处理虚引用之后再处理弱全局引用，也可以在处理虚引用之前先处理弱全局引用；弱全局引用和虚引用有可能会指向同一个对象，也可能不会。因此，不要交叉使用弱全局引用和虚引用。
+
+<a name="4.5.3.1"></a>
+#### 4.5.3.1 NewWeakGlobalRef
+
+    ```c++
+    jweak NewWeakGlobalRef(JNIEnv *env, jobject obj);
+    ```
+
+该函数用于创建一个弱全局引用。若参数`obj`指向的对象为`NULL`，则该函数返回`NULL`；若系统内存不足，该函数返回`NULL`，并抛出`OutOfMemoryError`错误。
+
+该函数在`JNIEnv`接口函数表的索引位置为`226`。
+
+参数：
+    env         JNI接口指针
+    obj         目标对象
+
+该函数自JDK/JRE 1.2起可以使用。
+
+<a name="4.5.3.2"></a>
+#### 4.5.3.2 DeleteWeakGlobalRef
+
+    ```c++
+    void DeleteWeakGlobalRef(JNIEnv *env, jweak obj);
+    ```
+
+该函数删除一个弱全局引用。
+
+该函数在`JNIEnv`接口函数表的索引位置为`227`。
+
+参数：
+    env         JNI接口指针
+    obj         待删除的弱全局引用
+
+该函数自JDK/JRE 1.2起可以使用。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -534,3 +1375,34 @@ JNI使用UTF-8编码来表示各种字符串类型，这与JVM所使用的编码
 [23]:   #3.4
 [24]:   #3.5
 [25]:   #3.6
+[26]:   #4
+[27]:   #4.1
+[28]:   #4.2
+[29]:   #4.2.1
+[30]:   #4.2.2
+[31]:   #4.3
+[32]:   #4.3.1
+[33]:   #4.3.2
+[34]:   #4.3.3
+[35]:   #4.3.4
+[36]:   #4.4
+[37]:   #4.4.1
+[38]:   #4.4.2
+[39]:   #4.4.3
+[40]:   #4.4.4
+[41]:   #4.4.5
+[42]:   #4.4.6
+[43]:   #4.4.7
+[44]:   #4.5
+[45]:   #4.5.1
+[46]:   #4.5.1.1
+[47]:   #4.5.1.2
+[48]:   #4.5.2
+[49]:   #4.5.2.1
+[50]:   #4.5.2.2
+[51]:   #4.5.2.3
+[52]:   #4.5.2.4
+[53]:   #4.5.2.5
+[54]:   #4.5.3
+[55]:   #4.5.3.1
+[56]:   #4.5.3.2
