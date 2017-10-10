@@ -71,10 +71,23 @@ tags:       [java, jni, jvm]
             * [4.5.4.6 IsSameObject][63]
         * [4.5.5 访问对象的属性][64]
             * [4.5.5.1 GetFieldID][65]
-            * [4.5.5.2 "Get<type>Field"系列函数][65]
-            * [4.5.5.3 "Set<type>Field"系列函数][66]
-        * [4.5.6 调用实例方法][67]
-            * [4.5.6.1 GetMethodID][68]
+            * [4.5.5.2 "Get<type>Field"系列函数][66]
+            * [4.5.5.3 "Set<type>Field"系列函数][67]
+        * [4.5.6 调用实例方法][68]
+            * [4.5.6.1 GetMethodID][69]
+            * [4.5.6.2 "Call<type>Method" "Call<type>MethodA"和"Call<type>MethodV"系列函数][70]
+            * [4.5.6.3 "CallNonvirtual<type>Method" "CallNonvirtual<type>MethodA" "CallNonvirtual<type>MethodV"系列函数][71]
+        * [4.5.7 访问静态属性][72]
+            * [4.5.7.1 GetStaticFieldID][73]
+            * [4.5.7.2 "GetStatic<type>Field"系列函数][74]
+            * [4.5.7.3 "SetStatic<type>Field"系列函数][75]
+        * [4.5.8 调用静态方法][76]
+            * [4.5.8.1 GetStaticMethodID][77]
+            * [4.5.8.2 "CallStatic<type>Method" "CallStatic<type>MethodA" "CallStatic<type>MethodV"系列函数][78]
+        * [4.5.9 字符串操作][79]
+            * [4.5.9.1 NewString][80]
+            * [4.5.9.2 GetStringChars][81]
+            * [4.5.9.3 ReleaseStringChars][82]
             
 
 
@@ -1380,23 +1393,9 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 
 参数`clazz`不可以是数组类型。
 
-* NewObject
-
-使用函数`NewObject`时，开发者将传递给构造函数的参数直接放到参数`methodID`后面即可，`NewObject`函数会将这些参数传递给目标类型的构造函数。
-
-该函数在`JNIEnv`接口函数表的索引位置为`28`。
-
-* NewObjectA
-
-使用函数`NewObjectA`时，开发者需要将传递给构造函数的参数包装为一个`jvalues`类型的数组，放置在参数`methodID`后面，`newObjectA`从数组中获取参数，再传给目标类型的构造函数。
-
-该函数在`JNIEnv`接口函数表的索引位置为`30`。
-
-* NewObjectV
-
-使用函数`NewObjectV`时，开发者需要将传递给构造函数的参数包装台类型为`va_list`的参数，放置在参数`methodID`后面，`newObjectV`从数组中获取参数，再传给目标类型的构造函数。
-
-该函数在`JNIEnv`接口函数表的索引位置为`29`。
+* `NewObject`： 使用函数`NewObject`时，开发者将传递给构造函数的参数直接放到参数`methodID`后面即可，`NewObject`函数会将这些参数传递给目标类型的构造函数。该函数在`JNIEnv`接口函数表的索引位置为`28`。
+* `NewObjectA`： 使用函数`NewObjectA`时，开发者需要将传递给构造函数的参数包装为一个`jvalues`类型的数组，放置在参数`methodID`后面，`NewObjectA`从数组中获取参数，再传给目标类型的构造函数。该函数在`JNIEnv`接口函数表的索引位置为`30`。
+* `NewObjectV`： 使用函数`NewObjectV`时，开发者需要将传递给构造函数的参数包装为类型为`va_list`的参数，放置在参数`methodID`后面，`NewObjectV`从数组中获取参数，再传给目标类型的构造函数。该函数在`JNIEnv`接口函数表的索引位置为`29`。
 
 参数：
     env         JNI接口指针
@@ -1642,7 +1641,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 
 若要获取构造函数的方法ID，需要以`<init>`作为方法名，以`void(V)`作为返回类型。
 
-该系列函数在`JNIEnv`接口函数表的索引位置是`33`。
+该函数在`JNIEnv`接口函数表的索引位置是`33`。
 
 参数：
 
@@ -1660,6 +1659,513 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
     NoSuchMethodError               若找不到目标方法，抛出该错误
     ExceptionInInitializerError     若类初始化错误，抛出该错误
     OutOfMemoryError                若系统内存不足，抛出该错误
+
+<a name="4.5.6.2"></a>
+#### 4.5.6.2 "Call<type>Method" "Call<type>MethodA"和"Call<type>MethodV"系列函数
+
+    ```c++
+    NativeType Call<type>Method(JNIEnv *env, jobject obj, jmethodID methodID, ...);
+
+    NativeType Call<type>MethodA(JNIEnv *env, jobject obj, jmethodID methodID, const jvalue *args);
+
+    NativeType Call<type>MethodV(JNIEnv *env, jobject obj,  jmethodID methodID, va_list args);
+    ```
+
+这3个系列的函数用于在本地方法中调用Java对象的实例方法，其区别在于如何处理被调用函数的参数。
+
+调用目标对象的实例方法时，方法的ID值必须通过调用函数`GetMethodID()`来获取。
+
+需要注意的是，如果被调用的函数是私有方法或构造函数，则必须通过其本身的类来获取方法ID，而不能通过其父类获取。
+
+* `Call<type>Method`： 使用函数`Call<type>MethodwObject`时，开发者将传递给目标函数的参数直接放到参数`methodID`后面即可，函数`Call<type>Method`会将这些参数传递给目标函数。
+* `Call<type>MethodA`： 使用函数`Call<type>MethodA`时，开发者需要将传递给目标函数的参数包装为一个`jvalues`类型的数组，放置在参数`methodID`后面，`Call<type>MethodA`从数组中获取参数，再传给目标函数。
+* `Call<type>MethodV`： 使用函数`Call<type>MethodV`时，开发者需要将传递给目标函数的参数包装为类型为`va_list`的参数，放置在参数`methodID`后面，`Call<type>MethodV`从数组中获取参数，再传给目标函数。
+
+下表描述不同类型所对应的具体函数：
+
+    CallVoidMethod()        CallVoidMethodA()       CallVoidMethodV()	        void
+    CallObjectMethod()      CallObjectMethodA()     CallObjectMethodV()	        jobject
+    CallBooleanMethod()     CallBooleanMethodA()    CallBooleanMethodV()        jboolean
+    CallByteMethod()        CallByteMethodA()       CallByteMethodV()	        jbyte
+    CallCharMethod()        CallCharMethodA()       CallCharMethodV()	        jchar
+    CallShortMethod()       CallShortMethodA()      CallShortMethodV()	        jshort
+    CallIntMethod()         CallIntMethodA()        CallIntMethodV()	        jint
+    CallLongMethod()        CallLongMethodA()       CallLongMethodV()	        jlong
+    CallFloatMethod()       CallFloatMethodA()      CallFloatMethodV()	        jfloat
+    CallDoubleMethod()      CallDoubleMethodA()     CallDoubleMethodV()	        jdouble
+
+下表展示了各个函数在`JNIEnv`接口函数表的索引：
+
+    CallVoidMethod()        61
+    CallVoidMethodA()       63
+    CallVoidMethodV()	    62
+
+    CallObjectMethod()      34
+    CallObjectMethodA()     36
+    CallObjectMethodV()	    35
+
+    CallBooleanMethod()     37
+    CallBooleanMethodA()    39
+    CallBooleanMethodV()	38
+
+    CallByteMethod()        40
+    CallByteMethodA()       42
+    CallByteMethodV()	    41
+
+    CallCharMethod()        43
+    CallCharMethodA()       45
+    CallCharMethodV()	    44
+
+    CallShortMethod()       46
+    CallShortMethodA()      48
+    CallShortMethodV()	    47
+
+    CallIntMethod()         49
+    CallIntMethodA()        51
+    CallIntMethodV()	    50
+
+    CallLongMethod()        52
+    CallLongMethodA()       54
+    CallLongMethodV()	    53
+
+    CallFloatMethod()       55
+    CallFloatMethodA()      57
+    CallFloatMethodV()	    56
+
+    CallDoubleMethod()      58
+    CallDoubleMethodA()     60
+    CallDoubleMethodV()	    59
+
+参数：
+
+    env         JNI接口指针
+    obj         指向Java对象的引用
+    methodID    目标方法的ID值
+
+返回：
+
+    返回调用目标方法的返回值
+
+异常：
+
+    抛出在执行目标方法时抛出的异常
+
+<a name="4.5.6.3"></a>
+#### 4.5.6.3 "CallNonvirtual<type>Method" "CallNonvirtual<type>MethodA" "CallNonvirtual<type>MethodV"系列函数
+
+    ```c++
+    NativeType CallNonvirtual<type>Method(JNIEnv *env, jobject obj, jclass clazz, jmethodID methodID, ...);
+
+    NativeType CallNonvirtual<type>MethodA(JNIEnv *env, jobject obj, jclass clazz, jmethodID methodID, const jvalue *args);
+
+    NativeType CallNonvirtual<type>MethodV(JNIEnv *env, jobject obj, jclass clazz, jmethodID methodID, va_list args);
+    ```
+
+这3个系列的函数用于调用某个Java对象的实例方法，方法的ID值通过调用`GetMethodID()`方法获得。
+
+`CallNonvirtual<type>Method`系列函数和`Call<type>Method`系列函数的区别在于，`Call<type>Method`系列函数是基于实例的类来调用目标方法的，`CallNonvirtual<type>Method`系列函数是基于参数`clazz`指定的类来调用目标方法的，而且参数`methodID`也应该是在该类上获得的。获取参数`methodID`是，必须是从对象的真实类型或其父类中获得的。
+
+* `CallNonvirtual<type>Method`： 使用函数`CallNonvirtual<type>Method`时，开发者将传递给目标函数的参数直接放到参数`methodID`后面即可，函数`CallNonvirtual<type>Method`会将这些参数传递给目标函数。
+* `CallNonvirtual<type>MethodA`： 使用函数`CallNonvirtual<type>MethodA`时，开发者需要将传递给目标函数的参数包装为一个`jvalues`类型的数组，放置在参数`methodID`后面，`CallNonvirtual<type>MethodA`从数组中获取参数，再传给目标函数。
+* `CallNonvirtual<type>MethodV`： 使用函数`CallNonvirtual<type>MethodV`时，开发者需要将传递给目标函数的参数包装为类型为`va_list`的参数，放置在参数`methodID`后面，`CallNonvirtual<type>MethodV`从数组中获取参数，再传给目标函数。
+
+下表描述不同类型所对应的具体函数：
+
+    CallNonvirtualVoidMethod()      CallNonvirtualVoidMethodA()     CallNonvirtualVoidMethodV()	    void
+    CallNonvirtualObjectMethod()    CallNonvirtualObjectMethodA()   CallNonvirtualObjectMethodV()   jobject
+    CallNonvirtualBooleanMethod()   CallNonvirtualBooleanMethodA()  CallNonvirtualBooleanMethodV()  jboolean
+    CallNonvirtualByteMethod()      CallNonvirtualByteMethodA()     CallNonvirtualByteMethodV()	    jbyte
+    CallNonvirtualCharMethod()      CallNonvirtualCharMethodA()     CallNonvirtualCharMethodV()	    jchar
+    CallNonvirtualShortMethod()     CallNonvirtualShortMethodA()    CallNonvirtualShortMethodV()	jshort
+    CallNonvirtualIntMethod()       CallNonvirtualIntMethodA()      CallNonvirtualIntMethodV()	    jint
+    CallNonvirtualLongMethod()      CallNonvirtualLongMethodA()     CallNonvirtualLongMethodV()	    jlong
+    CallNonvirtualFloatMethod()     CallNonvirtualFloatMethodA()    CallNonvirtualFloatMethodV()	jfloat
+    CallNonvirtualDoubleMethod()    CallNonvirtualDoubleMethodA()   CallNonvirtualDoubleMethodV()	jdouble
+
+下表展示了各个函数在`JNIEnv`接口函数表的索引：
+
+    CallNonvirtualVoidMethod()      91
+    CallNonvirtualVoidMethodA()     93
+    CallNonvirtualVoidMethodV()	    92
+
+    CallNonvirtualObjectMethod()    64
+    CallNonvirtualObjectMethodA()   66
+    CallNonvirtualObjectMethodV()	65
+
+    CallNonvirtualBooleanMethod()   67
+    CallNonvirtualBooleanMethodA()  69
+    CallNonvirtualBooleanMethodV()	68
+
+    CallNonvirtualByteMethod()      70
+    CallNonvirtualByteMethodA()     72
+    CallNonvirtualByteMethodV()	    71
+
+    CallNonvirtualCharMethod()      73
+    CallNonvirtualCharMethodA()     75
+    CallNonvirtualCharMethodV()	    74
+
+    CallNonvirtualShortMethod()     76
+    CallNonvirtualShortMethodA()    78
+    CallNonvirtualShortMethodV()	77
+
+    CallNonvirtualIntMethod()       79
+    CallNonvirtualIntMethodA()      81
+    CallNonvirtualIntMethodV()	    80
+
+    CallNonvirtualLongMethod()      82
+    CallNonvirtualLongMethodA()     84
+    CallNonvirtualLongMethodV()	    83
+
+    CallNonvirtualFloatMethod()     85
+    CallNonvirtualFloatMethodA()    87
+    CallNonvirtualFloatMethodV()	86
+
+    CallNonvirtualDoubleMethod()    88
+    CallNonvirtualDoubleMethodA()   90
+    CallNonvirtualDoubleMethodV()	89
+
+参数：
+
+    env         JNI接口指针
+    clazz       目标类对象
+    obj         指向Java对象的引用
+    methodID    目标方法的ID值
+
+返回：
+
+    返回调用目标方法的返回值
+
+异常：
+
+    抛出调用目标方法时抛出的异常
+
+<a name="4.5.7"></a>
+### 4.5.7 访问静态属性
+
+<a name="4.5.7.1"></a>
+#### 4.5.7.1 GetStaticFieldID
+
+    ```c++
+    jfieldID GetStaticFieldID(JNIEnv *env, jclass clazz, const char *name, const char *sig);
+    ```
+
+返回某个类的静态属性的ID值，目标属性通过名字和签名来定位。`GetStatic<type>Field`和`SetStatic<type>Field`系列函数会通过该ID值来访问静态属性的值。
+
+对于未初始化的类，调用该函数时，会先完成类的初始化。
+
+该函数在`JNIEnv`接口函数表的索引位置是`144`。
+
+参数：
+
+    env         JNI接口指针
+    clazz       目标类对象
+    name        目标方法的名字，以自定义UTF-8编码，以0结尾
+    sig         目标方法签名，以自定义UTF-8编码，以0结尾
+
+返回：
+
+    返回目标属性的ID值；若目标属性不存在，返回"NULL"
+
+异常：
+
+    NoSuchFieldError                若目标属性不存在，抛出该错误
+    ExceptionInInitializerError     若初始化类时发生错误，抛出该错误
+    OutOfMemoryError                若系统内存不足，抛出该错误
+
+<a name="4.5.7.2"></a>
+#### 4.5.7.2 "GetStatic<type>Field"系列函数
+
+    ```c++
+    NativeType GetStatic<type>Field(JNIEnv *env, jclass clazz, jfieldID fieldID);
+    ```
+
+该系列函数用于访问目标对象的静态属性值，属性ID必须通过调用函数`GetStaticFieldID()`来获取。
+
+下表描述不同类型所对应的具体函数：
+
+    GetStaticObjectField()	    jobject
+    GetStaticBooleanField()	    jboolean
+    GetStaticByteField()	    jbyte
+    GetStaticCharField()	    jchar
+    GetStaticShortField()	    jshort
+    GetStaticIntField()	        jint
+    GetStaticLongField()	    jlong
+    GetStaticFloatField()	    jfloat
+    GetStaticDoubleField()	    jdouble
+
+下表描述了不同函数在`JNIEnv`中的索引位置：
+
+    GetStaticObjectField()	    145
+    GetStaticBooleanField()	    146
+    GetStaticByteField()	    147
+    GetStaticCharField()	    148
+    GetStaticShortField()	    149
+    GetStaticIntField()	        150
+    GetStaticLongField()	    151
+    GetStaticFloatField()	    152
+    GetStaticDoubleField()	    153
+
+参数：
+
+    env         JNI接口指针
+    clazz       目标类对象
+    fieldID     静态属性域的ID值
+
+返回：
+
+    返回静态属性的值
+
+<a name="4.5.7.3"></a>
+#### 4.5.7.3 "SetStatic<type>Field"系列函数
+
+    ```c++
+    void SetStatic<type>Field(JNIEnv *env, jclass clazz, jfieldID fieldID, NativeType value);
+    ```
+
+该函数用于设置某个对象的目标属性值。目标属性的ID值需要通过调用函数`GetStaticFieldID()`来获取。
+
+下表描述不同类型所对应的具体函数：
+
+    SetStaticObjectField()	    jobject
+    SetStaticBooleanField()	    jboolean
+    SetStaticByteField()	    jbyte
+    SetStaticCharField()	    jchar
+    SetStaticShortField()	    jshort
+    SetStaticIntField()	        jint
+    SetStaticLongField()	    jlong
+    SetStaticFloatField()	    jfloat
+    SetStaticDoubleField()	    jdouble
+
+下表描述了不同函数在`JNIEnv`中的索引位置：
+
+    SetStaticObjectField()	    154
+    SetStaticBooleanField()	    155
+    SetStaticByteField()	    156
+    SetStaticCharField()	    157
+    SetStaticShortField()	    158
+    SetStaticIntField()	        159
+    SetStaticLongField()	    160
+    SetStaticFloatField()	    161
+    SetStaticDoubleField()	    162
+
+参数：
+
+    env         JNI接口指针
+    clazz       目标类对象
+    fieldID     目标属性域的ID
+    value       待设置的属性值。
+
+<a name="4.5.8"></a>
+### 4.5.8 调用静态方法
+
+<a name="4.5.8.1"></a>
+#### 4.5.8.1 GetStaticMethodID
+
+    ```c++
+    jmethodID GetStaticMethodID(JNIEnv *env, jclass clazz, const char *name, const char *sig);
+    ```
+
+返回某个静态方法的ID值，目标方法由方法名和签名来定位。
+
+对于未初始化的类，调用该方法时，会先进行类的初始化。
+
+该函数在`JNIEnv`接口函数表的索引位置是`113`。
+
+参数：
+
+    env         JNI接口指针
+    clazz       目标类对象
+    name        目标方法的名字，以自定义UTF-8编码，以0结尾
+    sig         目标方法签名，以自定义UTF-8编码，以0结尾
+
+返回：
+
+    返回目标方法的ID值；若操作失败，返回"NULL"
+
+异常：
+
+    NoSuchMethodError               若目标方法不存在，抛出该错误
+    ExceptionInInitializerError     若初始化类时发生错误，抛出该错误
+    OutOfMemoryError                若系统内存不足，抛出该错误
+
+<a name="4.5.8.2"></a>
+#### 4.5.8.2 "CallStatic<type>Method" "CallStatic<type>MethodA" "CallStatic<type>MethodV"系列函数
+
+    ```c++
+    NativeType CallStatic<type>Method(JNIEnv *env, jclass clazz, jmethodID methodID, ...);
+
+    NativeType CallStatic<type>MethodA(JNIEnv *env, jclass clazz, jmethodID methodID, jvalue *args);
+
+    NativeType CallStatic<type>MethodV(JNIEnv *env, jclass clazz, jmethodID methodID, va_list args);
+    ```
+
+这3个系列函数用于调用由参数`methodID`指定的静态方法。
+
+* `CallStatic<type>Method`： 开发者将传递给目标函数的参数直接放到参数`methodID`后面即可，函数`CallStatic<type>Method`会将这些参数传递给目标函数。
+* `CallStatic<type>MethodA`： 开发者需要将传递给目标函数的参数包装为一个`jvalues`类型的数组，放置在参数`methodID`后面，`CallStatic<type>MethodA`从数组中获取参数，再传给目标函数。
+* `CallStatic<type>MethodV`： 开发者需要将传递给目标函数的参数包装为类型为`va_list`的参数，放置在参数`methodID`后面，`CallStatic<type>MethodV`从数组中获取参数，再传给目标函数。
+
+下表描述不同类型所对应的具体函数：
+
+    CallStaticVoidMethod()      CallStaticVoidMethodA()     CallStaticVoidMethodV()	    void
+    CallStaticObjectMethod()    CallStaticObjectMethodA()   CallStaticObjectMethodV()	jobject
+    CallStaticBooleanMethod()   CallStaticBooleanMethodA()  CallStaticBooleanMethodV()	jboolean
+    CallStaticByteMethod()      CallStaticByteMethodA()     CallStaticByteMethodV()	    jbyte
+    CallStaticCharMethod()      CallStaticCharMethodA()     CallStaticCharMethodV()	    jchar
+    CallStaticShortMethod()     CallStaticShortMethodA()    CallStaticShortMethodV()	jshort
+    CallStaticIntMethod()       CallStaticIntMethodA()      CallStaticIntMethodV()	    jint
+    CallStaticLongMethod()      CallStaticLongMethodA()     CallStaticLongMethodV()	    jlong
+    CallStaticFloatMethod()     CallStaticFloatMethodA()    CallStaticFloatMethodV()	jfloat
+    CallStaticDoubleMethod()    CallStaticDoubleMethodA()   CallStaticDoubleMethodV()	jdouble
+
+下表描述了不同函数在`JNIEnv`中的索引位置：
+
+    CallStaticVoidMethod()      141
+    CallStaticVoidMethodA()     143
+    CallStaticVoidMethodV()	    142
+
+    CallStaticObjectMethod()    114
+    CallStaticObjectMethodA()   116
+    CallStaticObjectMethodV()	115
+
+    CallStaticBooleanMethod()   117
+    CallStaticBooleanMethodA()  119
+    CallStaticBooleanMethodV()	118
+
+    CallStaticByteMethod()      120
+    CallStaticByteMethodA()     122
+    CallStaticByteMethodV()	    121
+
+    CallStaticCharMethod()      123
+    CallStaticCharMethodA()     125
+    CallStaticCharMethodV()	    124
+
+    CallStaticShortMethod()     126
+    CallStaticShortMethodA()    128
+    CallStaticShortMethodV()	127
+
+    CallStaticIntMethod()       129
+    CallStaticIntMethodA()      131
+    CallStaticIntMethodV()	    130
+
+    CallStaticLongMethod()      132
+    CallStaticLongMethodA()     134
+    CallStaticLongMethodV()	    133
+
+    CallStaticFloatMethod()     135
+    CallStaticFloatMethodA()    137
+    CallStaticFloatMethodV()	136
+
+    CallStaticDoubleMethod()    138
+    CallStaticDoubleMethodA()   140
+    CallStaticDoubleMethodV()	139
+
+参数：
+
+    env         JNI接口指针
+    clazz       目标类对象
+    methodID    目标方法的ID值
+
+返回：
+
+    返回调用目标方法的返回值
+
+异常：
+
+    抛出调用目标方法时抛出的异常
+
+<a name="4.5.9"></a>
+### 4.5.9 字符串操作
+
+<a name="4.5.9.1"></a>
+#### 4.5.9.1 NewString
+
+    ```c++
+    jstring NewString(JNIEnv *env, const jchar *unicodeChars, jsize len);
+    ```
+
+该用法用于以根据Unicode字符数组创建新的`java.lang.String`对象。
+
+该系列函数在`JNIEnv`接口函数表的索引位置是`163`。
+
+参数：
+
+    env             JNI接口指针
+    unicodeChars    指向Unicode字符串的指针
+    len             Unicode字符串的长度
+
+返回：
+
+    返回新创建的"java.lang.Object"对象；如果无法创建新对象，则返回"NULL"
+
+异常：
+
+    OutOfMemoryError    若系统内存不足，则抛出该错误
+
+<a name="4.5.9.2"></a>
+#### 4.5.9.2 GetStringLength
+
+    ```c++
+    jsize GetStringLength(JNIEnv *env, jstring string);
+    ```
+
+返回Java字符串的长度，即Unicode字符的个数。
+
+该系列函数在`JNIEnv`接口函数表的索引位置是`164`。
+
+参数：
+
+    env             JNI接口指针
+    string          Java的字符串对象
+
+返回：
+
+    返回字符串的长度
+
+<a name="4.5.9.3"></a>
+#### 4.5.9.3 GetStringChars
+
+    ```c++
+    const jchar * GetStringChars(JNIEnv *env, jstring string, jboolean *isCopy);
+    ```
+
+返回指向字符串对象中Unicode字符数组的指针。在调用函数`ReleaseStringChars()`之后，该指针的值变为无效。
+
+当参数`isCopy`不为`NULL`时，若执行该函数进行了拷贝，则它被设置为`JNI_TRUE`；否则被它被设置为`JNI_FALSE`。
+
+该系列函数在`JNIEnv`接口函数表的索引位置是`165`。
+
+参数：
+
+    env             JNI接口指针
+    string          Java的字符串对象
+    isCopy          指向布尔值的指针
+
+返回：
+
+    返回指向Unicode字符串的指针；如果操作失败，返回"NULL"
+
+<a name="4.5.9.3"></a>
+#### 4.5.9.3 ReleaseStringChars
+
+    ```c++
+    void ReleaseStringChars(JNIEnv *env, jstring string, const jchar *chars);
+    ```
+
+
+Informs the VM that the native code no longer needs access to chars. The chars argument is a pointer obtained from string using GetStringChars().
+
+LINKAGE:
+Index 166 in the JNIEnv interface function table.
+PARAMETERS:
+env: the JNI interface pointer.
+
+string: a Java string object.
+
+chars: a pointer to a Unicode string.
+
+
+
 
 
 
@@ -1744,3 +2250,16 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 [67]:   #4.5.5.3
 [68]:   #4.5.6
 [69]:   #4.5.6.1
+[70]:   #4.5.6.2
+[71]:   #4.5.6.3
+[72]:   #4.5.7
+[73]:   #4.5.7.1
+[74]:   #4.5.7.2
+[75]:   #4.5.7.3
+[76]:   #4.5.8
+[77]:   #4.5.8.1
+[78]:   #4.5.8.2
+[79]:   #4.5.9
+[80]:   #4.5.9.1
+[81]:   #4.5.9.2
+[82]:   #4.5.9.3
