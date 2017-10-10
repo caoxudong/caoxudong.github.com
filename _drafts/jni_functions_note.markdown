@@ -65,6 +65,16 @@ tags:       [java, jni, jvm]
         * [4.5.4 对象操作][57]
             * [4.5.4.1 AllocObject][58]
             * [4.5.4.2 NewObject, NewObjectA, NewObjectV][59]
+            * [4.5.4.3 GetObjectClass][60]
+            * [4.5.4.4 GetObjectRefType][61]
+            * [4.5.4.5 IsInstanceOf][62]
+            * [4.5.4.6 IsSameObject][63]
+        * [4.5.5 访问对象的属性][64]
+            * [4.5.5.1 GetFieldID][65]
+            * [4.5.5.2 "Get<type>Field"系列函数][65]
+            * [4.5.5.3 "Set<type>Field"系列函数][66]
+        * [4.5.6 调用实例方法][67]
+            * [4.5.6.1 GetMethodID][68]
             
 
 
@@ -1366,7 +1376,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
     jobject NewObjectV(JNIEnv *env, jclass clazz, jmethodID methodID, va_list args);
     ```
 
-这三个函数均可用来构造新的Java对象。其中，参数`methodID`用于指定调用哪个构造函数来初始化对象，其参数值必须是以`<init>`为方法名，以`void (V)`作为返回值调用函数`GetMethodID`所得。
+这三个函数均可用来构造新的Java对象。其中，参数`methodID`用于指定调用哪个构造函数来初始化对象，其参数值必须是以`<init>`为方法名，以`void(V)`作为返回值调用函数`GetMethodID`所得。
 
 参数`clazz`不可以是数组类型。
 
@@ -1404,16 +1414,252 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
     OutOfMemoryError            若系统内存不足，则抛出该异常
     构造函数本身可能抛出的异常。
 
+<a name="4.5.4.3"></a>
+#### 4.5.4.3 GetObjectClass
 
+    ```c++
+    jclass GetObjectClass(JNIEnv *env, jobject obj);
+    ```
 
+返回某个对象的类型对象。
 
+该函数在`JNIEnv`接口函数表的索引位置为`31`。
 
+参数：
+    env         JNI接口指针
+    obj         目标对象，不可以为"NULL"
 
+返回：
 
+    返回某个对象的类型对象。
 
+异常：
 
+    InstantiationException      若clazz指向接口或其他抽象类型，则抛出该异常
+    OutOfMemoryError            若系统内存不足，则抛出该异常
 
+<a name="4.5.4.4"></a>
+#### 4.5.4.4 GetObjectRefType
 
+    ```c++
+    jobjectRefType GetObjectRefType(JNIEnv* env, jobject obj);
+    ```
+
+返回目标对象的引用类型，其结果可能是局部引用、全局引用或弱全局引用。
+
+该函数在`JNIEnv`接口函数表的索引位置为`232`。
+
+参数：
+    env         JNI接口指针
+    obj         目标对象
+
+返回：
+
+    返回某个对象的类型对象。
+    JNIInvalidRefType       = 0,
+    JNILocalRefType         = 1,
+    JNIGlobalRefType        = 2,
+    JNIWeakGlobalRefType    = 3
+
+其中，无效的引用类型是指，参数`obj`所指向的地址并不是由创建引用类型的函数或JNI函数所分配。例如`NULL`并不是有效的引用，因此`GetObjectRefType(env,NULL)`会返回`JNIInvalidRefType`。
+
+另一方面，对于空引用，函数会返回创建该空引用时所用的引用类型。
+
+函数`GetObjectRefType`不能用于已经被删除的引用。引用通常实现为指向内存中数据结构的指针，而目标数据结构可能会被JVM中其他引用分配服务所复用，因此一旦删除某个引用所指向的数据结构后，函数`GetObjectRefType`就无法指定返回值了。
+
+该函数自JDK/JRE 1.6起可以使用。
+
+<a name="4.5.4.5"></a>
+#### 4.5.4.5 IsInstanceOf
+
+    ```c++
+    jboolean IsInstanceOf(JNIEnv *env, jobject obj, jclass clazz);
+    ```
+
+该函数用于判断目标对象是否是某个类型的实例。
+
+该函数在`JNIEnv`接口函数表的索引位置为`32`。
+
+参数：
+    env         JNI接口指针
+    obj         目标对象
+    clazz       目标类型
+
+返回：
+
+    如果目标对象可以被扩展类目标类型，则返回"JNI_TRUE"；否则返回"JNI_FALSE"。
+
+<a name="4.5.4.5"></a>
+#### 4.5.4.5 IsSameObject
+
+    ```c++
+    jboolean IsSameObject(JNIEnv *env, jobject ref1, jobject ref2);
+    ```
+
+判断参数中两个引用是否指向同一个Java对象。
+
+该函数在`JNIEnv`接口函数表的索引位置为`24`。
+
+参数：
+    env         JNI接口指针
+    ref1        对象引用1
+    ref2        对象引用2
+
+返回：
+
+    若是，则返回"JNI_TRUE"；否则返回"JNI_FALSE"。
+
+<a name="4.5.5"></a>
+### 4.5.5 访问对象的属性
+
+<a name="4.5.5.1"></a>
+#### 4.5.5.1 GetFieldID
+
+    ```c++
+    jfieldID GetFieldID(JNIEnv *env, jclass clazz, const char *name, const char *sig);
+    ```
+
+该函数返回某个类型的实例属性的ID，目标属性由属性名和签名来指定。`Get<type>Field`和`Set<type>Field`系列函数使用该ID值来获取属性的值。
+
+对未初始化的类调用该函数时，会先初始化目标类。
+
+该函数无法获取数组的长度；应该使用`GetArrayLength()`。
+
+该函数在`JNIEnv`接口函数表的索引位置为`94`。
+
+参数：
+    env         JNI接口指针
+    clazz       目标类型
+    name        属性名，以自定义UTF-8编码，以0结尾
+    sig         签名，以自定义UTF-8编码，以0结尾
+
+返回：
+
+    返回属性ID；若操作失败，返回"NULL"
+
+异常：
+
+    NoSuchFieldError                若没有目标属性，则抛出该错误
+    ExceptionInInitializerError     若类初始化事变，则抛出该错误
+    OutOfMemoryError                若内存不足，则抛出该错误
+
+<a name="4.5.5.2"></a>
+#### 4.5.5.2 "Get<type>Field"系列函数
+
+    ```c++
+    NativeType Get<type>Field(JNIEnv *env, jobject obj, jfieldID fieldID);
+    ```
+
+该系列函数用于获取目标实例的目标属性的值，其中目标属性`fieldID`是通过`GetFieldID()`函数所得。
+
+下面的内容描述了不同类型的函数和返回类型的对应关系。
+
+    GetObjectField()	jobject
+    GetBooleanField()	jboolean
+    GetByteField()	    jbyte
+    GetCharField()	    jchar
+    GetShortField()	    jshort
+    GetIntField()	    jint
+    GetLongField()	    jlong
+    GetFloatField()	    jfloat
+    GetDoubleField()	jdouble
+
+该系列函数在`JNIEnv`接口函数表的索引位置如下所示：
+
+    GetObjectField()	95
+    GetBooleanField()	96
+    GetByteField()	    97
+    GetCharField()	    98
+    GetShortField()	    99
+    GetIntField()	    100
+    GetLongField()	    101
+    GetFloatField()	    102
+    GetDoubleField()	103
+
+参数：
+
+    env         JNI接口指针
+    obj         指向Java对象的引用，不可以为"NULL"
+    fieldID     有效的属性ID
+
+返回：
+
+    返回目标属性的值。
+
+<a name="4.5.5.3"></a>
+#### 4.5.5.3 "Set<type>Field"系列函数
+
+    ```c++
+    void Set<type>Field(JNIEnv *env, jobject obj, jfieldID fieldID, NativeType value);
+    ```
+
+该系列函数用于对目标对象的目标属性进行赋值，其中目标属性`fieldID`是通过`GetFieldID()`函数所得。
+
+下面的内容描述了不同类型的函数和属性类型的对应关系。
+
+    SetObjectField()	jobject
+    SetBooleanField()	jboolean
+    SetByteField()	    jbyte
+    SetCharField()	    jchar
+    SetShortField()	    jshort
+    SetIntField()	    jint
+    SetLongField()	    jlong
+    SetFloatField()	    jfloat
+    SetDoubleField()	jdouble
+
+该系列函数在`JNIEnv`接口函数表的索引位置如下所示：
+
+    SetObjectField()	104
+    SetBooleanField()	105
+    SetByteField()	    106
+    SetCharField()	    107
+    SetShortField()	    108
+    SetIntField()	    109
+    SetLongField()	    110
+    SetFloatField()	    111
+    SetDoubleField()	112
+
+参数：
+
+    env         JNI接口指针
+    obj         指向Java对象的引用，不可以为"NULL"
+    fieldID     有效的属性ID
+    value       待赋值的内容
+
+<a name="4.5.6"></a>
+### 4.5.6 调用实例方法
+
+<a name="4.5.6.1"></a>
+#### 4.5.6.1 GetMethodID
+
+    ```c++
+    jmethodID GetMethodID(JNIEnv *env, jclass clazz, const char *name, const char *sig);
+    ```
+
+返回某个类或接口的实例方法ID。目标方法可能被定义于类的某个父类，并通过名字和参数来唯一定位。
+
+对未初始化的类调用该函数时，会先初始化目标类。
+
+若要获取构造函数的方法ID，需要以`<init>`作为方法名，以`void(V)`作为返回类型。
+
+该系列函数在`JNIEnv`接口函数表的索引位置是`33`。
+
+参数：
+
+    env         JNI接口指针
+    clazz       目标类型
+    name        目标方法的名字，以自定义UTF-8编码，以0结尾
+    sig         目标方法签名，以自定义UTF-8编码，以0结尾
+
+返回：
+
+    返回目标方法的ID；若找不到目标方法，返回"NULL"。
+
+异常：
+
+    NoSuchMethodError               若找不到目标方法，抛出该错误
+    ExceptionInInitializerError     若类初始化错误，抛出该错误
+    OutOfMemoryError                若系统内存不足，抛出该错误
 
 
 
@@ -1488,3 +1734,13 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 [57]:   #4.5.4
 [58]:   #4.5.4.1
 [59]:   #4.5.4.2
+[60]:   #4.5.4.3
+[61]:   #4.5.4.4
+[62]:   #4.5.4.5
+[63]:   #4.5.4.6
+[64]:   #4.5.5
+[65]:   #4.5.5.1
+[66]:   #4.5.5.2
+[67]:   #4.5.5.3
+[68]:   #4.5.6
+[69]:   #4.5.6.1
