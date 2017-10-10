@@ -62,6 +62,9 @@ tags:       [java, jni, jvm]
         * [4.5.3 弱全局引用][54]
             * [4.5.3.1 NewWeakGlobalRef][55]
             * [4.5.3.2 DeleteWeakGlobalRef][56]
+        * [4.5.4 对象操作][57]
+            * [4.5.4.1 AllocObject][58]
+            * [4.5.4.2 NewObject, NewObjectA, NewObjectV][59]
             
 
 
@@ -1323,7 +1326,83 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 
 该函数自JDK/JRE 1.2起可以使用。
 
+<a name="4.5.4"></a>
+### 4.5.4 对象操作
 
+<a name="4.5.4.1"></a>
+#### 4.5.4.1 AllocObject
+
+    ```c++
+    jobject AllocObject(JNIEnv *env, jclass clazz);
+    ```
+
+为新创建的Java对象分配内存，但不会调用构造函数。返回对该对象的引用。
+
+参数`clazz`不可以指向数组类型。
+
+该函数在`JNIEnv`接口函数表的索引位置为`27`。
+
+参数：
+    env         JNI接口指针
+    clazz       Java的类型对象
+
+返回：
+
+    返回指向Java对象的引用；若如法构造该对象，则返回"NULL"
+
+异常：
+
+    InstantiationException    若clazz指向接口或其他抽象类型，则抛出该异常
+    OutOfMemoryError          若系统内存不足，则抛出该异常
+
+<a name="4.5.4.2"></a>
+#### 4.5.4.2 NewObject, NewObjectA, NewObjectV
+
+    ```c++
+    jobject NewObject(JNIEnv *env, jclass clazz, jmethodID methodID, ...);
+
+    jobject NewObjectA(JNIEnv *env, jclass clazz, jmethodID methodID, const jvalue *args);
+
+    jobject NewObjectV(JNIEnv *env, jclass clazz, jmethodID methodID, va_list args);
+    ```
+
+这三个函数均可用来构造新的Java对象。其中，参数`methodID`用于指定调用哪个构造函数来初始化对象，其参数值必须是以`<init>`为方法名，以`void (V)`作为返回值调用函数`GetMethodID`所得。
+
+参数`clazz`不可以是数组类型。
+
+* NewObject
+
+使用函数`NewObject`时，开发者将传递给构造函数的参数直接放到参数`methodID`后面即可，`NewObject`函数会将这些参数传递给目标类型的构造函数。
+
+该函数在`JNIEnv`接口函数表的索引位置为`28`。
+
+* NewObjectA
+
+使用函数`NewObjectA`时，开发者需要将传递给构造函数的参数包装为一个`jvalues`类型的数组，放置在参数`methodID`后面，`newObjectA`从数组中获取参数，再传给目标类型的构造函数。
+
+该函数在`JNIEnv`接口函数表的索引位置为`30`。
+
+* NewObjectV
+
+使用函数`NewObjectV`时，开发者需要将传递给构造函数的参数包装台类型为`va_list`的参数，放置在参数`methodID`后面，`newObjectV`从数组中获取参数，再传给目标类型的构造函数。
+
+该函数在`JNIEnv`接口函数表的索引位置为`29`。
+
+参数：
+    env         JNI接口指针
+    clazz       Java的类型对象
+    methodID    目标构造函数的ID值
+    args        要传递给构造函数的参数
+
+返回：
+
+    返回指向Java对象的引用；若无法构造该对象，返回NULL
+
+异常：
+
+    InstantiationException      若clazz指向接口或其他抽象类型，则抛出该异常
+    OutOfMemoryError            若系统内存不足，则抛出该异常
+    构造函数本身可能抛出的异常。
 
 
 
@@ -1406,3 +1485,6 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 [54]:   #4.5.3
 [55]:   #4.5.3.1
 [56]:   #4.5.3.2
+[57]:   #4.5.4
+[58]:   #4.5.4.1
+[59]:   #4.5.4.2
