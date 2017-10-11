@@ -113,6 +113,16 @@ tags:       [java, jni, jvm]
             * [4.5.12.1 MonitorEnter][105]
             * [4.5.12.2 MonitorExit][106]
         * [4.5.13 NIO支持][107]
+            * [4.5.13.1 NewDirectByteBuffer][110]
+            * [4.5.13.2 GetDirectBufferAddress][111]
+            * [4.5.13.3 GetDirectBufferCapacity][112]
+        * [4.5.14 反射支持][113]
+            * [4.5.14.1 FromReflectedMethod][114]
+            * [4.5.14.2 FromReflectedField][115]
+            * [4.5.14.3 ToReflectedMethod][116]
+            * [4.5.14.4 ToReflectedField][117]
+        * [4.5.15 JVM接口][118]
+            * [4.5.15.1 GetJavaVM][119]
             
             
 
@@ -2877,16 +2887,187 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 <a name="4.5.13"></a>
 ### 4.5.13 NIO支持
 
-The NIO-related entry points allow native code to access java.nio direct buffers. The contents of a direct buffer can, potentially, reside in native memory outside of the ordinary garbage-collected heap. For information about direct buffers, please see New I/O APIs and the specification of the java.nio.ByteBuffer class.
+NIO相关的函数使本地代码可以访问`java.nio`的直接缓冲。直接缓冲的内容可能会驻留在本地内存中，而非放到可执行垃圾回收的堆中。有关直接缓冲相关的信息，参见[New I/O][108]和[java.nio.ByteBuffer][109]的说明。
 
-Three new functions introduced in JDK/JRE 1.4 allow JNI code to create, examine, and manipulate direct buffers:
-NewDirectByteBuffer
-GetDirectBufferAddress
+在JDK/JRE 1.4中，JNI引入了3个新的函数，可以创建、校验和操作直接缓冲。
+
+* [NewDirectByteBuffer][110]
+* [GetDirectBufferAddress][111]
+* [GetDirectBufferCapacity][112]
+
+所有的JVM实现都必须支持这些函数，但并不要求支持通过JNI访问直接缓冲。如果JVM不支持通过JNI访问直接缓冲，则函数`NewDirectByteBuffer`和`GetDirectBufferAddress`只能返回`NULL`，而函数`GetDirectBufferCapacity`只能返回`-1`。如果JVM支持通过JNI访问直接缓冲，则必须返回正确的值。
+
+<a name="4.5.13.1"></a>
+#### 4.5.13.1 NewDirectByteBuffer
+
+    ```c++
+    jobject NewDirectByteBuffer(JNIEnv* env, void* address, jlong capacity);
+    ```
+
+创建`java.nio.ByteBuffer`对象，并为其分配一块指定起始位置和长度的内存。
+
+调用该函数的本地代码，必须确保缓冲区指向了一块有效的内存区域，至少是可读的，某些场景下，还需要是可写的。在Java代码中访问无效内存区域的话，可能会返回任意值，可能会无效，或是抛出未指定的异常。
+
+函数在`JNIEnv`接口函数中的索引位置为`229`。
+
+参数：
+
+    env             JNI接口指针
+    address         内存区域的开始位置，不可为NULL
+    capacity        要开辟的内存区域的大小，单位是字节
+
+返回：
+
+    返回一个指向新创建的"java.nio.ByteBuffer"的局部引用。如果函数调用发生异常，或是JVM不支持通过JNI访问直接缓冲，返回NULL
+
+异常：
+
+    OutOfMemoryError    若分配ByteBuffer对象失败，抛出该错误
+
+该函数自JDK/JRE 1.4之后可用。
+
+<a name="4.5.13.2"></a>
+#### 4.5.13.2 GetDirectBufferAddress
+
+    ```c++
+    void* GetDirectBufferAddress(JNIEnv* env, jobject buf);
+    ```
+
+返回`java.nio.Buffer`对象所引用的内存区域的起始位置。
+
+该函数使本地代码与Java代码可以访问同一块直接缓冲。
+
+函数在`JNIEnv`接口函数中的索引位置为`230`。
+
+参数：
+
+    env             JNI接口指针
+    buf             "java.nio.Buffer"对象的引用，不可以为NULL
+
+返回：
+
+    返回直接缓冲的起始位置。
+
+    以下情况返回"NULL"：
+    * 内存区域未定义
+    * 参数"buf"不是"java.nio.Buffer"对象
+    * JVM不支持通过JNI访问直接缓冲
+
+该函数自JDK/JRE 1.4之后可用。
+
+<a name="4.5.13.3"></a>
+#### 4.5.13.3 GetDirectBufferCapacity
+
 GetDirectBufferCapacity
-Every implementation of the Java virtual machine must support these functions, but not every implementation is required to support JNI access to direct buffers. If a JVM does not support such access then the NewDirectByteBuffer and GetDirectBufferAddress functions must always return NULL, and the GetDirectBufferCapacity function must always return -1. If a JVM does support such access then these three functions must be implemented to return the appropriate values.
 
+    ```c++
+    jlong GetDirectBufferCapacity(JNIEnv* env, jobject buf);
+    ```
 
+返回直接缓冲的大小，
+Fetches and returns the capacity of the memory region referenced by the given direct java.nio.Buffer. The capacity is the number of elements that the memory region contains.
 
+函数在`JNIEnv`接口函数中的索引位置为`231`。
+
+参数：
+
+    env             JNI接口指针
+    buf             "java.nio.Buffer"对象的引用，不可以为NULL
+
+返回：
+
+    返回直接缓冲去的大小。
+
+    以下情况返回"NULL"：
+    * 参数"buf"所指向的不是"java.nio.Buffer"对象
+    * JVM不支持通过JNI访问直接缓冲
+    * 参数"buf"所指向的未对齐的视图缓冲，而且处理器架构不支持访问未对齐的内存区域
+
+该函数自JDK/JRE 1.4之后可用。
+
+<a name="4.5.14"></a>
+### 4.5.14 反射支持
+
+开发者可以通过JNI函数来访问Java的方法和属性。Java的反射API使开发者可以在运行时获取Java类的内部信息。JNI提供了一系列转换方法使开发者可以方便的将JNI中的方法/属性ID值转换为反射调用所需的方法和属性对象。
+
+<a name="4.5.14.1"></a>
+#### 4.5.14.1 FromReflectedMethod
+
+    ```c++
+    jmethodID FromReflectedMethod(JNIEnv *env, jobject method);
+    ```
+
+将`java.lang.reflect.Method`对象或`java.lang.reflect.Constructor`转换为JNI的方法ID。
+
+函数在`JNIEnv`接口函数中的索引位置为`7`。
+
+该函数自JDK/JRE 1.2之后可用。
+
+<a name="4.5.14.2"></a>
+#### 4.5.14.2 FromReflectedField
+
+    ```c++
+    jfieldID FromReflectedField(JNIEnv *env, jobject field);
+    ```
+
+将`java.lang.reflect.Field`对象转换为JNI的属性ID。
+
+函数在`JNIEnv`接口函数中的索引位置为`8`。
+
+该函数自JDK/JRE 1.2之后可用。
+
+<a name="4.5.14.3"></a>
+#### 4.5.14.3 ToReflectedMethod
+
+    ```c++
+    jobject ToReflectedMethod(JNIEnv *env, jclass cls, jmethodID methodID, jboolean isStatic);
+    ```
+
+将方法ID转换为`java.lang.reflect.Method`或`java.lang.reflect.Constructor`对象。参数`isStatic`用于表示目标方法是否是静态方法。
+
+如果方法执行失败，返回`0`，并抛出`OutOfMemoryError`错误。
+
+函数在`JNIEnv`接口函数中的索引位置为`9`。
+
+该函数自JDK/JRE 1.2之后可用。
+
+<a name="4.5.14.4"></a>
+#### 4.5.14.4 ToReflectedField
+
+    ```c++
+    jobject ToReflectedField(JNIEnv *env, jclass cls, jfieldID fieldID, jboolean isStatic);
+    ```
+
+将属性ID转换为`java.lang.reflect.Field`对象，参数`isStatic`用于表示目标属性是否是静态属性。
+
+如果方法执行失败，返回`0`，并抛出`OutOfMemoryError`错误。
+
+函数在`JNIEnv`接口函数中的索引位置为`12`。
+
+该函数自JDK/JRE 1.2之后可用。
+
+<a name="4.5.15"></a>
+### 4.5.15 JVM接口
+
+<a name="4.5.15.1"></a>
+#### 4.5.15.1 GetJavaVM
+
+    ```c++
+    jint GetJavaVM(JNIEnv *env, JavaVM **vm);
+    ```
+
+返回与当前线程关联的JVM接口。执行结果存放于参数`vm`中。
+
+函数在`JNIEnv`接口函数中的索引位置为`219`。
+
+参数：
+
+    env             JNI接口指针
+    vm              用于返回结果的指针
+
+返回：
+
+    若执行成功，返回"0"，否则返回负数。
 
 
 
@@ -3006,3 +3187,15 @@ Every implementation of the Java virtual machine must support these functions, b
 [105]:   #4.5.12.1
 [106]:   #4.5.12.2
 [107]:   #4.5.13
+[108]:   http://docs.oracle.com/javase/8/docs/technotes/guides/io/index.html
+[109]:   http://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html
+[110]:   #4.5.13.1
+[111]:   #4.5.13.2
+[112]:   #4.5.13.3
+[113]:   #4.5.14
+[114]:   #4.5.14.1
+[115]:   #4.5.14.2
+[116]:   #4.5.14.3
+[117]:   #4.5.14.4
+[118]:   #4.5.15
+[119]:   #4.5.15.1
