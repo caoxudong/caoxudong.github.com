@@ -75,15 +75,15 @@ tags:       [java, jni, jvm]
             * [4.5.5.3 `Set<type>Field`系列函数][67]
         * [4.5.6 调用实例方法][68]
             * [4.5.6.1 GetMethodID][69]
-            * [4.5.6.2 "Call<type>Method" "Call<type>MethodA"和"Call<type>MethodV"系列函数][70]
-            * [4.5.6.3 "CallNonvirtual<type>Method" "CallNonvirtual<type>MethodA" "CallNonvirtual<type>MethodV"系列函数][71]
+            * [4.5.6.2 `Call<type>Method` `Call<type>MethodA`和`Call<type>MethodV`系列函数][70]
+            * [4.5.6.3 `CallNonvirtual<type>Method` `CallNonvirtual<type>MethodA` `CallNonvirtual<type>MethodV`系列函数][71]
         * [4.5.7 访问静态属性][72]
             * [4.5.7.1 GetStaticFieldID][73]
-            * [4.5.7.2 "GetStatic<type>Field"系列函数][74]
-            * [4.5.7.3 "SetStatic<type>Field"系列函数][75]
+            * [4.5.7.2 `GetStatic<type>Field`系列函数][74]
+            * [4.5.7.3 `SetStatic<type>Field`系列函数][75]
         * [4.5.8 调用静态方法][76]
             * [4.5.8.1 GetStaticMethodID][77]
-            * [4.5.8.2 "CallStatic<type>Method" "CallStatic<type>MethodA" "CallStatic<type>MethodV"系列函数][78]
+            * [4.5.8.2 `CallStatic<type>Method` `CallStatic<type>MethodA` `CallStatic<type>MethodV`系列函数][78]
         * [4.5.9 字符串操作][79]
             * [4.5.9.1 NewString][80]
             * [4.5.9.2 GetStringChars][81]
@@ -100,11 +100,11 @@ tags:       [java, jni, jvm]
             * [4.5.10.2 NewObjectArray][92]
             * [4.5.10.3 GetObjectArrayElement][93]
             * [4.5.10.4 SetObjectArrayElement][94]
-            * [4.5.10.5 "New<PrimitiveType>Array"系列函数][95]
-            * [4.5.10.6 "Get<PrimitiveType>ArrayElements"系列函数][96]
-            * [4.5.10.7 "Release<PrimitiveType>ArrayElements"系列函数][97]
-            * [4.5.10.8 "Get<PrimitiveType>ArrayRegion"系列函数][98]
-            * [4.5.10.9 "Set<PrimitiveType>ArrayRegion"系列函数][99]
+            * [4.5.10.5 `New<PrimitiveType>Array`系列函数][95]
+            * [4.5.10.6 `Get<PrimitiveType>ArrayElements`系列函数][96]
+            * [4.5.10.7 `Release<PrimitiveType>ArrayElements`系列函数][97]
+            * [4.5.10.8 `Get<PrimitiveType>ArrayRegion`系列函数][98]
+            * [4.5.10.9 `Set<PrimitiveType>ArrayRegion`系列函数][99]
             * [4.5.10.10 GetPrimitiveArrayCritical, ReleasePrimitiveArrayCritical][100]
         * [4.5.11 注册本地方法][101]
             * [4.5.11.1 RegisterNatives][102]
@@ -1581,7 +1581,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
     OutOfMemoryError                若内存不足，则抛出该错误
 
 <a name="4.5.5.2"></a>
-#### 4.5.5.2 "Get<type>Field"系列函数
+#### 4.5.5.2 `Get<type>Field`系列函数
 
     ```c++
     NativeType Get<type>Field(JNIEnv *env, jobject obj, jfieldID fieldID);
@@ -1626,7 +1626,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
     返回目标属性的值。
 
 <a name="4.5.5.3"></a>
-#### 4.5.5.3 "Set<type>Field"系列函数
+#### 4.5.5.3 `Set<type>Field`系列函数
 
     ```c++
     void Set<type>Field(JNIEnv *env, jobject obj, jfieldID fieldID, NativeType value);
@@ -1703,7 +1703,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
     OutOfMemoryError                若系统内存不足，抛出该错误
 
 <a name="4.5.6.2"></a>
-#### 4.5.6.2 "Call<type>Method" "Call<type>MethodA"和"Call<type>MethodV"系列函数
+#### 4.5.6.2 `Call<type>Method` `Call<type>MethodA`和`Call<type>MethodV`系列函数
 
     ```c++
     NativeType Call<type>Method(JNIEnv *env, jobject obj, jmethodID methodID, ...);
@@ -1806,7 +1806,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
     抛出在执行目标方法时抛出的异常
 
 <a name="4.5.6.3"></a>
-#### 4.5.6.3 "CallNonvirtual<type>Method" "CallNonvirtual<type>MethodA" "CallNonvirtual<type>MethodV"系列函数
+#### 4.5.6.3 `CallNonvirtual<type>Method` `CallNonvirtual<type>MethodA` `CallNonvirtual<type>MethodV`系列函数
 
     ```c++
     NativeType CallNonvirtual<type>Method(JNIEnv *env, jobject obj, jclass clazz, jmethodID methodID, ...);
@@ -1941,7 +1941,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
     OutOfMemoryError                若系统内存不足，抛出该错误
 
 <a name="4.5.7.2"></a>
-#### 4.5.7.2 "GetStatic<type>Field"系列函数
+#### 4.5.7.2 `GetStatic<type>Field`系列函数
 
     ```c++
     NativeType GetStatic<type>Field(JNIEnv *env, jclass clazz, jfieldID fieldID);
@@ -1986,7 +1986,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
     返回静态属性的值
 
 <a name="4.5.7.3"></a>
-#### 4.5.7.3 "SetStatic<type>Field"系列函数
+#### 4.5.7.3 `SetStatic<type>Field`系列函数
 
     ```c++
     void SetStatic<type>Field(JNIEnv *env, jclass clazz, jfieldID fieldID, NativeType value);
@@ -2061,7 +2061,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
     OutOfMemoryError                若系统内存不足，抛出该错误
 
 <a name="4.5.8.2"></a>
-#### 4.5.8.2 "CallStatic<type>Method" "CallStatic<type>MethodA" "CallStatic<type>MethodV"系列函数
+#### 4.5.8.2 `CallStatic<type>Method` `CallStatic<type>MethodA` `CallStatic<type>MethodV`系列函数
 
     ```c++
     NativeType CallStatic<type>Method(JNIEnv *env, jclass clazz, jmethodID methodID, ...);
@@ -2487,7 +2487,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
     ArrayStoreException                 若待设置的值不是数组类型的子类，则抛出该异常
 
 <a name="4.5.10.5"></a>
-#### 4.5.10.5 "New<PrimitiveType>Array"系列函数
+#### 4.5.10.5 `New<PrimitiveType>Array`系列函数
 
     ```c++
     ArrayType New<PrimitiveType>Array(JNIEnv *env, jsize length);
@@ -2529,7 +2529,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
     返回新创建的对象；若无法创建，则返回"NULL"
 
 <a name="4.5.10.6"></a>
-#### 4.5.10.6 "Get<PrimitiveType>ArrayElements"系列函数
+#### 4.5.10.6 `Get<PrimitiveType>ArrayElements`系列函数
 
     ```c++
     NativeType *Get<PrimitiveType>ArrayElements(JNIEnv *env, ArrayType array, jboolean *isCopy);
@@ -2579,7 +2579,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
     返回指向数组元素的指针；若操作失败，则返回"NULL"
 
 <a name="4.5.10.7"></a>
-#### 4.5.10.7 "Release<PrimitiveType>ArrayElements"系列函数
+#### 4.5.10.7 `Release<PrimitiveType>ArrayElements`系列函数
 
     ```c++
     void Release<PrimitiveType>ArrayElements(JNIEnv *env, ArrayType array, NativeType *elems, jint mode);
@@ -2628,7 +2628,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
     mode            释放方式
 
 <a name="4.5.10.8"></a>
-#### 4.5.10.8 "Get<PrimitiveType>ArrayRegion"系列函数
+#### 4.5.10.8 `Get<PrimitiveType>ArrayRegion`系列函数
 
     ```c++
     void Get<PrimitiveType>ArrayRegion(JNIEnv *env, ArrayType array, jsize start, jsize len, NativeType *buf);
@@ -2673,7 +2673,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
     ArrayIndexOutOfBoundsException      若指定的索引不在指定数组的有效范围内，抛出该异常
 
 <a name="4.5.10.9"></a>
-#### 4.5.10.9 "Set<PrimitiveType>ArrayRegion"系列函数
+#### 4.5.10.9 `Set<PrimitiveType>ArrayRegion`系列函数
 
     ```c++
     void Set<PrimitiveType>ArrayRegion(JNIEnv *env, ArrayType array, jsize start, jsize len, const NativeType *buf);
