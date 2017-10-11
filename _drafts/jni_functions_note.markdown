@@ -88,6 +88,32 @@ tags:       [java, jni, jvm]
             * [4.5.9.1 NewString][80]
             * [4.5.9.2 GetStringChars][81]
             * [4.5.9.3 ReleaseStringChars][82]
+            * [4.5.9.4 NewStringUTF][83]
+            * [4.5.9.5 GetStringUTFLength][84]
+            * [4.5.9.6 GetStringUTFChars][85]
+            * [4.5.9.7 ReleaseStringUTFChars][86]
+            * [4.5.9.8 GetStringRegion][87]
+            * [4.5.9.9 GetStringUTFRegion][88]
+            * [4.5.9.10 GetStringCritical, ReleaseStringCritical][89]
+        * [4.5.10 数组操作][90]
+            * [4.5.10.1 GetArrayLength][91]
+            * [4.5.10.2 NewObjectArray][92]
+            * [4.5.10.3 GetObjectArrayElement][93]
+            * [4.5.10.4 SetObjectArrayElement][94]
+            * [4.5.10.5 "New<PrimitiveType>Array"系列函数][95]
+            * [4.5.10.6 "Get<PrimitiveType>ArrayElements"系列函数][96]
+            * [4.5.10.7 "Release<PrimitiveType>ArrayElements"系列函数][97]
+            * [4.5.10.8 "Get<PrimitiveType>ArrayRegion"系列函数][98]
+            * [4.5.10.9 "Set<PrimitiveType>ArrayRegion"系列函数][99]
+            * [4.5.10.10 GetPrimitiveArrayCritical, ReleasePrimitiveArrayCritical][100]
+        * [4.5.11 注册本地方法][101]
+            * [4.5.11.1 RegisterNatives][102]
+            * [4.5.11.2 UnregisterNatives][103]
+        * [4.5.12 监视器操作][104]
+            * [4.5.12.1 MonitorEnter][105]
+            * [4.5.12.2 MonitorExit][106]
+        * [4.5.13 NIO支持][107]
+            
             
 
 
@@ -1553,6 +1579,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 
 下面的内容描述了不同类型的函数和返回类型的对应关系。
 
+    function            native type
     GetObjectField()	jobject
     GetBooleanField()	jboolean
     GetByteField()	    jbyte
@@ -1565,6 +1592,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 
 该系列函数在`JNIEnv`接口函数表的索引位置如下所示：
 
+    function            index
     GetObjectField()	95
     GetBooleanField()	96
     GetByteField()	    97
@@ -1596,6 +1624,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 
 下面的内容描述了不同类型的函数和属性类型的对应关系。
 
+    function            type
     SetObjectField()	jobject
     SetBooleanField()	jboolean
     SetByteField()	    jbyte
@@ -1608,6 +1637,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 
 该系列函数在`JNIEnv`接口函数表的索引位置如下所示：
 
+    function            index
     SetObjectField()	104
     SetBooleanField()	105
     SetByteField()	    106
@@ -1683,55 +1713,68 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 
 下表描述不同类型所对应的具体函数：
 
-    CallVoidMethod()        CallVoidMethodA()       CallVoidMethodV()	        void
-    CallObjectMethod()      CallObjectMethodA()     CallObjectMethodV()	        jobject
-    CallBooleanMethod()     CallBooleanMethodA()    CallBooleanMethodV()        jboolean
-    CallByteMethod()        CallByteMethodA()       CallByteMethodV()	        jbyte
-    CallCharMethod()        CallCharMethodA()       CallCharMethodV()	        jchar
-    CallShortMethod()       CallShortMethodA()      CallShortMethodV()	        jshort
-    CallIntMethod()         CallIntMethodA()        CallIntMethodV()	        jint
-    CallLongMethod()        CallLongMethodA()       CallLongMethodV()	        jlong
-    CallFloatMethod()       CallFloatMethodA()      CallFloatMethodV()	        jfloat
-    CallDoubleMethod()      CallDoubleMethodA()     CallDoubleMethodV()	        jdouble
+    function                    native type
+    CallVoidMethod()            void
+    CallVoidMethodA()           void
+    CallVoidMethodV()	        void
+    CallObjectMethod()          jobject
+    CallObjectMethodA()         jobject
+    CallObjectMethodV()	        jobject
+    CallBooleanMethod()         jboolena
+    CallBooleanMethodA()        jboolean
+    CallBooleanMethodV()        jboolean
+    CallByteMethod()            jbyte
+    CallByteMethodA()           jbyte
+    CallByteMethodV()	        jbyte
+    CallCharMethod()            jchar
+    CallCharMethodA()           jchar
+    CallCharMethodV()	        jchar
+    CallShortMethod()           jshort
+    CallShortMethodA()          jshort
+    CallShortMethodV()	        jshort
+    CallIntMethod()             jint
+    CallIntMethodA()            jint
+    CallIntMethodV()	        jint
+    CallLongMethod()            jlong
+    CallLongMethodA()           jlong
+    CallLongMethodV()	        jlong
+    CallFloatMethod()           jfloat
+    CallFloatMethodA()          jfloat
+    CallFloatMethodV()	        jfloat
+    CallDoubleMethod()          jdouble
+    CallDoubleMethodA()         jdouble
+    CallDoubleMethodV()	        jdouble
 
 下表展示了各个函数在`JNIEnv`接口函数表的索引：
 
+    function                index
     CallVoidMethod()        61
     CallVoidMethodA()       63
     CallVoidMethodV()	    62
-
     CallObjectMethod()      34
     CallObjectMethodA()     36
     CallObjectMethodV()	    35
-
     CallBooleanMethod()     37
     CallBooleanMethodA()    39
     CallBooleanMethodV()	38
-
     CallByteMethod()        40
     CallByteMethodA()       42
     CallByteMethodV()	    41
-
     CallCharMethod()        43
     CallCharMethodA()       45
     CallCharMethodV()	    44
-
     CallShortMethod()       46
     CallShortMethodA()      48
     CallShortMethodV()	    47
-
     CallIntMethod()         49
     CallIntMethodA()        51
     CallIntMethodV()	    50
-
     CallLongMethod()        52
     CallLongMethodA()       54
     CallLongMethodV()	    53
-
     CallFloatMethod()       55
     CallFloatMethodA()      57
     CallFloatMethodV()	    56
-
     CallDoubleMethod()      58
     CallDoubleMethodA()     60
     CallDoubleMethodV()	    59
@@ -1771,55 +1814,68 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 
 下表描述不同类型所对应的具体函数：
 
-    CallNonvirtualVoidMethod()      CallNonvirtualVoidMethodA()     CallNonvirtualVoidMethodV()	    void
-    CallNonvirtualObjectMethod()    CallNonvirtualObjectMethodA()   CallNonvirtualObjectMethodV()   jobject
-    CallNonvirtualBooleanMethod()   CallNonvirtualBooleanMethodA()  CallNonvirtualBooleanMethodV()  jboolean
-    CallNonvirtualByteMethod()      CallNonvirtualByteMethodA()     CallNonvirtualByteMethodV()	    jbyte
-    CallNonvirtualCharMethod()      CallNonvirtualCharMethodA()     CallNonvirtualCharMethodV()	    jchar
-    CallNonvirtualShortMethod()     CallNonvirtualShortMethodA()    CallNonvirtualShortMethodV()	jshort
-    CallNonvirtualIntMethod()       CallNonvirtualIntMethodA()      CallNonvirtualIntMethodV()	    jint
-    CallNonvirtualLongMethod()      CallNonvirtualLongMethodA()     CallNonvirtualLongMethodV()	    jlong
-    CallNonvirtualFloatMethod()     CallNonvirtualFloatMethodA()    CallNonvirtualFloatMethodV()	jfloat
-    CallNonvirtualDoubleMethod()    CallNonvirtualDoubleMethodA()   CallNonvirtualDoubleMethodV()	jdouble
+    function                        native type
+    CallNonvirtualVoidMethod()      void
+    CallNonvirtualVoidMethodA()     void
+    CallNonvirtualVoidMethodV()	    void
+    CallNonvirtualObjectMethod()    jobject
+    CallNonvirtualObjectMethodA()   jobject
+    CallNonvirtualObjectMethodV()   jobject
+    CallNonvirtualBooleanMethod()   jboolean
+    CallNonvirtualBooleanMethodA()  jboolean
+    CallNonvirtualBooleanMethodV()  jboolean
+    CallNonvirtualByteMethod()      jbyte
+    CallNonvirtualByteMethodA()     jbyte
+    CallNonvirtualByteMethodV()	    jbyte
+    CallNonvirtualCharMethod()      jchar
+    CallNonvirtualCharMethodA()     jchar
+    CallNonvirtualCharMethodV()	    jchar
+    CallNonvirtualShortMethod()     jshort
+    CallNonvirtualShortMethodA()    jshort
+    CallNonvirtualShortMethodV()	jshort
+    CallNonvirtualIntMethod()       jint
+    CallNonvirtualIntMethodA()      jint
+    CallNonvirtualIntMethodV()	    jint
+    CallNonvirtualLongMethod()      jlong
+    CallNonvirtualLongMethodA()     jlong
+    CallNonvirtualLongMethodV()	    jlong
+    CallNonvirtualFloatMethod()     jfloat
+    CallNonvirtualFloatMethodA()    jfloat
+    CallNonvirtualFloatMethodV()	jfloat
+    CallNonvirtualDoubleMethod()    jdouble
+    CallNonvirtualDoubleMethodA()   jdouble
+    CallNonvirtualDoubleMethodV()	jdouble
 
 下表展示了各个函数在`JNIEnv`接口函数表的索引：
 
+    function                        index
     CallNonvirtualVoidMethod()      91
     CallNonvirtualVoidMethodA()     93
     CallNonvirtualVoidMethodV()	    92
-
     CallNonvirtualObjectMethod()    64
     CallNonvirtualObjectMethodA()   66
     CallNonvirtualObjectMethodV()	65
-
     CallNonvirtualBooleanMethod()   67
     CallNonvirtualBooleanMethodA()  69
     CallNonvirtualBooleanMethodV()	68
-
     CallNonvirtualByteMethod()      70
     CallNonvirtualByteMethodA()     72
     CallNonvirtualByteMethodV()	    71
-
     CallNonvirtualCharMethod()      73
     CallNonvirtualCharMethodA()     75
     CallNonvirtualCharMethodV()	    74
-
     CallNonvirtualShortMethod()     76
     CallNonvirtualShortMethodA()    78
     CallNonvirtualShortMethodV()	77
-
     CallNonvirtualIntMethod()       79
     CallNonvirtualIntMethodA()      81
     CallNonvirtualIntMethodV()	    80
-
     CallNonvirtualLongMethod()      82
     CallNonvirtualLongMethodA()     84
     CallNonvirtualLongMethodV()	    83
-
     CallNonvirtualFloatMethod()     85
     CallNonvirtualFloatMethodA()    87
     CallNonvirtualFloatMethodV()	86
-
     CallNonvirtualDoubleMethod()    88
     CallNonvirtualDoubleMethodA()   90
     CallNonvirtualDoubleMethodV()	89
@@ -1883,6 +1939,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 
 下表描述不同类型所对应的具体函数：
 
+    function                    native type
     GetStaticObjectField()	    jobject
     GetStaticBooleanField()	    jboolean
     GetStaticByteField()	    jbyte
@@ -1895,6 +1952,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 
 下表描述了不同函数在`JNIEnv`中的索引位置：
 
+    function                    index
     GetStaticObjectField()	    145
     GetStaticBooleanField()	    146
     GetStaticByteField()	    147
@@ -1926,6 +1984,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 
 下表描述不同类型所对应的具体函数：
 
+    function                    native type
     SetStaticObjectField()	    jobject
     SetStaticBooleanField()	    jboolean
     SetStaticByteField()	    jbyte
@@ -1938,6 +1997,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 
 下表描述了不同函数在`JNIEnv`中的索引位置：
 
+    function                    index
     SetStaticObjectField()	    154
     SetStaticBooleanField()	    155
     SetStaticByteField()	    156
@@ -2007,55 +2067,68 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 
 下表描述不同类型所对应的具体函数：
 
-    CallStaticVoidMethod()      CallStaticVoidMethodA()     CallStaticVoidMethodV()	    void
-    CallStaticObjectMethod()    CallStaticObjectMethodA()   CallStaticObjectMethodV()	jobject
-    CallStaticBooleanMethod()   CallStaticBooleanMethodA()  CallStaticBooleanMethodV()	jboolean
-    CallStaticByteMethod()      CallStaticByteMethodA()     CallStaticByteMethodV()	    jbyte
-    CallStaticCharMethod()      CallStaticCharMethodA()     CallStaticCharMethodV()	    jchar
-    CallStaticShortMethod()     CallStaticShortMethodA()    CallStaticShortMethodV()	jshort
-    CallStaticIntMethod()       CallStaticIntMethodA()      CallStaticIntMethodV()	    jint
-    CallStaticLongMethod()      CallStaticLongMethodA()     CallStaticLongMethodV()	    jlong
-    CallStaticFloatMethod()     CallStaticFloatMethodA()    CallStaticFloatMethodV()	jfloat
-    CallStaticDoubleMethod()    CallStaticDoubleMethodA()   CallStaticDoubleMethodV()	jdouble
+    function                    native type
+    CallStaticVoidMethod()      void
+    CallStaticVoidMethodA()     void
+    CallStaticVoidMethodV()	    void
+    CallStaticObjectMethod()    jobject
+    CallStaticObjectMethodA()   jobejct
+    CallStaticObjectMethodV()	jobject
+    CallStaticBooleanMethod()   jboolean
+    CallStaticBooleanMethodA()  jboolean
+    CallStaticBooleanMethodV()	jboolean
+    CallStaticByteMethod()      jbyte
+    CallStaticByteMethodA()     jbyte
+    CallStaticByteMethodV()	    jbyte
+    CallStaticCharMethod()      jchar
+    CallStaticCharMethodA()     jchar
+    CallStaticCharMethodV()	    jchar
+    CallStaticShortMethod()     jshort
+    CallStaticShortMethodA()    jshort
+    CallStaticShortMethodV()	jshort
+    CallStaticIntMethod()       jint
+    CallStaticIntMethodA()      jint
+    CallStaticIntMethodV()	    jint
+    CallStaticLongMethod()      jlong
+    CallStaticLongMethodA()     jlong
+    CallStaticLongMethodV()	    jlong
+    CallStaticFloatMethod()     jfloat
+    CallStaticFloatMethodA()    jfloat
+    CallStaticFloatMethodV()	jfloat
+    CallStaticDoubleMethod()    jdouble
+    CallStaticDoubleMethodA()   jdouble
+    CallStaticDoubleMethodV()	jdouble
 
 下表描述了不同函数在`JNIEnv`中的索引位置：
 
+    function                    index
     CallStaticVoidMethod()      141
     CallStaticVoidMethodA()     143
     CallStaticVoidMethodV()	    142
-
     CallStaticObjectMethod()    114
     CallStaticObjectMethodA()   116
     CallStaticObjectMethodV()	115
-
     CallStaticBooleanMethod()   117
     CallStaticBooleanMethodA()  119
     CallStaticBooleanMethodV()	118
-
     CallStaticByteMethod()      120
     CallStaticByteMethodA()     122
     CallStaticByteMethodV()	    121
-
     CallStaticCharMethod()      123
     CallStaticCharMethodA()     125
     CallStaticCharMethodV()	    124
-
     CallStaticShortMethod()     126
     CallStaticShortMethodA()    128
     CallStaticShortMethodV()	127
-
     CallStaticIntMethod()       129
     CallStaticIntMethodA()      131
     CallStaticIntMethodV()	    130
-
     CallStaticLongMethod()      132
     CallStaticLongMethodA()     134
     CallStaticLongMethodV()	    133
-
     CallStaticFloatMethod()     135
     CallStaticFloatMethodA()    137
     CallStaticFloatMethodV()	136
-
     CallStaticDoubleMethod()    138
     CallStaticDoubleMethodA()   140
     CallStaticDoubleMethodV()	139
@@ -2086,7 +2159,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 
 该用法用于以根据Unicode字符数组创建新的`java.lang.String`对象。
 
-该系列函数在`JNIEnv`接口函数表的索引位置是`163`。
+该函数在`JNIEnv`接口函数表的索引位置是`163`。
 
 参数：
 
@@ -2111,7 +2184,7 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 
 返回Java字符串的长度，即Unicode字符的个数。
 
-该系列函数在`JNIEnv`接口函数表的索引位置是`164`。
+该函数在`JNIEnv`接口函数表的索引位置是`164`。
 
 参数：
 
@@ -2131,9 +2204,12 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
 
 返回指向字符串对象中Unicode字符数组的指针。在调用函数`ReleaseStringChars()`之后，该指针的值变为无效。
 
-当参数`isCopy`不为`NULL`时，若执行该函数进行了拷贝，则它被设置为`JNI_TRUE`；否则被它被设置为`JNI_FALSE`。
+调用该函数时，若参数`isCopy`不为`NULL`，则：
 
-该系列函数在`JNIEnv`接口函数表的索引位置是`165`。
+* 若执行了拷贝，则`isCopy`被设置为`JNI_TRUE`
+* 若未执行拷贝，则`isCopy`被设置为`JNI_FALSE`
+
+该函数在`JNIEnv`接口函数表的索引位置是`165`。
 
 参数：
 
@@ -2152,20 +2228,662 @@ JVM会以下面的代码初始化接口函数表，其中需要注意的是，�
     void ReleaseStringChars(JNIEnv *env, jstring string, const jchar *chars);
     ```
 
+该函数用于通知JVM"本地代码不会再访问某个字符串的字符数组了"，参数`chars`的值是通过调用函数`GetStringChars()`所得。
 
-Informs the VM that the native code no longer needs access to chars. The chars argument is a pointer obtained from string using GetStringChars().
+该函数在`JNIEnv`接口函数表的索引位置是`166`。
 
-LINKAGE:
-Index 166 in the JNIEnv interface function table.
-PARAMETERS:
-env: the JNI interface pointer.
+参数：
 
-string: a Java string object.
+    env             JNI接口指针
+    string          Java的字符串对象
+    chars           指向Unicode字符串的指针
 
-chars: a pointer to a Unicode string.
+<a name="4.5.9.4"></a>
+#### 4.5.9.4 NewStringUTF
 
+    ```c++
+    jstring NewStringUTF(JNIEnv *env, const char *bytes);
+    ```
 
+该函数用于构造一个`java.lang.String`对象，字符串的内容由参数`bytes`指定，以自定义UTF-8编码。
 
+该函数在`JNIEnv`接口函数表的索引位置是`167`。
+
+参数：
+
+    env             JNI接口指针
+    bytes           指向以自定义UTF-8编码的字符串内容
+
+返回：
+
+    返回一个字符串对象；若无法创建，则返回"NULL"
+
+异常：
+
+    OutOfMemoryError    若系统内存不足，则抛出此错误
+
+<a name="4.5.9.5"></a>
+#### 4.5.9.5 GetStringUTFLength
+
+    ```c++
+    jsize GetStringUTFLength(JNIEnv *env, jstring string);
+    ```
+
+返回以自定义UTF-8编码的字符串所使用字节的个数。
+
+该函数在`JNIEnv`接口函数表的索引位置是`168`。
+
+参数：
+
+    env             JNI接口指针
+    string          字符串对象
+
+返回：
+
+    返回字符串所使用的字节的个数。
+
+<a name="4.5.9.6"></a>
+#### 4.5.9.6 GetStringUTFChars
+
+    ```c++
+    const char * GetStringUTFChars(JNIEnv *env, jstring string, jboolean *isCopy);
+    ```
+
+返回指向以自定义UTF-8编码的字符串的字节数组的指针，当调用函数`ReleaseStringUTFChars()`后，该指针的值变为无效。
+
+调用该函数时，若参数`isCopy`不为`NULL`，则：
+
+* 若执行了拷贝，则`isCopy`被设置为`JNI_TRUE`
+* 若未执行拷贝，则`isCopy`被设置为`JNI_FALSE`
+
+该函数在`JNIEnv`接口函数表的索引位置是`169`。
+
+参数：
+
+    env             JNI接口指针
+    string          字符串对象
+    isCopy          指向布尔值的指针
+
+返回：
+
+    返回指向以自定义UTF-8编码的字符串的字节数组的指针；若操作失败，则返回"NULL"
+
+<a name="4.5.9.7"></a>
+#### 4.5.9.7 ReleaseStringUTFChars
+
+    ```c++
+    void ReleaseStringUTFChars(JNIEnv *env, jstring string, const char *utf);
+    ```
+
+该函数用于通知JVM，"本地代码不会再访问参数utf指向的数组"，参数`utf`的值由函数`GetStringUTFChars()`所得。
+
+该函数在`JNIEnv`接口函数表的索引位置是`170`。
+
+参数：
+
+    env             JNI接口指针
+    string          字符串对象
+    utf             指向字符串内容的指针
+
+注意：在JDK/JRE 1.1中，开发者可以得到原生类型的数组；到了JDK/JRE 1.2时，添加了一系列函数，以便在本地代码中可以获取以UTF-8或自定义UTF-8编码的字符。参见下面的函数介绍。
+
+<a name="4.5.9.8"></a>
+#### 4.5.9.8 GetStringRegion
+
+    ```c++
+    void GetStringRegion(JNIEnv *env, jstring str, jsize start, jsize len, jchar *buf);
+    ```
+
+该函数用于拷贝指定长度的Unicode字符到指定的字符数组中。
+
+若索引超过限制，则抛出`StringIndexOutOfBoundsException`异常。
+
+该函数在`JNIEnv`接口函数表的索引位置是`220`。
+
+该函数自JDK/JRE 1.2之后可用。
+
+<a name="4.5.9.9"></a>
+#### 4.5.9.9 GetStringUTFRegion
+
+    ```c++
+    void GetStringUTFRegion(JNIEnv *env, jstring str, jsize start, jsize len, char *buf);
+    ```
+
+从目标字符串中，拷贝指定数量的Unicode字符，转换为自定义UTF-8编码，再放置到指定的数组中。
+
+若索引超过限制，则抛出`StringIndexOutOfBoundsException`异常。
+
+该函数在`JNIEnv`接口函数表的索引位置是`221`。
+
+该函数自JDK/JRE 1.2之后可用。
+
+<a name="4.5.9.10"></a>
+#### 4.5.9.10 GetStringCritical, ReleaseStringCritical
+
+    ```c++
+    const jchar * GetStringCritical(JNIEnv *env, jstring string, jboolean *isCopy);
+
+    void ReleaseStringCritical(JNIEnv *env, jstring string, const jchar *carray);
+    ```
+
+这两个函数的语义与前面提到的函数`GetStringChars`和`ReleaseStringChars`类似。在获取字符数组时，JVM会尽量返回指向字符串元素的指针；否则，会拷贝一份数组内容并返回。`Get/ReleaseStringCritical`函数和`Get/ReleaseStringChars`函数的关键区别在于如何调用他们：如果代码段中调用了`GetStringCritical`函数，则在调用`ReleaseStringChars`之前，本地代码**禁止**再调用其他JNI函数，否则会阻塞当前线程的运行。
+
+函数`GetPrimitiveArrayCritical`和`ReleasePrimitiveArrayCritical`的调用方式于此类似。
+
+函数在`JNIEnv`接口函数表的索引位置如下所示：
+
+    GetStringCritical       224
+    ReleaseStingCritical    225
+
+该函数自JDK/JRE 1.2之后可用。
+
+<a name="4.5.10"></a>
+### 4.5.10 数组操作
+
+<a name="4.5.10.1"></a>
+#### 4.5.10.1 GetArrayLength
+
+    ```c++
+    jsize GetArrayLength(JNIEnv *env, jarray array);
+    ```
+
+返回数组的长度。
+
+函数在`JNIEnv`接口函数表的索引位置为`171`。
+
+参数：
+
+    env             JNI接口指针
+    array           数组对象
+
+返回：
+
+    返回数组的长度
+
+<a name="4.5.10.2"></a>
+#### 4.5.10.2 NewObjectArray
+
+    ```c++
+    jobjectArray NewObjectArray(JNIEnv *env, jsize length, jclass elementClass, jobject initialElement);
+    ```
+
+构造一个指定类型的数组对象，并以指定值来初始化数组内容。
+
+函数在`JNIEnv`接口函数表的索引位置为`172`。
+
+参数：
+
+    env             JNI接口指针
+    length          数组长度
+    elementClass    数组类型
+    initialElement  数组内容的初始值
+
+返回：
+
+    返回数组对象；若无法创建数组对象，返回"NULL"
+
+异常：
+
+    OutOfMemoryError    系统内存不足时，抛出该错误
+
+<a name="4.5.10.3"></a>
+#### 4.5.10.3 GetObjectArrayElement
+
+    ```c++
+    jobject GetObjectArrayElement(JNIEnv *env, jobjectArray array, jsize index);
+    ```
+
+返回`Object`类型数组中的某个元素。
+
+函数在`JNIEnv`接口函数表的索引位置为`173`。
+
+参数：
+
+    env             JNI接口指针
+    array           目标数组
+    index           目标索引位置
+
+返回：
+
+    返回目标索引位置的元素
+
+异常：
+
+    ArrayIndexOutOfBoundsException      若指定的索引并不在目标数组的有效范围内，抛出该异常
+
+<a name="4.5.10.4"></a>
+#### 4.5.10.4 SetObjectArrayElement
+
+    ```c++
+    void SetObjectArrayElement(JNIEnv *env, jobjectArray array, jsize index, jobject value);
+    ```
+
+对目标数组的指定索引位置赋值。
+
+函数在`JNIEnv`接口函数表的索引位置为`173`。
+
+参数：
+
+    env             JNI接口指针
+    array           目标数组
+    index           目标索引位置
+    value           待设置的值
+
+异常：
+
+    ArrayIndexOutOfBoundsException      若指定的索引并不在目标数组的有效范围内，抛出该异常
+    ArrayStoreException                 若待设置的值不是数组类型的子类，则抛出该异常
+
+<a name="4.5.10.5"></a>
+#### 4.5.10.5 "New<PrimitiveType>Array"系列函数
+
+    ```c++
+    ArrayType New<PrimitiveType>Array(JNIEnv *env, jsize length);
+    ```
+
+该系列函数用于创建原生类型的数组对象。
+
+下表描述了原生类型与具体函数的对应关系
+
+    function            array type
+    NewBooleanArray()	jbooleanArray
+    NewByteArray()	    jbyteArray
+    NewCharArray()	    jcharArray
+    NewShortArray()	    jshortArray
+    NewIntArray()	    jintArray
+    NewLongArray()	    jlongArray
+    NewFloatArray()	    jfloatArray
+    NewDoubleArray()	jdoubleArray
+
+下表描述了具体函数在`JNIEnv`接口函数中的索引位置
+
+    function            index
+    NewBooleanArray()	175
+    NewByteArray()	    176
+    NewCharArray()	    177
+    NewShortArray()	    178
+    NewIntArray()	    179
+    NewLongArray()	    180
+    NewFloatArray()	    181
+    NewDoubleArray()	182
+
+参数：
+
+    env             JNI接口指针
+    length          数组的长度
+
+返回：
+
+    返回新创建的对象；若无法创建，则返回"NULL"
+
+<a name="4.5.10.6"></a>
+#### 4.5.10.6 "Get<PrimitiveType>ArrayElements"系列函数
+
+    ```c++
+    NativeType *Get<PrimitiveType>ArrayElements(JNIEnv *env, ArrayType array, jboolean *isCopy);
+    ```
+
+该系列函数用于获取数组内容，返回指向内容的指针，当调用函数`Release<PrimitiveType>ArrayElements()`后，该指针的值变为无效。由于该函数返回的值可能是原始数组内容的拷贝，因此修改其数组元素时并不能反映到原始数组中。这时需要调用函数`Release<PrimitiveType>ArrayElements()`函数，使修改生效。
+
+调用该函数时，若参数`isCopy`不为`NULL`，则：
+
+* 若执行了拷贝，则`isCopy`被设置为`JNI_TRUE`
+* 若未执行拷贝，则`isCopy`被设置为`JNI_FALSE`
+
+无论布尔值在JVM中是如何表示的，函数`GetBooleanArrayElements()`都会返回`jboolean`类型的指针，其中每个字节表示一个数组元素。其他类型的数组在内存中都是连续存放的。
+
+下表描述了原生类型和具体函数的对应关系：
+
+    function                    array type      native type      
+    GetBooleanArrayElements()	jbooleanArray	jboolean
+    GetByteArrayElements()	    jbyteArray	    jbyte
+    GetCharArrayElements()	    jcharArray	    jchar
+    GetShortArrayElements()	    jshortArray	    jshort
+    GetIntArrayElements()	    jintArray	    jint
+    GetLongArrayElements()	    jlongArray	    jlong
+    GetFloatArrayElements()	    jfloatArray	    jfloat
+    GetDoubleArrayElements()	jdoubleArray	jdouble
+
+下表描述了函数在`JNIEnv`接口函数中的索引位置：
+
+    function                    index
+    GetBooleanArrayElements()	183
+    GetByteArrayElements()	    184
+    GetCharArrayElements()	    185
+    GetShortArrayElements()	    186
+    GetIntArrayElements()	    187
+    GetLongArrayElements()	    188
+    GetFloatArrayElements()	    189
+    GetDoubleArrayElements()	190
+
+参数：
+
+    env             JNI接口指针
+    array           数组的长度
+    isCopy          指向布尔值的指针
+
+返回：
+
+    返回指向数组元素的指针；若操作失败，则返回"NULL"
+
+<a name="4.5.10.7"></a>
+#### 4.5.10.7 "Release<PrimitiveType>ArrayElements"系列函数
+
+    ```c++
+    void Release<PrimitiveType>ArrayElements(JNIEnv *env, ArrayType array, NativeType *elems, jint mode);
+    ```
+
+该系列函数用于通知JVM，"本地代码不会再访问数组元素了"。参数`elems`是指向数组元素的指针，通过调用函数`Get<PrimitiveType>ArrayElements()`获得。如果必要的话，该函数会将所有对数组元素的更新拷贝回原始数组。
+
+参数`mode`指定应该如何释放数组缓冲。如果参数`elems`所指向的内容并非是原始数组的拷贝，则参数`mode`不起作用；否则按照如下参数值来执行：
+
+    mode	        actions
+    0	            将数组内容拷贝回原始数组，并释放参数elems指向的缓冲区
+    JNI_COMMIT	    将数组内容拷贝回原始数组，但不释放参数elems指向的缓冲区
+    JNI_ABORT	    释放参数elems指向的缓冲区，但不会将数组内容拷贝回原始数组
+
+大部分情况下，开发者都会将参数`mode`设置为0，以便同步数组内容到原始数组。其他参数值给了开发者更灵活的操作，使用时请小心。
+
+下表描述了原生类型和具体函数的对应关系：
+
+    function                        array type      native type
+    ReleaseBooleanArrayElements()	jbooleanArray	jboolean
+    ReleaseByteArrayElements()	    jbyteArray	    jbyte
+    ReleaseCharArrayElements()	    jcharArray	    jchar
+    ReleaseShortArrayElements()	    jshortArray	    jshort
+    ReleaseIntArrayElements()	    jintArray	    jint
+    ReleaseLongArrayElements()	    jlongArray	    jlong
+    ReleaseFloatArrayElements()	    jfloatArray	    jfloat
+    ReleaseDoubleArrayElements()	jdoubleArray	jdouble
+
+下表描述了函数在`JNIEnv`接口函数中的索引位置：
+
+    function                        index
+    ReleaseBooleanArrayElements()	191
+    ReleaseByteArrayElements()	    192
+    ReleaseCharArrayElements()	    193
+    ReleaseShortArrayElements()	    194
+    ReleaseIntArrayElements()	    195
+    ReleaseLongArrayElements()	    196
+    ReleaseFloatArrayElements()	    197
+    ReleaseDoubleArrayElements()	198
+
+参数：
+
+    env             JNI接口指针
+    array           数组对象
+    elems           指向数组元素数组的指针
+    mode            释放方式
+
+<a name="4.5.10.8"></a>
+#### 4.5.10.8 "Get<PrimitiveType>ArrayRegion"系列函数
+
+    ```c++
+    void Get<PrimitiveType>ArrayRegion(JNIEnv *env, ArrayType array, jsize start, jsize len, NativeType *buf);
+    ```
+
+该系列函数用于将数组中某个范围的元素拷贝到指定的缓冲区中。
+
+下表描述了原生类型和具体函数的对应关系：
+
+    function                    array type      native type
+    GetBooleanArrayRegion()	    jbooleanArray	jboolean
+    GetByteArrayRegion()	    jbyteArray	    jbyte
+    GetCharArrayRegion()	    jcharArray	    jchar
+    GetShortArrayRegion()	    jshortArray	    jhort
+    GetIntArrayRegion()	        jintArray	    jint
+    GetLongArrayRegion()	    jlongArray	    jlong
+    GetFloatArrayRegion()	    jfloatArray	    jloat
+    GetDoubleArrayRegion()	    jdoubleArray	jdouble
+
+下表描述了函数在`JNIEnv`接口函数中的索引位置：
+
+    function                    index
+    GetBooleanArrayRegion()	    199
+    GetByteArrayRegion()	    200
+    GetCharArrayRegion()	    201
+    GetShortArrayRegion()	    202
+    GetIntArrayRegion()	        203
+    GetLongArrayRegion()	    204
+    GetFloatArrayRegion()	    205
+    GetDoubleArrayRegion()	    206
+
+参数：
+
+    env             JNI接口指针
+    array           数组对象
+    start           起始位置
+    len             拷贝的长度
+    buf             指定的缓冲区
+
+异常：
+
+    ArrayIndexOutOfBoundsException      若指定的索引不在指定数组的有效范围内，抛出该异常
+
+<a name="4.5.10.9"></a>
+#### 4.5.10.9 "Set<PrimitiveType>ArrayRegion"系列函数
+
+    ```c++
+    void Set<PrimitiveType>ArrayRegion(JNIEnv *env, ArrayType array, jsize start, jsize len, const NativeType *buf);
+    ```
+
+该系列函数用于将指定缓冲区中的内容拷贝到数组的指定的范围内。
+
+下表描述了原生类型和具体函数的对应关系：
+
+    function                    array type      native type
+    SetBooleanArrayRegion()	    jbooleanArray	jboolean
+    SetByteArrayRegion()	    jbyteArray	    jbyte
+    SetCharArrayRegion()	    jcharArray	    jchar
+    SetShortArrayRegion()	    jshortArray	    jshort
+    SetIntArrayRegion()	        jintArray	    jint
+    SetLongArrayRegion()	    jlongArray	    jlong
+    SetFloatArrayRegion()	    jfloatArray	    jfloat
+    SetDoubleArrayRegion()	    jdoubleArray	jdouble
+
+下表描述了函数在`JNIEnv`接口函数中的索引位置：
+
+    function                    index
+    SetBooleanArrayRegion()	    207
+    SetByteArrayRegion()	    208
+    SetCharArrayRegion()	    209
+    SetShortArrayRegion()	    210
+    SetIntArrayRegion()	        211
+    SetLongArrayRegion()	    212
+    SetFloatArrayRegion()	    213
+    SetDoubleArrayRegion()	    214
+
+参数：
+
+    env             JNI接口指针
+    array           数组对象
+    start           起始位置
+    len             拷贝的长度
+    buf             指定的缓冲区
+
+异常：
+
+    ArrayIndexOutOfBoundsException      若指定的索引不在指定数组的有效范围内，抛出该异常
+
+>注意，在JDK/JRE 1.1中，开发者可以通过函数`Get/Release<primitivetype>ArrayElements`来获取指向原生数组元素的指针。若JVM支持**pinning**机制，则该函数会返回指向原始数据的指针；否则会返回指向拷贝数据的指针。
+>
+>在JDK/JRE 1.3中，引入了新的函数，即便JVM不支持**pinning**机制，也可以返回原始数据的指针。
+
+<a name="4.5.10.10"></a>
+#### 4.5.10.10 GetPrimitiveArrayCritical, ReleasePrimitiveArrayCritical
+
+    ```c++
+    void * GetPrimitiveArrayCritical(JNIEnv *env, jarray array, jboolean *isCopy);
+
+    void ReleasePrimitiveArrayCritical(JNIEnv *env, jarray array, void *carray, jint mode);
+    ```
+
+这两个函数的语义与前面提到的函数`Get/Release<primitivetype>ArrayElements`类似。JVM会尽量返回指向原始数组的指针；实在不行的话，会返回拷贝数组的指针。他们关键区别在于调用方式。
+
+在调用函数`GetPrimitiveArrayCritical`之后，本地代码应该尽快调用函数`ReleasePrimitiveArrayCritical`。正如函数名所表达的，这两个函数中间的代码，是"**关键代码**"。在关键代码中，本地代码**禁止**再调用其他JNI函数或系统调用，否则可能会造成当前线程阻塞。
+
+因为存在这种限制条件，即便JVM不支持**pinning**机制，本地代码调用该函数时很有可能会得到指向原始数组的指针。例如，当通过该函数获取到指向原始数组的指针时，JVM可能会临时禁用垃圾回收器。
+
+多次调用`Get/Release<primitivetype>ArrayElements`时，可以嵌套进行，例如：
+
+    ```c++
+    jint len = (*env)->GetArrayLength(env, arr1);
+    jbyte *a1 = (*env)->GetPrimitiveArrayCritical(env, arr1, 0);
+    jbyte *a2 = (*env)->GetPrimitiveArrayCritical(env, arr2, 0);
+    /* We need to check in case the VM tried to make a copy. */
+    if (a1 == NULL || a2 == NULL) {
+        ... /* out of memory exception thrown */
+    }
+    memcpy(a1, a2, len);
+    (*env)->ReleasePrimitiveArrayCritical(env, arr2, a2, 0);
+    (*env)->ReleasePrimitiveArrayCritical(env, arr1, a1, 0);
+    ```
+
+注意，如果JVM的内部实现将数组表示为其他格式的话，函数`GetPrimitiveArrayCritical`可能会返回一个数组的拷贝。因此，开发者需要检查函数的返回值是否为`NULL`，此时表示系统内存不足。
+
+下表描述了函数在`JNIEnv`接口函数中的索引位置：
+
+    GetPrimitiveArrayCritical       222
+    ReleasePrimitiveArrayCritical   223
+
+该函数自JDK/JRE 1.2之后可用。
+
+<a name="4.5.11"></a>
+### 4.5.11 注册本地方法
+
+<a name="4.5.11.1"></a>
+#### 4.5.11.1 RegisterNatives
+
+    ```c++
+    jint RegisterNatives(JNIEnv *env, jclass clazz, const JNINativeMethod *methods, jint nMethods);
+    ```
+
+该函数用于为指定类型注册本地方法。类型由参数`clazz`指定。参数`methods`指定了要注册的本地方法的数组，每个元素都包含有名字、签名和函数指针，其中名字和签名都是以自定义UTF-8编码的。参数`nMethods`指定了要注册的本地方法的个数。数据结构`JNINativeMethod`的定义如下：
+
+    ```c++
+    typedef struct {
+
+        char *name;
+
+        char *signature;
+
+        void *fnPtr;
+
+    } JNINativeMethod;
+    ```
+
+函数指针必须具有如下类型的签名：
+
+    ```c++
+    ReturnType (*fnPtr)(JNIEnv *env, jobject objectOrClass, ...);
+    ```
+
+函数在`JNIEnv`接口函数中的索引位置为`215`。
+
+参数：
+
+    env             JNI接口指针
+    clazz           Java的类型对象
+    methods         待注册的本地方法数组
+    nMethods        待注册的本地方法数量
+
+返回：
+
+    若成功，返回"0"；否则返回负数
+
+异常：
+
+    NoSuchMethodError       若在类中找不到指定的方法，或指定方法不是本地方法，则抛出该错误
+
+<a name="4.5.11.2"></a>
+#### 4.5.11.2 UnregisterNatives
+
+    ```c++
+    jint UnregisterNatives(JNIEnv *env, jclass clazz);
+    ```
+
+取消注册某个类中所有的本地方法。取消注册后，目标类会回到链接、注册本地方法之前的状态。
+
+一般情况下，这个方法不应该使用。它只是提供了一种重新载入和链接本地库的特殊方式。
+
+函数在`JNIEnv`接口函数中的索引位置为`216`。
+
+参数：
+
+    env             JNI接口指针
+    clazz           目标类型对象
+
+返回：
+
+    若成功，返回"0"；否则返回负数
+
+<a name="4.5.12"></a>
+### 4.5.12 监视器操作
+
+<a name="4.5.12.1"></a>
+#### 4.5.12.1 MonitorEnter
+
+    ```c++
+    jint MonitorEnter(JNIEnv *env, jobject obj);
+    ```
+
+该函数用于进入目标对象所持有的监视器。
+
+参数`obj`的值**禁止**为`NULL`。
+
+每个Java对象都有一个监视器与之相关联。若当前线程已经持有了目标对象的监视器，则调用该方法时会增加监视器中计数器的值，这个值表示当前线程进入监视器的次数；若目标对象的监视器还没有被任何线程持有，则将当前线程设置为监视器的持有者，并将计数器设置为1；若目标对象的监视器已经被其他线程持有，则当前线程会等待，知道监视器被释放，然后尝试重新进入监视器。
+
+通过函数`MonitorEnter`进入的监视器，不能通过JVM指令`monitorexit`或退出`synchronized`方法来释放。函数`MonitorEnter`和`monitorenter`指令可能竞争同一个对象的监视器。
+
+为了避免死锁，通过函数`MonitorEnter`进入的监视器，必须通过函数`MonitorExit`来释放，除非调用函数`DetachCurrentThread`来隐式的释放监视器。
+
+函数在`JNIEnv`接口函数中的索引位置为`217`。
+
+参数：
+
+    env             JNI接口指针
+    obj             目标对象
+
+返回：
+
+    若成功，返回"0"；否则返回负数
+
+<a name="4.5.12.2"></a>
+#### 4.5.12.2 MonitorExit
+
+    ```c++
+    jint MonitorExit(JNIEnv *env, jobject obj);
+    ```
+
+在调用该函数时，当前线程必须持有目标对象的监视器。成功调用该函数后，会将监视器中的计数器的值减1。若计数器的值变为0，则当前线程释放目标监视器。
+
+**禁止**本地方法调用该函数来释放通过`synchronized`方法或`monitorenter`指令进入的监视器。
+
+函数在`JNIEnv`接口函数中的索引位置为`218`。
+
+参数：
+
+    env             JNI接口指针
+    obj             目标对象
+
+返回：
+
+    若成功，返回"0"；否则返回负数
+
+异常：
+
+    IllegalMonitorStateException    若当前线程没持有目标监视器时，抛出该异常。
+
+<a name="4.5.13"></a>
+### 4.5.13 NIO支持
+
+The NIO-related entry points allow native code to access java.nio direct buffers. The contents of a direct buffer can, potentially, reside in native memory outside of the ordinary garbage-collected heap. For information about direct buffers, please see New I/O APIs and the specification of the java.nio.ByteBuffer class.
+
+Three new functions introduced in JDK/JRE 1.4 allow JNI code to create, examine, and manipulate direct buffers:
+NewDirectByteBuffer
+GetDirectBufferAddress
+GetDirectBufferCapacity
+Every implementation of the Java virtual machine must support these functions, but not every implementation is required to support JNI access to direct buffers. If a JVM does not support such access then the NewDirectByteBuffer and GetDirectBufferAddress functions must always return NULL, and the GetDirectBufferCapacity function must always return -1. If a JVM does support such access then these three functions must be implemented to return the appropriate values.
 
 
 
@@ -2181,85 +2899,110 @@ chars: a pointer to a Unicode string.
 
 
 
-[1]:    http://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/jniTOC.html
-[2]:    #1
-[3]:    #2
-[4]:    #2.1
-[5]:    #2.2
-[6]:    #2.2.1
-[7]:    #2.2.2
-[8]:    #2.3
-[9]:    #2.3.1
-[10]:   #2.3.2
-[11]:   #2.4
-[12]:   #2.4.1
-[13]:   #2.4.2
-[14]:   #2.4.3
-[15]:   #2.5
-[16]:   #2.5.1
-[17]:   #2.5.2
-[18]:   #2.5.3
-[19]:   #3
-[20]:   #3.1
-[21]:   #3.2
-[22]:   #3.3
-[23]:   #3.4
-[24]:   #3.5
-[25]:   #3.6
-[26]:   #4
-[27]:   #4.1
-[28]:   #4.2
-[29]:   #4.2.1
-[30]:   #4.2.2
-[31]:   #4.3
-[32]:   #4.3.1
-[33]:   #4.3.2
-[34]:   #4.3.3
-[35]:   #4.3.4
-[36]:   #4.4
-[37]:   #4.4.1
-[38]:   #4.4.2
-[39]:   #4.4.3
-[40]:   #4.4.4
-[41]:   #4.4.5
-[42]:   #4.4.6
-[43]:   #4.4.7
-[44]:   #4.5
-[45]:   #4.5.1
-[46]:   #4.5.1.1
-[47]:   #4.5.1.2
-[48]:   #4.5.2
-[49]:   #4.5.2.1
-[50]:   #4.5.2.2
-[51]:   #4.5.2.3
-[52]:   #4.5.2.4
-[53]:   #4.5.2.5
-[54]:   #4.5.3
-[55]:   #4.5.3.1
-[56]:   #4.5.3.2
-[57]:   #4.5.4
-[58]:   #4.5.4.1
-[59]:   #4.5.4.2
-[60]:   #4.5.4.3
-[61]:   #4.5.4.4
-[62]:   #4.5.4.5
-[63]:   #4.5.4.6
-[64]:   #4.5.5
-[65]:   #4.5.5.1
-[66]:   #4.5.5.2
-[67]:   #4.5.5.3
-[68]:   #4.5.6
-[69]:   #4.5.6.1
-[70]:   #4.5.6.2
-[71]:   #4.5.6.3
-[72]:   #4.5.7
-[73]:   #4.5.7.1
-[74]:   #4.5.7.2
-[75]:   #4.5.7.3
-[76]:   #4.5.8
-[77]:   #4.5.8.1
-[78]:   #4.5.8.2
-[79]:   #4.5.9
-[80]:   #4.5.9.1
-[81]:   #4.5.9.2
-[82]:   #4.5.9.3
+[1]:     http://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/jniTOC.html
+[2]:     #1
+[3]:     #2
+[4]:     #2.1
+[5]:     #2.2
+[6]:     #2.2.1
+[7]:     #2.2.2
+[8]:     #2.3
+[9]:     #2.3.1
+[10]:    #2.3.2
+[11]:    #2.4
+[12]:    #2.4.1
+[13]:    #2.4.2
+[14]:    #2.4.3
+[15]:    #2.5
+[16]:    #2.5.1
+[17]:    #2.5.2
+[18]:    #2.5.3
+[19]:    #3
+[20]:    #3.1
+[21]:    #3.2
+[22]:    #3.3
+[23]:    #3.4
+[24]:    #3.5
+[25]:    #3.6
+[26]:    #4
+[27]:    #4.1
+[28]:    #4.2
+[29]:    #4.2.1
+[30]:    #4.2.2
+[31]:    #4.3
+[32]:    #4.3.1
+[33]:    #4.3.2
+[34]:    #4.3.3
+[35]:    #4.3.4
+[36]:    #4.4
+[37]:    #4.4.1
+[38]:    #4.4.2
+[39]:    #4.4.3
+[40]:    #4.4.4
+[41]:    #4.4.5
+[42]:    #4.4.6
+[43]:    #4.4.7
+[44]:    #4.5
+[45]:    #4.5.1
+[46]:    #4.5.1.1
+[47]:    #4.5.1.2
+[48]:    #4.5.2
+[49]:    #4.5.2.1
+[50]:    #4.5.2.2
+[51]:    #4.5.2.3
+[52]:    #4.5.2.4
+[53]:    #4.5.2.5
+[54]:    #4.5.3
+[55]:    #4.5.3.1
+[56]:    #4.5.3.2
+[57]:    #4.5.4
+[58]:    #4.5.4.1
+[59]:    #4.5.4.2
+[60]:    #4.5.4.3
+[61]:    #4.5.4.4
+[62]:    #4.5.4.5
+[63]:    #4.5.4.6
+[64]:    #4.5.5
+[65]:    #4.5.5.1
+[66]:    #4.5.5.2
+[67]:    #4.5.5.3
+[68]:    #4.5.6
+[69]:    #4.5.6.1
+[70]:    #4.5.6.2
+[71]:    #4.5.6.3
+[72]:    #4.5.7
+[73]:    #4.5.7.1
+[74]:    #4.5.7.2
+[75]:    #4.5.7.3
+[76]:    #4.5.8
+[77]:    #4.5.8.1
+[78]:    #4.5.8.2
+[79]:    #4.5.9
+[80]:    #4.5.9.1
+[81]:    #4.5.9.2
+[82]:    #4.5.9.3
+[83]:    #4.5.9.4
+[84]:    #4.5.9.5
+[85]:    #4.5.9.6
+[86]:    #4.5.9.7
+[87]:    #4.5.9.8
+[88]:    #4.5.9.9
+[89]:    #4.5.9.10
+[90]:    #4.5.10
+[91]:    #4.5.10.1
+[92]:    #4.5.10.2
+[93]:    #4.5.10.3
+[94]:    #4.5.10.4
+[95]:    #4.5.10.5
+[96]:    #4.5.10.6
+[97]:    #4.5.10.7
+[98]:    #4.5.10.8
+[99]:    #4.5.10.9
+[100]:   #4.5.10.10
+[101]:   #4.5.11
+[102]:   #4.5.11.1
+[103]:   #4.5.11.2
+[104]:   #4.5.12
+[105]:   #4.5.12.1
+[106]:   #4.5.12.2
+[107]:   #4.5.13
