@@ -71,8 +71,8 @@ tags:       [java, jni, jvm]
             * [4.5.4.6 IsSameObject][63]
         * [4.5.5 访问对象的属性][64]
             * [4.5.5.1 GetFieldID][65]
-            * [4.5.5.2 "Get<type>Field"系列函数][66]
-            * [4.5.5.3 "Set<type>Field"系列函数][67]
+            * [4.5.5.2 `Get<type>Field`系列函数][66]
+            * [4.5.5.3 `Set<type>Field`系列函数][67]
         * [4.5.6 调用实例方法][68]
             * [4.5.6.1 GetMethodID][69]
             * [4.5.6.2 "Call<type>Method" "Call<type>MethodA"和"Call<type>MethodV"系列函数][70]
@@ -123,6 +123,8 @@ tags:       [java, jni, jvm]
             * [4.5.14.4 ToReflectedField][117]
         * [4.5.15 JVM接口][118]
             * [4.5.15.1 GetJavaVM][119]
+* [5 Invocation API][120]
+    * [5.1 Overview][121]
             
             
 
@@ -3069,6 +3071,21 @@ Fetches and returns the capacity of the memory region referenced by the given di
 
     若执行成功，返回"0"，否则返回负数。
 
+<a name="5"></a>
+# 5 Invocation API
+
+Invocation API使软件供应商可以将Java嵌入到任意本地应用中。供应商在发布包含Java的应用程序时，可以不必包含JVM的源代码。
+
+<a name="5.1"></a>
+## 5.1 Overview
+
+
+
+The following code example illustrates how to use functions in the Invocation API. In this example, the C++ code creates a Java VM and invokes a static method, called Main.test. For clarity, we omit error checking.
+
+
+
+
 
 
 
@@ -3199,3 +3216,5 @@ Fetches and returns the capacity of the memory region referenced by the given di
 [117]:   #4.5.14.4
 [118]:   #4.5.15
 [119]:   #4.5.15.1
+[120]:   #5
+[121]:   #5.1
