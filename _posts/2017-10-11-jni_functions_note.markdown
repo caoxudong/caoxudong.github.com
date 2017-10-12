@@ -125,6 +125,22 @@ tags:       [java, jni, jvm]
             * [4.5.15.1 GetJavaVM][119]
 * [5 Invocation API][120]
     * [5.1 Overview][121]
+        * [5.1.1 创建JVM][122]
+        * [5.1.2 连接到JVM][123]
+        * [5.1.3 断开与JVM的连接][124]
+        * [5.1.4 卸载JVM][125]
+    * [5.2 库与版本管理][126]
+        * [5.2.1 JNI_OnLoad][127]
+        * [5.2.2 JNI_UnOnLoad][128]
+    * [5.3 Invocation API][129]
+        * [5.3.1 JNI_GetDefaultJavaVMInitArgs][130]
+        * [5.3.2 JNI_GetCreatedJavaVMs][131]
+        * [5.3.3 JNI_CreateJavaVM][132]
+        * [5.3.4 DestroyJavaVM][133]
+        * [5.3.5 AttachCurrentThread][134]
+        * [5.3.6 AttachCurrentThreadAsDaemon][135]
+        * [5.3.7 DetachCurrentThread][136]
+        * [5.3.8 GetEnv][137]
             
             
 
@@ -3079,12 +3095,381 @@ Invocation API使软件供应商可以将Java嵌入到任意本地应用中。�
 <a name="5.1"></a>
 ## 5.1 Overview
 
+下面的代码展示了如何在Invocation API中调用函数。在这个示例中，C++代码创建了一个JVM，并调用了名为`Main.test`的静态方法。为便于理解，这里省略了错误检查。
+
+    ```c++
+    #include <jni.h>       /* where everything is defined */
+    ...
+    JavaVM *jvm;       /* denotes a Java VM */
+    JNIEnv *env;       /* pointer to native method interface */
+    JavaVMInitArgs vm_args; /* JDK/JRE 6 VM initialization arguments */
+    JavaVMOption* options = new JavaVMOption[1];
+    options[0].optionString = "-Djava.class.path=/usr/lib/java";
+    vm_args.version = JNI_VERSION_1_6;
+    vm_args.nOptions = 1;
+    vm_args.options = options;
+    vm_args.ignoreUnrecognized = false;
+    /* load and initialize a Java VM, return a JNI interface
+        * pointer in env */
+    JNI_CreateJavaVM(&jvm, (void**)&env, &vm_args);
+    delete options;
+    /* invoke the Main.test method using the JNI */
+    jclass cls = env->FindClass("Main");
+    jmethodID mid = env->GetStaticMethodID(cls, "test", "(I)V");
+    env->CallStaticVoidMethod(cls, mid, 100);
+    /* We are done. */
+    jvm->DestroyJavaVM();
+    ```
+
+This example uses three functions in the API. The Invocation API allows a native application to use the JNI interface pointer to access VM features. The design is similar to Netscape’s JRI Embedding Interface.
+
+在这个示例中，使用了3个函数。Invocation API允许本地应用程序通过JNI接口指针访问JVM的特性。
 
 
-The following code example illustrates how to use functions in the Invocation API. In this example, the C++ code creates a Java VM and invokes a static method, called Main.test. For clarity, we omit error checking.
+<a name="5.1.1"></a>
+### 5.1.1 创建JVM
 
+函数`JNI_CreateJavaVM()`可以载入并初始化一个JVM，然后返回JNI接口指针，调用了该函数的线程可被认为是主线程。
 
+<a name="5.1.2"></a>
+### 5.1.2 连接到JVM
 
+JNI接口指针(即`JNIEnv`)仅在当前线程内有效。其他的线程若需要访问JVM实例，**必须**先调用函数`AttachCurrentThread`将自己连接到JVM，以便能获取到JNI接口指针。连接到JVM后，本地线程就可以像运行在本地方法中的Java线程一样正常工作了。在调用函数`DetachCurrentThread()`后，本地线程会断开与JVM的连接。
+
+连接到JVM的线程应该具有足够大的栈空间来完成预定的任务。每个线程栈的大小取决于不同操作系统的设置。例如，对于`pthread`来说，线程栈的大小可以在创建线程时通过参数`pthread_attr_t`传入。
+
+<a name="5.1.3"></a>
+### 5.1.3 断开与JVM的连接
+
+本地线程在退出之前，必须调用函数`DetachCurrentThread()`来断开与JVM的连接。需要注意的是，如果有Java方法在调用栈的话，线程无法断开与JVM的连接。
+
+<a name="5.1.4"></a>
+### 5.1.4 卸载JVM
+
+函数`JNI_DestroyJavaVM()`可用于卸载一个JVM实例。
+
+调用该函数后，JVM会等到除当前线程外所有非守护的用户线程都退出时才会真正退出。用户线程包括Java线程和连接到JVM的本地线程。之所以有这种限制，是因为Java线程和连接到JVM的本地线程可能会持有系统资源，例如锁、窗口等，JVM无法自动释放这些资源。若当前线程成为最后一个非守护的用户线程时，释放系统资源的工作则可以由开发者自行控制。
+
+<a name="5.2"></a>
+## 5.2 库与版本管理
+
+本地库在加载之后，对所有的类加载器都是可见的。不同类加载器中的不同类可能会连接到同一个本地线程。这会导致两个问题：
+
+* 本地库被类加载器loader1中的类Class1载入后，可能会被错误的连接到类加载器loader2中的类Class1
+* 本地线程可能会混淆不同类加载器中的类，这会打破类加载器所构建的命名空间，导致类型安全问题
+
+每个类加载器管理自己的本地库集合，同一个JNI本地库不能被多个类加载器载入，否则会抛出`UnsatisfiedLinkError`错误。例如，当某个本地库被不同类加载器载入时，`System.loadLibrary`方法会抛出`UnsatisfiedLinkError`错误。这么做有以下优点：
+
+* 基于类加载器的命名空间隔离机制得以保留。本地库不会混淆不同类加载器中的类。
+* 本地库可以在对应的类加载器被垃圾回收器回收时卸载掉。
+
+为了更好的进行版本控制和资源管理，JNI库可以导出函数`JNI_OnLoad`和`JNI_OnUnload`来处理。
+
+<a name="5.2.1"></a>
+### 5.2.1 JNI_OnLoad
+
+    ```c++
+    jint JNI_OnLoad(JavaVM *vm, void *reserved);
+    ```
+
+在载入本地库时(例如调用函数`System.loadLibrary`)，JVM会调用函数`JNI_OnLoad`。函数`JNI_OnLoad`必须返回本地库所所需的JNI版本号。
+
+为了能够使用新增的JNI函数，本地库需要导出函数`JNI_OnLoad`，且该函数必须返回`JNI_VERSION_1_2`。如果本地库没有导出函数`JNI_OnLoad`，则JVM会假设本地库仅仅需要版本号为`JNI_VERSION_1_1`的支持。如果JVM无法识别函数`JNI_OnLoad`返回值，则JVM会卸载掉该本地库，就像没再载入过一样。
+
+    ```c++
+    JNI_Onload_L(JavaVM *vm, void *reserved);
+    ```
+
+如果库`L`是静态链接的，则在调用函数`System.loadLibrary("L")`或其他等效API时，JVM会调用函数`JNI_OnLoad_L`，参数和返回值与调用函数`JNI_OnLoad`相同。函数`JNI_OnLoad_L`必须返回本地库所需要的JNI版本号，必须大于等于`JNI_VERSION_1_8`。如果JVM无法识别函数`JNI_OnLoad`返回值，则JVM会卸载掉该本地库，就像没再载入过一样。
+
+<a name="5.2.2"></a>
+### 5.2.2 JNI_OnUnload
+
+    ```c++
+    void JNI_OnUnload(JavaVM *vm, void *reserved);
+    ```
+
+当载入过本地库的类加载器被回收掉时，会JVM会调用本地库的函数`JNI_OnUnload`来执行清理工作。由于该函数的执行上下文无法预知，因此开发者在该函数中应尽可能保守的使用JVM服务。
+
+注意，函数`JNI_OnLoad`和`JNI_OnUnload`是可选的，并非是JVM导出的。
+
+    ```c++
+    JNI_OnUnload_L(JavaVM *vm, void *reserved);
+    ```
+
+若库是静态链接的，则载入了该库的类加载器被回收掉时，JVM会调用函数`JNI_OnUnload_L`来执行清理函数。由于该函数的执行上下文无法预知，因此开发者在该函数中应尽可能保守的使用JVM服务。
+
+注意：载入本地库是一个整体过程，使本地库和个函数入口得以在JVM中完成注册；而通过操作系统级别的调用来载入本地库(例如`dlopen`)并不能完成目标。从类加载器中调用本地函数，会将本地库载入到内存中，返回指向本地库的句柄，以便后续搜索本地库的入口点。在返回句柄并注册本地库后，Java的本地类加载器完成整个载入过程。
+
+<a name="5.3"></a>
+## 5.3 Invocation API
+
+`JavaVM`是指向Invocation API函数表的指针，下面的代码展示了该函数表的定义：
+
+    ```c++
+    typedef const struct JNIInvokeInterface *JavaVM;
+
+    const struct JNIInvokeInterface ... = {
+        NULL,
+        NULL,
+        NULL,
+
+        DestroyJavaVM,
+        AttachCurrentThread,
+        DetachCurrentThread,
+
+        GetEnv,
+
+        AttachCurrentThreadAsDaemon
+    };
+    ```
+
+注意，`JNI_GetDefaultJavaVMInitArgs()` `JNI_GetCreatedJavaVMs()`和`JNI_CreateJavaVM()`这三个函数并不是`JavaVM`函数表的一部分，调用着三个函数时，并不需要有`JavaVM`数据结构。
+
+<a name="5.3.1"></a>
+### 5.3.1 JNI_GetDefaultJavaVMInitArgs
+
+    ```c++
+    jint JNI_GetDefaultJavaVMInitArgs(void *vm_args);
+    ```
+
+返回JVM的默认参数配置。在调用该函数前，本地代码必须先设置属性`vm_args->version`为本地代码期望JVM能支持的JNI版本号。调用该函数后，属性`vm_args->version`会被设置为当前JVM所能支持的实际JNI版本号。
+
+参数：
+
+    vm_args     指向数据结构"JavaVMInitArgs"的指针，函数返回后，会在其中填入默认参数
+
+返回：
+
+    如果当前JVM能支持期望的JNI版本号，则返回"JNI_OK"；否则返回相应的错误码，值为负数。
+
+<a name="5.3.2"></a>
+### 5.3.2 JNI_GetCreatedJavaVMs
+
+    ```c++
+    jint JNI_GetCreatedJavaVMs(JavaVM **vmBuf, jsize bufLen, jsize *nVMs);
+    ```
+
+返回所有已创建的JVM实例。指向JVM实例的指针会被放入到参数`vmBuf`中，并按照JVM实例的创建顺序排放，返回的JVM实例的个数由参数`bufLen`指定，所有已创建的JVM实例的个数由参数`nVMs`返回。
+
+需要注意的是，不支持在单一线程中创建多个JVM实例。
+
+参数：
+
+    vmBuf       存放JVM实例的数组指针
+    bufLen      要返回的JVM实例的个数
+    nVMs        所有已创建的JVM实例的个数
+
+返回：
+
+    若函数调用成功，返回"JNI_OK"；否则返回相应的错误码，值为负数。
+
+<a name="5.3.3"></a>
+### 5.3.3 JNI_CreateJavaVM
+
+    ```c++
+    jint JNI_CreateJavaVM(JavaVM **p_vm, void **p_env, void *vm_args);
+    ```
+
+载入并初始化一个JVM实例，当前线程变为主线程，并为当前线程设置JNI接口函数参数。
+
+不支持在单一线程中创建多个JVM实例。
+
+传给函数`JNI_CreateJavaVM`的第二个参数永远都是指向`JNIEnv*`的指针，而第三个参数是指向数据结构`JavaVMInitArgs`的指针，其中`options`属性指明启动JVM的选项。
+
+    ```c++
+    typedef struct JavaVMInitArgs {
+        jint version;
+
+        jint nOptions;
+        JavaVMOption *options;
+        jboolean ignoreUnrecognized;
+    } JavaVMInitArgs;
+    ```
+
+其中`JavaVMOption`的定义如下：
+
+    ```c++
+    typedef struct JavaVMOption {
+        char *optionString;  /* the option as a string in the default platform encoding */
+        void *extraInfo;
+    } JavaVMOption;
+    ```
+
+数组的大小由参数`nOptions`指定。若参数`ignoreUnrecognized`设置为`JNI_TRUE`，则函数`JNI_CreateJavaVM`会忽略所有以`-X`或`_`开头的、无法识别的JVM选项；若参数`ignoreUnrecognized`设置为`JNI_FALSE`，则遇到无法识别的JVM选项时，函数`JNI_CreateJavaVM`会返回`JNI_ERR`。所有的JVM实现都必须能识别以下标准参数：
+
+    options                         desc
+    -D<name>=<value>	            定义系统属性
+    -verbose[:class|gc|jni]	        设置详细输出。可以以英文逗号分隔多个选项，例如"-verbose:gc,class"。
+    vfprintf	                    此时，属性"extraInfo"是指向vfprintf钩子的指针
+    exit	                        此时，属性"extraInfo"是指向退出钩子的指针
+    abort	                        此时，属性"extraInfo"是指向终止钩子的指针
+
+此外，每个JVM实现都可以支持自己特有的非标准选项。非标准选项必须以`-X`或`_`开头，例如JDK/JRE支持`-Xms`和`-Xmx`来指定堆的初始大小和最大值。以`-X`开头的选项可以被`java`命令工具所使用。
+
+下面的代码展示了如何创建一个JVM：
+
+    ```c++
+    JavaVMInitArgs vm_args;
+    JavaVMOption options[4];
+
+    options[0].optionString = "-Djava.compiler=NONE";           /* disable JIT */
+    options[1].optionString = "-Djava.class.path=c:\myclasses"; /* user classes */
+    options[2].optionString = "-Djava.library.path=c:\mylibs";  /* set native library path */
+    options[3].optionString = "-verbose:jni";                   /* print JNI-related messages */
+
+    vm_args.version = JNI_VERSION_1_2;
+    vm_args.options = options;
+    vm_args.nOptions = 4;
+    vm_args.ignoreUnrecognized = TRUE;
+
+    /* Note that in the JDK/JRE, there is no longer any need to call
+    * JNI_GetDefaultJavaVMInitArgs.
+    */
+    res = JNI_CreateJavaVM(&vm, (void **)&env, &vm_args);
+    if (res < 0) ...
+    ```
+
+参数：
+
+    p_vm        指向返回JVM数据结构的指针，新创建的JVM会放到这里
+    p_env       指向主线程所使用的JNI接口指针的指针
+    vm_args     JVM的初始化参数
+
+返回：
+
+    若函数调用成功，返回"JNI_OK"；否则返回相应的错误码，值为负数。
+
+<a name="5.3.4"></a>
+### 5.3.4 DestroyJavaVM 
+
+    ```c++
+    jint DestroyJavaVM(JavaVM *vm);
+    ```
+
+销毁JVM实例，释放其持有的资源。
+
+任何线程都可以调用该方法。如果当前线程是连接到JVM的线程，则JVM会等到除当前线程外所有非守护的用户线程退出后，才会真正退出。如果当前线程不是连接到JVM的线程，则JVM会连接到当前线程，并等到除当前线程外所有非守护的用户线程退出后，才会真正退出。
+
+该函数在JVM接口函数表中的索引位置为`3`。
+
+参数：
+
+    vm          待销毁的JVM实例
+
+返回：
+
+    若函数调用成功，返回"JNI_OK"；否则返回相应的错误码，值为负数。
+
+销毁中的JVM不可再使用，结果未定义。
+
+<a name="5.3.5"></a>
+### 5.3.5 AttachCurrentThread
+
+    ```c++
+    jint AttachCurrentThread(JavaVM *vm, void **p_env, void *thr_args);
+    ```
+
+将当前线程连接到JVM，在参数`p_env`中返回JNI接口指针。
+
+已经连接到JVM的线程重复调用该方法时，是空操作。
+
+本地线程不能同时连接到两个不同的JVM实例。
+
+当本地线程连接到JVM后，其上下文类载入去被设置为启动类载入器(bootstrap loader)。
+
+该函数在JVM接口函数表中的索引位置为`4`。
+
+参数：
+
+    vm          待连接的JVM实例
+    p_env       操作成功后，JNI接口指针通过该参数返回
+    thr_args    可以为NULL；或是指向数据结构"JavaVMAttachArgs"的指针，用来指定额外信息on:
+
+第二个参数永远是指向`JNIEnv`的指针。
+
+第三个参数是保留参数，可以设置为`NULL`；也可以设置为以下数据结构的指针，以此来传递额外信息：
+
+    ```c++
+    typedef struct JavaVMAttachArgs {
+        jint version;
+        char *name;    /* the name of the thread as a modified UTF-8 string, or NULL */
+        jobject group; /* global ref of a ThreadGroup object, or NULL */
+    } JavaVMAttachArgs
+    ```
+
+返回：
+
+    若函数调用成功，返回"JNI_OK"；否则返回相应的错误码，值为负数。
+
+<a name="5.3.6"></a>
+### 5.3.6 AttachCurrentThreadAsDaemon
+
+    ```c++
+    jint AttachCurrentThreadAsDaemon(JavaVM* vm, void** penv, void* args);
+    ```
+
+该方法的语义与函数`AttachCurrentThread`类似，但新创建的`java.lang.Thread`实例会被设置为守护线程。
+
+如果当前线程已经通过函数`AttachCurrentThread`或`AttachCurrentThreadAsDaemon`连接到JVM，则调用当前方法只会将参数`penv`设置为当前线程的`JNIEnv*`的值，不会变更当前线程的守护线程状态。
+
+该函数在JVM接口函数表中的索引位置为`7`。
+
+参数：
+
+    vm          待连接的JVM实例
+    penv        操作成功后，JNI接口指针通过该参数返回
+    args        指向数据结构"JavaVMAttachArgs"的指针
+
+返回：
+
+    若函数调用成功，返回"JNI_OK"；否则返回相应的错误码，值为负数。
+
+异常：
+
+    无
+
+<a name="5.3.7"></a>
+### 5.3.7 DetachCurrentThread
+
+    ```c++
+    jint DetachCurrentThread(JavaVM *vm);
+    ```
+
+断开当前线程与目标JVM的连接，同时释放当前线程所持有的监视器，所有等待该监视器的线程都会收到通知。
+
+可以在主线程调用该函数。
+
+该函数在JVM接口函数表中的索引位置为`7`。
+
+参数：
+
+    vm          待断开的JVM实例
+
+返回：
+
+    若函数调用成功，返回"JNI_OK"；否则返回相应的错误码，值为负数。
+
+<a name="5.3.8"></a>
+### 5.3.8 GetEnv
+
+    ```c++
+    jint GetEnv(JavaVM *vm, void **env, jint version);
+    ```
+
+该函数在JVM接口函数表中的索引位置为`6`。
+
+参数：
+
+    vm          目标JVM实例
+    env         做返回结果使用
+    version     期望支持的JNI版本号
+
+返回：
+
+    * 如果当前线程尚未连接到JVM，则参数"*env"被置为"NULL"，函数返回"JNI_EDETACHED"
+    * 如果当前JVM不支持期望的JNI版本号，则参数"*env"被置为"NULL"，函数返回"JNI_EVERSION"
+    * 其他情况下，参数"*env"指向JNI接口指针，函数返回"JNI_OK"
 
 
 
@@ -3218,3 +3603,19 @@ The following code example illustrates how to use functions in the Invocation AP
 [119]:   #4.5.15.1
 [120]:   #5
 [121]:   #5.1
+[122]:   #5.1.1
+[123]:   #5.1.2
+[124]:   #5.1.3
+[125]:   #5.1.4
+[126]:   #5.2
+[127]:   #5.2.1
+[128]:   #5.2.2
+[129]:   #5.3
+[130]:   #5.3.1
+[131]:   #5.3.2
+[132]:   #5.3.3
+[133]:   #5.3.4
+[134]:   #5.3.5
+[135]:   #5.3.6
+[136]:   #5.3.7
+[137]:   #5.3.8
