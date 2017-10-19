@@ -1,5 +1,5 @@
 ---
-title:      JNI开发
+title:      JNI规范
 layout:     post
 category:   blog
 tags:       [java, jni, jvm]
@@ -141,6 +141,7 @@ tags:       [java, jni, jvm]
         * [5.3.6 AttachCurrentThreadAsDaemon][135]
         * [5.3.7 DetachCurrentThread][136]
         * [5.3.8 GetEnv][137]
+* [Resources][138]
             
             
 
@@ -3121,8 +3122,6 @@ Invocation API使软件供应商可以将Java嵌入到任意本地应用中。�
     jvm->DestroyJavaVM();
     ```
 
-This example uses three functions in the API. The Invocation API allows a native application to use the JNI interface pointer to access VM features. The design is similar to Netscape’s JRI Embedding Interface.
-
 在这个示例中，使用了3个函数。Invocation API允许本地应用程序通过JNI接口指针访问JVM的特性。
 
 
@@ -3475,7 +3474,7 @@ JNI接口指针(即`JNIEnv`)仅在当前线程内有效。其他的线程若需�
 
 
 
-
+<a name="resources"></a>
 # Resources
 
 * [Java Native Interface Specification Contents][1]
@@ -3619,3 +3618,4 @@ JNI接口指针(即`JNIEnv`)仅在当前线程内有效。其他的线程若需�
 [135]:   #5.3.6
 [136]:   #5.3.7
 [137]:   #5.3.8
+[138]:   #resources
