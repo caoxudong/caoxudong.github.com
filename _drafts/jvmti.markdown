@@ -44,6 +44,8 @@ tags:       [java, jvm, jvmti]
             * [2.6.2.8 StopThread][75]
             * [2.6.2.9 InterruptThread][76]
             * [2.6.2.10 GetThreadInfo][77]
+            * [2.6.2.11 GetOwnedMonitorInfo][78]
+            * [2.6.2.12 GetOwnedMonitorStackDepthInfo][79]
         * [2.6.3 线程组][30]
         * [2.6.4 栈帧][31]
         * [2.6.5 强制提前返回][32]
@@ -487,6 +489,8 @@ JVMTI启动函数定义：
 * [StopThread][75]
 * [InterruptThread][76]
 * [GetThreadInfo][77]
+* [GetOwnedMonitorInfo][78]
+* [GetOwnedMonitorStackDepthInfo][79]
 
 <a name="2.6.2.1"></a>
 #### 2.6.2.1 GetThreadState
@@ -984,6 +988,16 @@ JVMTI线程状态与Java线程状态的对应关系：
     * `JVMTI_ERROR_NULL_POINTER`: 参数`monitor_info_count_ptr`为`NULL`
     * `JVMTI_ERROR_NULL_POINTER`: 参数`monitor_info_ptr`为`NULL`
 
+<a name="2.6.2.13"></a>
+#### 2.6.2.13 GetCurrentContendedMonitor
+
+    ```c
+    jvmtiError GetCurrentContendedMonitor(jvmtiEnv* env, jthread thread, jobject* monitor_ptr)
+    ```
+
+
+
+
 <a name="2.6.3"></a>
 ### 2.6.3 线程组
 
@@ -1185,5 +1199,7 @@ JVMTI线程状态与Java线程状态的对应关系：
 [75]:     #2.6.2.8
 [76]:     #2.6.2.9
 [77]:     #2.6.2.10
+[78]:     #2.6.2.11
+[79]:     #2.6.2.12
 
 [100]:    https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html
