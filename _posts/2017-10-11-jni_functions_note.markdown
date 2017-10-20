@@ -3462,7 +3462,7 @@ JNI接口指针(即`JNIEnv`)仅在当前线程内有效。其他的线程若需�
 
     vm          目标JVM实例
     env         做返回结果使用
-    version     期望支持的JNI版本号
+    version     期望支持的JNI[版本号][1]
 
 返回：
 
