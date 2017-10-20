@@ -31,7 +31,19 @@ tags:       [java, jvm, jvmti]
     * [2.5 异常与函数][26]
     * [2.6 函数表][27]
         * [2.6.1 内存管理][28]
+            * [2.6.1.1 Allocate][66]
+            * [2.6.1.2 Deallocate][67]
         * [2.6.2 线程][29]
+            * [2.6.2.1 GetThreadState][68]
+            * [2.6.2.2 GetCurrentThread][69]
+            * [2.6.2.3 GetAllThreads][70]
+            * [2.6.2.4 SuspendThread][71]
+            * [2.6.2.5 SuspendThreadList][72]
+            * [2.6.2.6 ResumeThread][73]
+            * [2.6.2.7 ResumeThreadList][74]
+            * [2.6.2.8 StopThread][75]
+            * [2.6.2.9 InterruptThread][76]
+            * [2.6.2.10 GetThreadInfo][77]
         * [2.6.3 线程组][30]
         * [2.6.4 栈帧][31]
         * [2.6.5 强制提前返回][32]
@@ -65,10 +77,6 @@ tags:       [java, jvm, jvmti]
     * [4.6 函数表][60]
 * [5 常量索引][61]
 * [6 变更历史][62]
-            
-            
-            
-            
 * [Resource][100]
 
 <a name="1"></a>
@@ -379,10 +387,13 @@ JVMTI函数永远不会抛出异常，通过返回值表示执行状态。在调
 
 内存管理的函数包括：
 
-* Allocate
-* deallocate
+* [`Allocate`][66]
+* [`deallocate`][67]
 
 这两个函数JVMTI代理可以通过JVMTI分配/释放内存，需要注意的是，JVMTI的管理机制与其他内存管理库的机制不兼容。
+
+<a name="2.6.1.1"></a>
+#### 2.6.1.1 Allocate
 
     ```c
     jvmtiError Allocate(jvmtiEnv* env, jlong size, unsigned char** mem_ptr)
@@ -394,12 +405,584 @@ JVMTI函数永远不会抛出异常，通过返回值表示执行状态。在调
 * 回调点： 该函数可能会在堆处理函数的回调函数中被调用，或者在事件`GarbageCollectionStart` `GarbageCollectionFinish`和`ObjectFree`的事件处理函数中被调用
 * 索引位置： 46
 * Since： 1.0
+* 功能： 必要
+* 参数：
+    * size: 类型为`jlong`，表示要分配的字节数，使用类型`jlong`是为了与JVMDI相兼容
+    * mem_ptr: 
+        * 类型为`unsigned char**`，出参。若参数`size`为0，则`mem_ptr`的值为`NULL`
+        * 调用者传入指向`unsigned char*`的指针，若分配成功，则会将新分配的地址放到该指针指向的位置
+        * 新分配的内存区域，需要通过函数`Deallocate`释放掉
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_OUT_OF_MEMORY`: 内存不足
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`size`小于0
+    * `JVMTI_ERROR_NULL_POINTER	`: 参数`mem_ptr`为`NULL`
 
+<a name="2.6.1.2"></a>
+#### 2.6.1.2 Deallocate
 
+    ```c
+    jvmtiError Deallocate(jvmtiEnv* env, unsigned char* mem)
+    ```
 
+该函数通过`JVMTI`的内存分配器释放由参数`mem`指向的内存区域，特别的，应该专用于由JVMTI函数分配的内存区域。分配的内存都应该被释放掉，避免内存泄漏。
+
+* 调用阶段： 可能在任何阶段调用
+* 回调安全： 该函数可能会在堆处理函数的回调函数中被调用，或者在事件`GarbageCollectionStart` `GarbageCollectionFinish`和`ObjectFree`的事件处理函数中被调用
+* 索引位置： 47
+* Since： 1.0
+* 功能： 必选
+* 参数：
+    * mem_ptr: 
+        * 类型为`unsigned char**`，指向待释放的内存区域。
+        * 调用者传入类型为`unsigned char`的数组，数组元素会被忽略
+        * 如果参数值为`NULL`，则啥也不做
+* 返回：
+    * 通用错误码 
 
 <a name="2.6.2"></a>
 ### 2.6.2 线程
+
+下面的内容包含了与线程操作相关的结构体和常量定义。
+
+JVMTI启动函数定义：
+
+    ```c
+    typedef void (JNICALL *jvmtiStartFunction)(jvmtiEnv* jvmti_env, JNIEnv* jni_env, void* arg);
+    ```
+
+该指针为JVMTI提供的回调机制，当使用函数`RunAgentThread`启动一个代理线程时，会调用该指针指向的函数。
+
+结构体`jvmtiMonitorStackDepthInfo`：
+
+    ```c
+    struct jvmtiMonitorStackDepthInfo {
+        jobject monitor;
+        jint stack_depth;
+    };
+    ```
+
+其中：
+
+* `monitor`: 所持有的监视器对象
+* `stack_depth`: 栈的深度，`0`则表示当前帧，`1`表示当前函数的调用者，如果无法确定栈帧的深度(例如通过JNI函数`MonitorEnter`获取的监视器)，则值为-1
+
+
+线程优先级常量：
+
+    常量                             值      描述
+    JVMTI_THREAD_MIN_PRIORITY	    1	    Minimum possible thread priority
+    JVMTI_THREAD_NORM_PRIORITY	    5	    Normal thread priority
+    JVMTI_THREAD_MAX_PRIORITY	    10	    Maximum possible thread priority
+
+线程相关的函数包括：
+
+* [GetThreadState][68]
+* [GetCurrentThread][69]
+* [GetAllThreads][70]
+* [SuspendThread][71]
+* [SuspendThreadList][72]
+* [ResumeThread][73]
+* [ResumeThreadList][74]
+* [StopThread][75]
+* [InterruptThread][76]
+* [GetThreadInfo][77]
+
+<a name="2.6.2.1"></a>
+#### 2.6.2.1 GetThreadState
+
+    ```c
+    jvmtiError GetThreadState(jvmtiEnv* env, jthread thread, jint* thread_state_ptr)
+    ```
+
+该函数用于获取当前线程状态。线程状态值的说明参见[2.6.2节][29]的说明。
+
+JVMTI线程状态如下：
+
+    线程状态常量                                      常量值       描述
+    JVMTI_THREAD_STATE_ALIVE	                    0x0001	    线程存活着。0表示线程是新创建(还未启动)或已结束的。
+    JVMTI_THREAD_STATE_TERMINATED	                0x0002	    线程已经结束执行
+    JVMTI_THREAD_STATE_RUNNABLE	                    0x0004	    线程运行中
+    JVMTI_THREAD_STATE_BLOCKED_ON_MONITOR_ENTER	    0x0400	    线程正等待进入同步块，或者在调用函数"Object.wait()"后，等待重新进入同步块
+    JVMTI_THREAD_STATE_WAITING	                    0x0080	    线程正在等待
+    JVMTI_THREAD_STATE_WAITING_INDEFINITELY	        0x0010	    线程正在等待，且没有超时，例如调用了函数"Object.wait()"
+    JVMTI_THREAD_STATE_WAITING_WITH_TIMEOUT	        0x0020	    线程正在等待，且设置了超时，例如调用了函数"Object.wait(long)"
+    JVMTI_THREAD_STATE_IN_OBJECT_WAIT	            0x0100	    线程正在等待获取对象监视器，例如调用了函数"Object.wait"
+    JVMTI_THREAD_STATE_PARKED	                    0x0200	    线程已经被暂停，例如调用了函数"LockSupport.park"，"LockSupport.parkUtil"和"LockSupport.parkNanos"
+    JVMTI_THREAD_STATE_SUSPENDED	                0x100000	线程被挂起，例如调用了函数"java.lang.Thread.suspend()"，或者JVMTI函数"SuspendThread"。若该状态位被设置，则状态值的其他位表示了线程在被挂起前的状态。
+    JVMTI_THREAD_STATE_INTERRUPTED	                0x200000    线程已经被中断Thread has been interrupted.
+    JVMTI_THREAD_STATE_IN_NATIVE	                0x400000	线程正在执行本地代码。需要注意的，JVM在执行JIT编译后的Java代码或JVM本身的代码时，并不会设置该标志位。JNI和JVMTI可能会作为JVM本身代码实现。
+    JVMTI_THREAD_STATE_VENDOR_1	                    0x10000000	由JVM厂商定义。
+    JVMTI_THREAD_STATE_VENDOR_2	                    0x20000000	由JVM厂商定义。
+    JVMTI_THREAD_STATE_VENDOR_3	                    0x40000000	由JVM厂商定义。
+
+JVMTI线程状态与Java线程状态的对应关系：
+
+    常量                                         值                                                  描述
+    	                                        JVMTI_THREAD_STATE_TERMINATED | 
+                                                JVMTI_THREAD_STATE_ALIVE | 
+                                                JVMTI_THREAD_STATE_RUNNABLE | 
+    JVMTI_JAVA_LANG_THREAD_STATE_MASK           JVMTI_THREAD_STATE_BLOCKED_ON_MONITOR_ENTER |       Mask the state with this before comparison
+                                                JVMTI_THREAD_STATE_WAITING | 
+                                                JVMTI_THREAD_STATE_WAITING_INDEFINITELY | 
+                                                JVMTI_THREAD_STATE_WAITING_WITH_TIMEOUT	
+
+    JVMTI_JAVA_LANG_THREAD_STATE_NEW	        0	                                                java.lang.Thread.State.NEW
+
+    JVMTI_JAVA_LANG_THREAD_STATE_TERMINATED	    JVMTI_THREAD_STATE_TERMINATED	                    java.lang.Thread.State.TERMINATED
+
+    JVMTI_JAVA_LANG_THREAD_STATE_RUNNABLE	    JVMTI_THREAD_STATE_ALIVE |                          java.lang.Thread.State.RUNNABLE
+                                                JVMTI_THREAD_STATE_RUNNABLE	
+
+    JVMTI_JAVA_LANG_THREAD_STATE_BLOCKED	    JVMTI_THREAD_STATE_ALIVE | 
+                                                JVMTI_THREAD_STATE_BLOCKED_ON_MONITOR_ENTER	        java.lang.Thread.State.BLOCKED
+
+                                        	    JVMTI_THREAD_STATE_ALIVE | 
+    JVMTI_JAVA_LANG_THREAD_STATE_WAITING        JVMTI_THREAD_STATE_WAITING |                        java.lang.Thread.State.WAITING
+                                                JVMTI_THREAD_STATE_WAITING_INDEFINITELY	
+
+                                            	JVMTI_THREAD_STATE_ALIVE | 
+    JVMTI_JAVA_LANG_THREAD_STATE_TIMED_WAITING  JVMTI_THREAD_STATE_WAITING |                        java.lang.Thread.State.TIMED_WAITING
+                                                JVMTI_THREAD_STATE_WAITING_WITH_TIMEOUT	
+
+线程状态的设计考虑了将来对规范的扩展，因此不应该将状态值作为标量使用。大多数的查询，都应该测试状态值的某个标志位是否被设置。本文中没有定义的标志位是为将来预留的。遵守规范的JVM实现必须将预留的标志位设置为`0`。JVMTI代理应该忽略这些预留的标志位，不能假设他们肯定就是`0`。
+
+示例：
+
+* 阻塞在`synchromized`语句的线程的状态为：
+
+        JVMTI_THREAD_STATE_ALIVE + JVMTI_THREAD_STATE_BLOCKED_ON_MONITOR_ENTER
+
+* 还未启动的线程的状态为：
+
+        0
+
+* 调用了函数`object.wait(3000)`的线程状态为：
+
+        JVMTI_THREAD_STATE_ALIVE + JVMTI_THREAD_STATE_WAITING + JVMTI_THREAD_STATE_WAITING_WITH_TIMEOUT + JVMTI_THREAD_STATE_MONITOR_WAITING
+
+* 运行过程中被挂起的线程状态为：
+
+        JVMTI_THREAD_STATE_ALIVE + JVMTI_THREAD_STATE_RUNNABLE + JVMTI_THREAD_STATE_SUSPENDED
+
+大多数场景下，程序应该针对指定的标志位进行测试。例如：
+
+* 线程是否正在休眠：
+
+        ```c
+        jint state;
+        jvmtiError err;
+
+        err = (*jvmti)->GetThreadState(jvmti, thread, &state);
+        if (err == JVMTI_ERROR_NONE) {
+        if (state & JVMTI_THREAD_STATE_SLEEPING) {  ...
+        ```
+
+* 线程是否正在等待(`Object.wait`，暂停或休眠)：
+
+        ```c
+        if (state & JVMTI_THREAD_STATE_WAITING) {  ...
+        ```
+
+* 线程是否还未启动：
+
+        ```c
+        if ((state & (JVMTI_THREAD_STATE_ALIVE | JVMTI_THREAD_STATE_TERMINATED)) == 0)  {  ...
+        ```
+
+* 判断线程是调用了`object.wait()`还是`object.wait(long)`:
+
+        ```c
+        if (state & JVMTI_THREAD_STATE_IN_OBJECT_WAIT)  {  
+            if (state & JVMTI_THREAD_STATE_WAITING_WITH_TIMEOUT)  {
+                printf("in Object.wait(long timeout)\n");
+            } else {
+                printf("in Object.wait()\n");
+            }
+        }
+        ```
+
+函数`java.lang.Thread.getState()`返回的线程状态`java.lang.Thread.State`是函数`GetThreadState`返回值的子集。通过掩码做位运算，可以获取到对应的`java.lang.Thread.State`。下面的代码展示了如何根据函数`GetThreadState`的返回值获取对应的`java.lang.Thread.State`：
+
+    ```c
+    err = (*jvmti)->GetThreadState(jvmti, thread, &state);
+    abortOnError(err);
+        switch (state & JVMTI_JAVA_LANG_THREAD_STATE_MASK) {
+        case JVMTI_JAVA_LANG_THREAD_STATE_NEW:
+            return "NEW";
+        case JVMTI_JAVA_LANG_THREAD_STATE_TERMINATED:
+            return "TERMINATED";
+        case JVMTI_JAVA_LANG_THREAD_STATE_RUNNABLE:
+            return "RUNNABLE";
+        case JVMTI_JAVA_LANG_THREAD_STATE_BLOCKED:
+            return "BLOCKED";
+        case JVMTI_JAVA_LANG_THREAD_STATE_WAITING:
+            return "WAITING";
+        case JVMTI_JAVA_LANG_THREAD_STATE_TIMED_WAITING:
+            return "TIMED_WAITING";
+        }
+    ```
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 17
+* Since： 1.0
+* 功能： 必选
+* 参数：
+    * `thread`: 类型为`jthread`，待处理的线程对象，若为`NULL`，则表示要处理当前线程
+    * `thread_state_ptr`: 
+        * 类型为`jint*`，出参
+        * 调用者传入指向`jint`的指针，函数返回时，会将线程状态的值放到该指针指向的内存
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_THREAD`： 参数`thread`指向的并不是线程对象
+    * `JVMTI_ERROR_NULL_POINTER`： 参数`thread_state_ptr`为`NULL`
+
+<a name="2.6.2.2"></a>
+#### 2.6.2.2 GetCurrentThread
+
+    ```c
+    jvmtiError GetCurrentThread(jvmtiEnv* env, jthread* thread_ptr)
+    ```
+
+该函数用于获取当前线程对象，这里获取的在Java代码中调用该函数时所在的线程。
+
+注意，大部分接收线程对象作为参数JVMTI函数，在接收到`NULL`时，都会以当前线程作为目标。
+
+* 调用阶段： 只可能在`start`或`live`阶段调用
+* 回调安全： 无
+* 索引位置： 18
+* Since： 1.1
+* 功能： 必选
+* 参数：
+    * `thread_ptr`: 
+        * 类型为`jthread*`，出参，用于获取线程对象。
+        * 调用者传入指向`jthread`的指针，函数返回的时候，会填入获取到的线程对象。
+        * 获取到的线程对象是一个JNI局部引用，必须管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`thread_ptr`为`NULL`
+
+<a name="2.6.2.3"></a>
+#### 2.6.2.3 GetAllThreads
+
+    ```c
+    jvmtiError GetAllThreads(jvmtiEnv* env, jint* threads_count_ptr, jthread** threads_ptr)
+    ```
+
+该函数用于获取所有存活的线程，注意，这里所说的是Java的线程，即所有连接到JVM的线程。若函数`java.lang.Thread.isAlive()`返回`true`，表示该线程是存活的，即线程已经启动了，但还没有死。线程的全部范围由JVMTIz还行环境的上下文决定，典型情况下，就是所连接到JVM的线程。注意，这其中是包含JVMTI代理线程的。有参见`RunAgentThread`的说明。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 4
+* Since： 1.0
+* 功能： 必选
+* 参数：
+    * `threads_count_ptr`: 
+        * 类型为`jint*`，出参
+        * 调用者传入指向`jint`指针，函数返回的时候，会填入获取到的线程的个数
+    * `threads_ptr`: 
+        * 类型为`jthread**`，出参，表示获取到的线程数组。
+        * 调用者传入指向`jthread*`指针，函数返回的时候，会创建一个长度为`threads_count_ptr`的数组，将来需要调用函数`Deallocate`加以释放。
+        * 获取到的线程对象是JNI局部引用，必须加以管理
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`threads_count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`threads_ptr`为`NULL`
+
+<a name="2.6.2.4"></a>
+#### 2.6.2.4 SuspendThread
+
+    ```c
+    jvmtiError SuspendThread(jvmtiEnv* env, jthread thread)
+    ```
+
+暂定目标线程。如果指定了目标线程，则会阻塞当前函数，直到其他线程对目标线程调用了函数`ResumeThread`。如果要暂停的是当前线程，则该函数啥也不干，返回错误
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 5
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+    * `can_suspend`: 是否能暂停/恢复线程
+* 参数：
+    * `thread`: 类型为`jthread`，要暂停的目标线程，若为`NULL`，则表示当前线程
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_suspend`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_THREAD_SUSPENDED`: 线程已经被暂停
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是一个线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 线程不是存活状态，可能还未启动或已经死亡
+
+<a name="2.6.2.5"></a>
+#### 2.6.2.5 SuspendThreadList
+
+    ```c
+    jvmtiError SuspendThreadList(jvmtiEnv* env, jint request_count, const jthread* request_list, jvmtiError* results)
+    ```
+
+该函数用于暂停指定的线程集合，暂停之后，可以通过函数`ResumeThreadList`或`ResumeThread`恢复运行。如果调用线程也在指定的线程集合中，则该函数不会返回，直到其他线程恢复调用线程的运行。若在暂停线程时遇到错误，会在出参中放置错误信息，而不是函数返回值，此时已经被暂停的线程不会改变状态。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 92
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+    * `can_suspend`: 是否能暂停/恢复线程
+* 参数：
+    * `request_count`: 类型为`jint`，要暂停的线程的数目
+    * `request_list`: 
+        * 类型为`const jthread*`，待暂停的线程的数组
+        * 调用者传入一个数组，数组元素的类型为`jthread`，数组元素的个数为`request_count`
+    * `results`: 
+        * 类型为`jvmtiError*`，出参
+        * 调用者要传入一个长度为`request_count`的数组，函数返回时，会放入暂停线程时的错误码，若线程被正确暂停，则放入`JVMTI_ERROR_NONE`，其他错误信息参见[函数`SuspendThread`的说明][71]
+        * 调用者传入的数组必须能够存放足够数量的`jvmtiError`对象。函数返回时，会忽略传入时的值，并设置操作结果
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_suspend`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`request_count`小于0
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`request_list`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`results`为`NULL`
+
+<a name="2.6.2.6"></a>
+#### 2.6.2.6 ResumeThread
+
+    ```c
+    jvmtiError ResumeThread(jvmtiEnv* env, jthread thread)
+    ```
+
+恢复已暂停线程的运行。通过JVMTI的暂停函数(`SuspendThread`)或`java.lang.Thread.suspend()`暂停的线程可以被恢复运行，对其他的线程无效。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 6
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+    * `can_suspend`: 是否能暂停/恢复线程
+* 参数：
+    * `thread`: 类型为`jthread`，要恢复运行的线程
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_suspend`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_THREAD_NOT_SUSPENDED`: 目标线程没有被暂停
+    * `JVMTI_ERROR_INVALID_TYPESTATE`: 线程状态已经被改变，状态不一致
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 目标线程不是存活状态，即未启动或已死亡
+
+<a name="2.6.2.7"></a>
+#### 2.6.2.7 ResumeThreadList
+
+    ```c
+    jvmtiError ResumeThreadList(jvmtiEnv* env, jint request_count, const jthread* request_list, jvmtiError* results)
+    ```
+
+恢复目标数组中的线程。通过JVMTI的暂停函数(`SuspendThread`)或`java.lang.Thread.suspend()`暂停的线程可以被恢复运行，对其他的线程无效。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 93
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+    * `can_suspend`: 是否能暂停/恢复线程
+* 参数：
+    * `request_count`: 类型为`jint`，要恢复的线程的数量
+    * `request_list`: 
+        * 类型为`const jthread*`，要恢复的线程数组
+        * 调用者需要传入一个`jthread`类型的数组，数组长度为`request_count`
+    * `results`: 
+        * 类型为`jvmtiError*`，出参
+        * 调用者传入一个`jvmtiError`类型的数组，长度为`request_count`，函数返回时，会填入恢复线程运行的操作结果。若操作成功，填入`JVMTI_ERROR_NONE`，否则填入具体的错误码，参见函数[`ResumeThread`][73]。
+        * 调用者传入的数组必须能够存放足够数量的`jvmtiError`对象。函数返回时，会忽略传入时的值，并设置操作结果
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_suspend`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`request_count`小于0
+    * `JVMTI_ERROR_NULL_POINTER	`: 参数`request_list`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER	`: 参数`results`为`NULL`
+
+<a name="2.6.2.8"></a>
+#### 2.6.2.8 StopThread
+
+    ```c
+    jvmtiError StopThread(jvmtiEnv* env, jthread thread, jobject exception)
+    ```
+
+该函数用于给目标线程发送异步异常，类似于调用方法`java.lang.Thread.stop`。正常情况下，该函数用于以`ThreadDeath`异常杀死目标线程。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 93
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+    * `can_signal_thread`: 是否能中断/终止线程
+* 参数：
+    * `thread`: 类型为`jthread`，要终止的线程
+    * `exception`: 类型为`jobejct`，异步异常对象
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_signal_thread`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE	`: 目标线程不是存活状态，即未启动或已死亡
+    * `JVMTI_ERROR_INVALID_OBJECT`: 参数`exception`不是对象
+
+<a name="2.6.2.9"></a>
+#### 2.6.2.9 InterruptThread
+
+    ```c
+    jvmtiError InterruptThread(jvmtiEnv* env, jthread thread)
+    ```
+
+该函数用于中断目标线程，类似于`java.lang.Thread.interrupt`。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 8
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+    * `can_signal_thread`: 是否能中断/终止线程
+* 参数：
+    * `thread`: 类型为`jthread`，要中断的线程
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_signal_thread`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE	`: 目标线程不是存活状态，即未启动或已死亡
+
+<a name="2.6.2.10"></a>
+#### 2.6.2.10 GetThreadInfo
+
+    ```c
+    jvmtiError GetThreadInfo(jvmtiEnv* env, jthread thread, jvmtiThreadInfo* info_ptr)
+    ```
+
+其中，结构体`jvmtiThreadInfo`定义如下：
+
+    ```c
+    struct jvmtiThreadInfo {
+        char* name;
+        jint priority;
+        jboolean is_daemon;
+        jthreadGroup thread_group;
+        jobject context_class_loader;
+    };
+    ```
+
+字段含义如下：
+
+* `name`: 以自定义UTF-8编码的线程名
+* `priority`: 线程优先级，常量值参见`jvmtiThreadPriority`
+* `is_daemon`: 目标线程是否是守护线程
+* `thread_group`: 目标线程所属的线程组，如果线程已死，该属性值为`NULL`
+* `context_class_loader`: 与目标线程相关联的上下文类载入器
+
+该函数用于获取目标线程的相关信息。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 9
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `thread`: 类型为`jthread`，目标线程，若为`NULL`，则表示当前线程
+    * `info_ptr`: 
+        * 类型为`jvmtiThreadInfo*`，
+        * 出参，函数返回时，会填入线程信息。
+        * JDK1.1的实现中无法识别字段`context_class_loader`，因此其值为`NULL`。
+        * 调用者需要传入指向结构体`jvmtiThreadInfo`的指针，函数返回的时候，会向其中赋值。
+            * 字段`name`是一个数组，需要调用`Deallocate`来释放
+            * 字段`thread_group`是一个局部引用，必须管理起来
+            * 字段`context_class_loader`是一个局部引用，必须管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_signal_thread`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_NULL_POINTER	`: 参数`info_str`为`NULL`
+
+<a name="2.6.2.11"></a>
+#### 2.6.2.11 GetOwnedMonitorInfo
+
+    ```c
+    jvmtiError GetOwnedMonitorInfo(jvmtiEnv* env, jthread thread, jint* owned_monitor_count_ptr, jobject** owned_monitors_ptr)
+    ```
+
+该函数用于获取目标线程所持有的监视器信息。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 10
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+    * `can_get_owned_monitor_info`: 是否能获取监视器的属主信息
+* 参数：
+    * `thread`: 类型为`jthread`，目标线程，若为`NULL`，则表示当前线程
+    * `owned_monitor_count_ptr`: 
+        * 类型为`jint*`，出参，函数返回时，会填入监视器的数量
+    * `owned_monitors_ptr`:
+        * 类型为`jobejct**`，出参，函数返回时，会填入监视器对象
+        * 调用者传入指向`jobject*`的指针，函数返回时，会创建长度为`*owned_monitor_count_ptr`的数组对象，后续需要调用函数`Deallocate`函数来释放
+        * 数组中的对象是局部引用，必须管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_get_owned_monitor_info`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE	`: 参数`thread`不是存活线程，可能未启动或已死亡
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`owned_monitor_count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`owned_monitors_ptr`为`NULL`
+
+<a name="2.6.2.12"></a>
+#### 2.6.2.12 GetOwnedMonitorStackDepthInfo
+
+    ```c
+    jvmtiError GetOwnedMonitorStackDepthInfo(jvmtiEnv* env, jthread thread, jint* monitor_info_count_ptr, jvmtiMonitorStackDepthInfo** monitor_info_ptr
+    ```
+
+其中，结构体`jvmtiMonitorStackDepthInfo`的定义如下：
+
+    ```c
+    typedef struct {
+        jobject monitor;
+        jint stack_depth;
+    } jvmtiMonitorStackDepthInfo;
+    ```
+
+其中字段含义如下：
+
+* `monitor`: 监视器对象
+* `stack_depth`: 获取到监视器时栈帧的深度。若是当前函数，则深度为0。若JVM无法判断栈帧的深度，则置为-1，例如，通过JNI函数`MonitorEnter`获取到监视器。
+
+该函数用于获取目标线程所持有的监视器信息，以及是在哪个栈帧获取的监视器。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 153
+* Since： 1.1
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_get_owned_monitor_stack_depth_info`: 是否能获取到监视器和栈帧深度信息
+* 参数：
+    * `thread`: 类型为`jthread`，目标线程，若为`NULL`，则表示当前线程
+    * `monitor_info_count_ptr`: 
+        * 类型为`jint*`，出参，函数返回时，会填入监视器的数量
+    * `monitor_info_ptr`:
+        * 类型为`jvmtiMonitorStackDepthInfo **`，出参，函数返回时，会填入监视器对象和栈帧的深度
+        * 调用者传入指向`jvmtiMonitorStackDepthInfo*`的指针，函数返回时，会创建长度为`*monitor_info_count_ptr`的数组对象，后续需要调用函数`Deallocate`函数来释放
+        * 数组中的对象是局部引用，必须管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_get_owned_monitor_info`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE	`: 参数`thread`不是存活线程，可能未启动或已死亡
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`monitor_info_count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`monitor_info_ptr`为`NULL`
 
 <a name="2.6.3"></a>
 ### 2.6.3 线程组
@@ -590,5 +1173,17 @@ JVMTI函数永远不会抛出异常，通过返回值表示执行状态。在调
 [63]:     http://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#2
 [64]:     http://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#4.5.2
 [65]:     http://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#2.5.3
+[66]:     #2.6.1.1
+[67]:     #2.6.1.2
+[68]:     #2.6.2.1
+[69]:     #2.6.2.2
+[70]:     #2.6.2.3
+[71]:     #2.6.2.4
+[72]:     #2.6.2.5
+[73]:     #2.6.2.6
+[74]:     #2.6.2.7
+[75]:     #2.6.2.8
+[76]:     #2.6.2.9
+[77]:     #2.6.2.10
 
 [100]:    https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html
