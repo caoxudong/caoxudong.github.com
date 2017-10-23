@@ -46,6 +46,10 @@ tags:       [java, jvm, jvmti]
             * [2.6.2.10 GetThreadInfo][77]
             * [2.6.2.11 GetOwnedMonitorInfo][78]
             * [2.6.2.12 GetOwnedMonitorStackDepthInfo][79]
+            * [2.6.2.13 GetCurrentContendedMonitor][80]
+            * [2.6.2.14 RunAgentThread][81]
+            * [2.6.2.15 SetThreadLocalStorage][82]
+            * [2.6.2.16 GetThreadLocalStorage][83]
         * [2.6.3 线程组][30]
         * [2.6.4 栈帧][31]
         * [2.6.5 强制提前返回][32]
@@ -445,38 +449,6 @@ JVMTI函数永远不会抛出异常，通过返回值表示执行状态。在调
 <a name="2.6.2"></a>
 ### 2.6.2 线程
 
-下面的内容包含了与线程操作相关的结构体和常量定义。
-
-JVMTI启动函数定义：
-
-    ```c
-    typedef void (JNICALL *jvmtiStartFunction)(jvmtiEnv* jvmti_env, JNIEnv* jni_env, void* arg);
-    ```
-
-该指针为JVMTI提供的回调机制，当使用函数`RunAgentThread`启动一个代理线程时，会调用该指针指向的函数。
-
-结构体`jvmtiMonitorStackDepthInfo`：
-
-    ```c
-    struct jvmtiMonitorStackDepthInfo {
-        jobject monitor;
-        jint stack_depth;
-    };
-    ```
-
-其中：
-
-* `monitor`: 所持有的监视器对象
-* `stack_depth`: 栈的深度，`0`则表示当前帧，`1`表示当前函数的调用者，如果无法确定栈帧的深度(例如通过JNI函数`MonitorEnter`获取的监视器)，则值为-1
-
-
-线程优先级常量：
-
-    常量                             值      描述
-    JVMTI_THREAD_MIN_PRIORITY	    1	    Minimum possible thread priority
-    JVMTI_THREAD_NORM_PRIORITY	    5	    Normal thread priority
-    JVMTI_THREAD_MAX_PRIORITY	    10	    Maximum possible thread priority
-
 线程相关的函数包括：
 
 * [GetThreadState][68]
@@ -491,6 +463,10 @@ JVMTI启动函数定义：
 * [GetThreadInfo][77]
 * [GetOwnedMonitorInfo][78]
 * [GetOwnedMonitorStackDepthInfo][79]
+* [GetCurrentContendedMonitor][80]
+* [RunAgentThread][81]
+* [SetThreadLocalStorage][82]
+* [GetThreadLocalStorage][83]
 
 <a name="2.6.2.1"></a>
 #### 2.6.2.1 GetThreadState
@@ -995,8 +971,124 @@ JVMTI线程状态与Java线程状态的对应关系：
     jvmtiError GetCurrentContendedMonitor(jvmtiEnv* env, jthread thread, jobject* monitor_ptr)
     ```
 
+获取目标进程正在通过`java.lang.Obejct.wait`方法竞争的对象监视器。
 
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 11
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_get_current_contended_monitor`: 是否能获取到监视器和栈帧深度信息
+* 参数：
+    * `thread`: 类型为`jthread`，目标线程，若为`NULL`，则表示当前线程
+    * `monitor_ptr`: 
+        * 类型为`jobject*`，出参，函数返回时，会填入监视器获取到的监视器对象，若没有，则置为`NULL`
+        * 调用者传入指向`jobject`对象的指针，函数返回的是一个JNI局部引用，必须管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_get_owned_monitor_info`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE	`: 参数`thread`不是存活线程，可能未启动或已死亡
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`monitor_ptr`为`NULL`
 
+<a name="2.6.2.14"></a>
+#### 2.6.2.14 RunAgentThread
+
+    ```c
+    typedef void (JNICALL *jvmtiStartFunction)(jvmtiEnv* jvmti_env, JNIEnv* jni_env, void* arg);
+    ```
+
+该指针为JVMTI提供的回调机制，当使用函数`RunAgentThread`启动一个代理线程时，会调用该指针指向的函数。
+
+    ```c
+    jvmtiError RunAgentThread(jvmtiEnv* env, jthread thread, jvmtiStartFunction proc, const void* arg, jint priority)
+    ```
+
+函数`RunAgentThread`用于以指定的本地函数，启动JVMTI代理线程。参数`arg`是会作为目标函数的参数传入，新创建的JVMTI代理线程可以用来处理与其他线程的交互，或者处理指定的事件，使用这种方式创建线程，无需载入`java.lang.Thread`的子类或是其他实现了接口`java.lang.Runnable`的类。新创建的JVMTI代理线程可以一直在本地代码中运行，但是该线程需要关联一个新创建的`java.lang.Thread`实例，这个实例可以用JNI函数来创建。
+
+线程优先级常量`jvmtiThreadPriority`：
+
+    常量                             值      描述
+    JVMTI_THREAD_MIN_PRIORITY	    1	    Minimum possible thread priority
+    JVMTI_THREAD_NORM_PRIORITY	    5	    Normal thread priority
+    JVMTI_THREAD_MAX_PRIORITY	    10	    Maximum possible thread priority
+
+新创建的线程会作为守护线程启动，如果启用了事件`ThreadStart`的话，会发送事件`ThreadStart`。
+
+由于线程已经启动了，因此在该函数返回时，线程处于存活状态，除非线程在启动后立刻就死了。
+
+该线程的线程组会被忽略，该线程不会被添加到线程组，而且在通过Java或JVMTI级别的接口查询线程组时，是查不到该线程的。
+
+在Java编程语言中是看不到这个线程的，但可以在JVMTI中看到，例如可以通过函数`GetAllThreads`或`GetAllStackTraces`。
+
+在执行函数`proc`过程中，新创建的线程会被连接到JVM，参见[JNI的相关文档][101]。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 12
+* Since： 1.1
+* 功能： 
+    * 必选
+* 参数：
+    * `thread`: 类型为`jthread`，要运行的线程对象
+    * `proc`: 类型为`jvmtiStartFunction`，线程的启动函数
+    * `arg`: 
+        * 类型为`const void *`，传给线程启动函数的参数
+        * 调用者传入y一个指针，若为`NULL`，则会将`NULL`传给启动函数
+    * `priority`: 类型为`jint`，线程优先级，函数`java.lang.Thread.setPriority`能接受的优先级和常量`jvmtiThreadPriority`的值都可以在这里设置
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_PRIORITY`: 线程优先级的值小于`JVMTI_THREAD_MIN_PRIORITY`或大于`JVMTI_THREAD_MAX_PRIORITY`
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`proc`为`NULL`
+
+<a name="2.6.2.15"></a>
+#### 2.6.2.15 SetThreadLocalStorage
+
+    ```c
+    jvmtiError SetThreadLocalStorage(jvmtiEnv* env, jthread thread, const void* data)
+    ```
+
+JVM中内部保存了执行环境和所属线程关联关系，并用一个指针指向它，指针的值就是线程局部存储(thread-local storage)。在调用该函数之前，指针的值为`NULL`，存储数据时，会分配相应的内存。存入的数据，可以通过函数`GetThreadLocalStorage`来获取。
+
+* 调用阶段： 只可能在`start`或`live`阶段调用
+* 回调安全： 无
+* 索引位置： 103
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `thread`: 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `data`: 类型为`const void *`，要存储的数据。调用者传入一个指针，若为`NULL`，则存入`NULL`
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE	`: 参数`thread`不是存活线程，可能未启动或已死亡
+
+<a name="2.6.2.16"></a>
+#### 2.6.2.16 GetThreadLocalStorage
+
+    ```c
+    jvmtiError GetThreadLocalStorage(jvmtiEnv* env, jthread thread, void** data_ptr)
+    ```
+
+该函数用于获取使用函数`SetThreadLocalStorage`存入的数据。
+
+* 调用阶段： 只可能在`start`或`live`阶段调用
+* 回调安全： 无
+* 索引位置： 102
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `thread`: 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `data_ptr`: 类型为`void**`，出参，要获取的数据。若没有通过函数`SetThreadLocalStorage`设置值，则返回`NULL`
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE	`: 参数`thread`不是存活线程，可能未启动或已死亡
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`data_ptr`为`NULL`
 
 <a name="2.6.3"></a>
 ### 2.6.3 线程组
@@ -1201,5 +1293,10 @@ JVMTI线程状态与Java线程状态的对应关系：
 [77]:     #2.6.2.10
 [78]:     #2.6.2.11
 [79]:     #2.6.2.12
+[80]:     #2.6.2.13
+[81]:     #2.6.2.14
+[82]:     #2.6.2.15
+[83]:     #2.6.2.16
 
 [100]:    https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html
+[101]:    http://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#5.1.2
