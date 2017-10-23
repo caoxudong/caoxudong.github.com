@@ -51,7 +51,17 @@ tags:       [java, jvm, jvmti]
             * [2.6.2.15 SetThreadLocalStorage][82]
             * [2.6.2.16 GetThreadLocalStorage][83]
         * [2.6.3 线程组][30]
+            * [2.6.3.1 GetTopThreadGroups][84]
+            * [2.6.3.2 GetThreadGroupInfo][85]
+            * [2.6.3.3 GetThreadGroupChildren][86]
         * [2.6.4 栈帧][31]
+            * [2.6.4.1 GetStackTrace][87]
+            * [2.6.4.2 GetAllStackTraces][88]
+            * [2.6.4.3 GetThreadListStackTraces][89]
+            * [2.6.4.4 GetFrameCount][90]
+            * [2.6.4.5 PopFrame][91]
+            * [2.6.4.6 GetFrameLocation][92]
+            * [2.6.4.7 NotifyFramePop][93]
         * [2.6.5 强制提前返回][32]
         * [2.6.6 堆][33]
         * [2.6.7 堆1.0][34]
@@ -1093,8 +1103,379 @@ JVM中内部保存了执行环境和所属线程关联关系，并用一个指�
 <a name="2.6.3"></a>
 ### 2.6.3 线程组
 
+线程组相关函数包括：
+
+* [GetTopThreadGroups][84]
+* [GetThreadGroupInfo][85]
+* [GetThreadGroupChildren][86]
+
+<a name="2.6.3.1"></a>
+#### 2.6.3.1 GetTopThreadGroups
+
+    ```c
+    jvmtiError GetTopThreadGroups(jvmtiEnv* env, jint* group_count_ptr, jthreadGroup** groups_ptr)
+    ```
+
+该函数用于获取JVM的顶层线程组。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 13
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `group_count_ptr`: 
+        * 类型为`jint*`，出参，返回顶层线程组的数量
+        * 调用者传入一个指向`jint`的指针
+    * `groups_ptr`: 
+        * 类型为`jthreadGroup**`，出参，返回顶层线程组的数组
+        * 调用者传入指向`jthreadGroup*`的指针，函数返回时，会创建长度为`*group_count_ptr`的数组，后续需要通过函数`Deallocate`来释放
+        * 数组中是JNI局部引用，需要管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`group_count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`groups_ptr`为`NULL`
+
+<a name="2.6.3.2"></a>
+#### 2.6.3.2 GetThreadGroupInfo
+
+    ```c
+    jvmtiError GetThreadGroupInfo(jvmtiEnv* env, jthreadGroup group, jvmtiThreadGroupInfo* info_ptr)
+    ```
+
+该函数用于获取线程组相关的信息。
+
+其中，结构体`jvmtiThreadGroupInfo`的定义如下：
+
+    ```c
+    typedef struct {
+        jthreadGroup parent;
+        char* name;
+        jint max_priority;
+        jboolean is_daemon;
+    } jvmtiThreadGroupInfo;
+    ```
+
+属性含义如下：
+
+    field           type            desc
+    parent	        jthreadGroup	父线程组
+    name	        char*	        以自定义UTF-8编码的线程组的名字
+    max_priority	jint	        该线程组的最大优先级
+    is_daemon	    jboolean	    该线程组是否是守护线程组
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 14
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `group`: 类型为`jthreadGroup`，目标线程组
+    * `info_ptr`: 
+        * 类型为`jvmtiThreadGroupInfo*`，出参，保存了线程组的相关信息
+        * 调用者传入指向`jvmtiThreadGroupInfo`的指针
+        * 属性`jvmtiThreadGroupInfo.parent`是一个JNI局部引用，必须管理起来
+        * 属性`jvmtiThreadGroupInfo.name`是一个新分配的数组，使用函数`Deallocate`来释放
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_THREAD_GROUP`: 参数`group`为不是一个线程组对象
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`info_ptr`为`NULL`
+
+<a name="2.6.3.3"></a>
+#### 2.6.3.3 GetThreadGroupChildren
+
+    ```c
+    jvmtiError GetThreadGroupChildren(jvmtiEnv* env, jthreadGroup group, jint* thread_count_ptr, jthread** threads_ptr, jint* group_count_ptr, jthreadGroup** groups_ptr)
+    ```
+
+该函数用于获取目标线程组中所有的存活线程和子线程组。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 15
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `group`: 类型为`jthreadGroup`，目标线程组
+    * `thread_count_ptr`: 
+        * 类型为`jint*`，出参，标明目标线程组中存活的线程数量
+        * 调用者传入指向`jint`的指针，在函数返回的时候，设置为存活的线程数量
+    * `threads_ptr`:
+        * 类型为`jthread**`，出参，返回目标线程组中的存活线程
+        * 调用者传入指向`jthread*`的指针，函数会创建长度为`*thread_count_ptr`的数组，并将数组的地址赋值到`threads_ptr`，后续需要调用函数`Deallocate`来释放内存
+        * 数组中是JNI局部引用，必须管理起来
+    * `group_count_ptr`: 
+        * 类型为`jint*`，出参，标明存活的子线程组的数量
+        * 调用者传入指向`jint`的指针，在函数返回的时候，设置为存活的子线程组的数量
+    * `groups_ptr`:
+        * 类型为`jthreadGroup**`，出参，返回目标线程组存活的子线程组
+        * 调用者传入指向`jthreadGroup*`的指针，函数会创建长度为`*group_count_ptr`的数组，并将数组的地址赋值到`groups_ptr`，后续需要调用函数`Deallocate`来释放内存
+        * 数组中是JNI局部引用，必须管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_THREAD_GROUP`: 参数`group`为不是一个线程组对象
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`thread_count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`threads_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`group_count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`groups_ptr`为`NULL`
+
 <a name="2.6.4"></a>
 ### 2.6.4 栈帧
+
+栈帧相关函数包括：
+
+* [GetStackTrace][87]
+* [GetAllStackTraces][88]
+* [GetThreadListStackTraces][89]
+* [GetFrameCount][90]
+* [PopFrame][91]
+* [GetFrameLocation][92]
+* [NotifyFramePop][93]
+
+这些函数可用于获取目标线程的栈信息，栈帧由深度值来引用，深度值为0表示为当前帧。
+
+对栈帧的描述参见[JVM规范2.6节][102]。栈帧与方法调用相关(包括本地方法)，但与平台和JVM的内部实现无关。
+
+JVMTI实现可能会通过方法调用来载入线程，而这些函数所获取到的栈帧可能会被包含在栈中，即栈帧的深度可能会比方法`main()`和`run()`大。但这种机制，必须在该JVMTI实现所有的JVMTI功能中保持一致。
+
+栈帧数据结构的定义如下：
+
+    ```c
+    typedef struct {
+        jmethodID method;
+        jlocation location;
+    } jvmtiFrameInfo;
+    ```
+
+其属性域含义如下：
+
+* `method`: 标明执行该栈帧的方法
+* `location`: 当前正在执行的执行的索引位置，若当前为本地方法，则该值为`-1`
+
+栈数据结构的定义如下：
+
+    ```c
+    typedef struct {
+        jthread thread;
+        jint state;
+        jvmtiFrameInfo* frame_buffer;
+        jint frame_count;
+    } jvmtiStackInfo;
+    ```
+
+其属性域含义如下：
+
+* `thread`: 出参，表示目标线程
+* `state`: 出现，线程状态，参见
+* `frame_buffer`: 出参，JVMTI代理创建数组，相应的函数会填入栈帧信息
+* `frame_count`: 出参，相应函数会填入栈帧的数量，值为`min(max_frame_count, stackDepth)`
+
+<a name="2.6.4.1"></a>
+#### 2.6.4.1 GetStackTrace
+
+    ```c
+    jvmtiError GetStackTrace(jvmtiEnv* env, jthread thread, jint start_depth, jint max_frame_count, jvmtiFrameInfo* frame_buffer, jint* count_ptr)
+    ```
+
+该函数用于获取目标线程的栈信息。若参数`max_frame_count`的值小于栈的深度，则只返回顶部数量为`max_frame_count`的栈帧，否则返回全部栈帧。参数`frame_buffer`保存了获取的栈帧信息，最近调用的函数放在数组的开始位置。
+
+下面的例子展示了如何获取栈顶的5个栈帧：
+
+    ```c
+    jvmtiFrameInfo frames[5];
+    jint count;
+    jvmtiError err;
+
+    err = (*jvmti)->GetStackTrace(jvmti, aThread, 0, 5, frames, &count);
+    if (err == JVMTI_ERROR_NONE && count >= 1) {
+        char *methodName;
+        err = (*jvmti)->GetMethodName(jvmti, frames[0].method, 
+                            &methodName, NULL, NULL);
+        if (err == JVMTI_ERROR_NONE) {
+            printf("Executing method: %s", methodName);
+        }
+    }
+    ```
+
+调用该函数时，无需挂起目标线程。
+
+函数`GetLineNumberTable`可用于将指令的索引位置映射为源代码的行号。这个操作可以延迟执行。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 104
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `thread`: 类型为`jthread`，目标线程组，若为`NULL`，则表示当前线程
+    * `start_depth`: 
+        * 类型为`jint`，表示从指定的深度开始获取栈帧信息
+        * 若值为非负数，则从当前帧开始计算深度。例如，若值为`0`，则从当前帧开始；若为`1`，则从当前帧的调用者开始；若为`2`，则从当前帧的调用者的调用者开始，以此类推
+        * 若为负数，则从第一个函数调用开始计算，第一个栈帧的深度为`stackDepth + start_depth`，其中`stackDepth`为整个栈的深度。例如，若值为`-1`，则只会获取最后一个栈帧；若值为`-2`，则从最后一个栈帧的被调用函数开始。
+    * `max_frame_count`: 类型为`jint`，表示要获取的栈帧数量的最大值
+    * `frame_buffer`:
+        * 类型为`jvmtiFrameInfo *`，出参，调用者创建一块内存区域，用于存储获取的栈帧信息
+        * 调用者创建一个足够大的数组，可以放下数量为`max_frame_count`的`jvmtiFrameInfo`。数组原本的内容会被忽略，在函数返回的时候，会设置出参`count_ptr`的值
+    * `count_ptr`:
+        * 类型为`jint*`，出参，标明获取到的栈帧的数量
+        * 若参数`start_depth`为非负数，则该值为`min(max_frame_count, stackDepth - start_depth)`
+        * 若参数`start_depth`为负数，则该值为`min(max_frame_count, -start_depth)`
+        * 调用者传入一个指向`jint`的指针，函数返回时会设置该值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`start_depth`为正数，且大于`stackDepth`；或者参数`start_depth`小于0，且小于`-stackDepth`
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是一个线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 参数`thread`不是存活线程，可能未启动或已死亡
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`max_frame_count`小于0
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`frame_buffer`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`count_ptr`为`NULL`
+
+<a name="2.6.4.2"></a>
+#### 2.6.4.2 GetAllStackTraces
+
+    ```c
+    jvmtiError GetAllStackTraces(jvmtiEnv* env, jint max_frame_count, jvmtiStackInfo** stack_info_ptr, jint* thread_count_ptr)
+    ```
+
+该函数用于获取所有存活线程的栈信息(包括JVMTI代理线程)。若参数`max_frame_count`小于栈的深度，则只返回栈顶部的、数量为`max_frame_count`的栈帧信息；否则返回整个栈信息。参数`frame_buffer`保存了获取的栈帧信息，最近调用的函数放在数组的开始位置。
+
+函数会同时收集所有存活线程的栈信息，即在收集信息时，线程状态和栈的信息不会发生变化。线程会被挂起。
+
+示例如下：
+
+    ```c
+    jvmtiStackInfo *stack_info;
+    jint thread_count;
+    int ti;
+    jvmtiError err;
+
+    err = (*jvmti)->GetAllStackTraces(jvmti, MAX_FRAMES, &stack_info, &thread_count); 
+    if (err != JVMTI_ERROR_NONE) {
+        ...   
+    }
+    for (ti = 0; ti < thread_count; ++ti) {
+        jvmtiStackInfo *infop = &stack_info[ti];
+        jthread thread = infop->thread;
+        jint state = infop->state;
+        jvmtiFrameInfo *frames = infop->frame_buffer;
+        int fi;
+
+        myThreadAndStatePrinter(thread, state);
+        for (fi = 0; fi < infop->frame_count; fi++) {
+            myFramePrinter(frames[fi].method, frames[fi].location);
+        }
+    }
+    /* this one Deallocate call frees all data allocated by GetAllStackTraces */
+    err = (*jvmti)->Deallocate(jvmti, stack_info); 
+    ```
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 100
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `max_frame_count`: 类型为`jint`，表示要获取的栈帧数量的最大值
+    * `stack_info_ptr`:
+        * 类型为`jvmtiStackInfo **`，出参，函数返回时会填入线程的栈信息，数组元素的个数由参数`thread_count_ptr`指定
+        * 调用者创建一个足够大的数组，可以放下数量为`max_frame_count`的`jvmtiFrameInfo`。数组原本的内容会被忽略，在函数返回的时候，会设置出参`count_ptr`的值
+        * 需要注意的是，函数在分配内存时，包含了`jvmtiFrameInfo`数组的部分，这部分区域的地址放在属性域`jvmtiStackInfo.frame_buffer`中，不能分别释放内存
+        * 调用者传入指向`jvmtiStackInfo*`的指针，函数返回时，`jvmtiStackInfo*`会指向一个新分配的数组，后续需要使用函数`Deallocate`释放该数组。数组中的元素时JNI局部引用，必须管理起来
+    * `thread_count_ptr`:
+        * 类型为`jint*`，出参，标明线程的数量
+        * 调用者传入一个指向`jint`的指针，函数返回时会设置该值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`max_frame_count`小于0
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`stack_info_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`thread_count_ptr`为`NULL`
+
+<a name="2.6.4.3"></a>
+#### 2.6.4.3 GetThreadListStackTraces
+
+    ```c
+    jvmtiError GetThreadListStackTraces(jvmtiEnv* env, jint thread_count, const jthread* thread_list, jint max_frame_count, jvmtiStackInfo** stack_info_ptr)
+    ```
+
+该函数用于获取指定线程的栈信息。若参数`max_frame_count`小于栈的深度，则只返回线程栈顶部的`max_frame_count`个栈帧；否则，会返回整个栈。参数`stack_info_ptr`保存了获取的栈帧信息，最近调用的函数放在数组的开始位置。
+
+函数会同时收集目标线程的栈信息，即在收集信息时，线程状态和栈的信息不会发生变化。线程会被挂起。
+
+若目标线程还没有启动或已经死亡，则会返回长度为0的栈帧，属性域`jvmtiStackInfo.frame_count`的值为`0`。开发者可以通过属性域`jvmtiStackInfo.state`来检查线程状态。
+
+函数调用示例参见函数[`GetAllStackTraces`][88]的说明。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 101
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `thread_count`: 类型为`jint`，表示目标线程的数量
+    * `thread_list`: 
+        * 类型为`const jthread*`，表示目标线程数组
+        * 调用者需要传入长度为`thread_count`的数组
+    * `max_frame_count`: 类型为`jint`，表示要获取的调用栈的数量
+    * `stack_info_ptr`:
+        * 类型为`jvmtiStackInfo **`，出参，函数返回时会填入线程的栈信息，数组元素的个数由参数`thread_count_ptr`指定
+        * 调用者创建一个足够大的数组，可以放下数量为`max_frame_count`的`jvmtiFrameInfo`。数组原本的内容会被忽略，在函数返回的时候，会设置出参`count_ptr`的值
+        * 需要注意的是，函数在分配内存时，包含了`jvmtiFrameInfo`数组的部分，这部分区域的地址放在属性域`jvmtiStackInfo.frame_buffer`中，不能分别释放内存
+        * 调用者传入指向`jvmtiStackInfo*`的指针，函数返回时，`jvmtiStackInfo*`会指向一个新分配的数组，后续需要使用函数`Deallocate`释放该数组。数组中的元素时JNI局部引用，必须管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread_list`中的某个元素不是线程对象
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`thread_count`小于0
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`thread_list`为`NULL`
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`max_frame_count`小于0
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`stack_info_ptr`为`NULL`
+
+<a name="2.6.4.4"></a>
+#### 2.6.4.4 GetFrameCount
+
+    ```c
+    jvmtiError GetFrameCount(jvmtiEnv* env, jthread thread, jint* count_ptr)
+    ```
+
+该函数用于获取目标线程调用栈中当前的栈帧数量。
+
+注意，线程中栈帧的数量随时都在变动。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 16
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `thread`: 类型为`jthread`，目标线程，若为`NULL`，则表示当前线程
+    * `count_ptr`: 类型为`jint*`，出参，函数返回时，会设置栈帧的数量。
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 线程不是存活状态，可能还未启动或已经死亡
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`count_ptr`为`NULL`
+
+
+
+
+<a name="2.6.4.5"></a>
+#### 2.6.4.5 PopFrame
+
+
+<a name="2.6.4.6"></a>
+#### 2.6.4.6 GetFrameLocation
+
+<a name="2.6.4.7"></a>
+#### 2.6.4.7 NotifyFramePop
+
+
+
 
 <a name="2.6.5"></a>
 ### 2.6.5 强制提前返回
@@ -1297,6 +1678,17 @@ JVM中内部保存了执行环境和所属线程关联关系，并用一个指�
 [81]:     #2.6.2.14
 [82]:     #2.6.2.15
 [83]:     #2.6.2.16
+[84]:     #2.6.3.1
+[85]:     #2.6.3.2
+[86]:     #2.6.3.3
+[87]:     #2.6.4.1
+[88]:     #2.6.4.2
+[89]:     #2.6.4.3
+[90]:     #2.6.4.4
+[91]:     #2.6.4.5
+[92]:     #2.6.4.6
+[93]:     #2.6.4.7
 
 [100]:    https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html
 [101]:    http://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#5.1.2
+[102]:    https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6
