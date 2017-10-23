@@ -1461,21 +1461,121 @@ JVMTI实现可能会通过方法调用来载入线程，而这些函数所获取
     * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 线程不是存活状态，可能还未启动或已经死亡
     * `JVMTI_ERROR_NULL_POINTER`: 参数`count_ptr`为`NULL`
 
-
-
-
 <a name="2.6.4.5"></a>
 #### 2.6.4.5 PopFrame
 
+    ```c
+    jvmtiError PopFrame(jvmtiEnv* env, jthread thread)
+    ```
+
+该函数用于弹出线程栈帧。弹出顶层栈帧后，会将程序回到前一个栈帧。当线程恢复运行后，线程的执行状态会被置为调用当前方法之前的状态。执行过程如下所示：
+
+* 当前栈帧会被弹出抛弃，前一个栈帧成为顶部栈帧
+* 恢复操作数栈，若不是以`invokestatic`指令调用的当前栈帧，则`objectref`也会添加到栈
+* 恢复JVM的指令寄存器，将之置为调用当前栈帧的调用指令
+
+需要注意的是，弹出栈帧后，在被调函数中被修改的内容还会保持已经被修改的值；当继续执行的时候，会调用指令序列的第一个指令。
+
+在调用函数`PopFrame`和恢复线程的过程中，线程栈的状态是未定义的。若要弹出多个栈帧，必须按下面3个步骤重复执行：
+
+* 以事件触发的方式暂停挂起线程（例如，步进、断点等）
+* 调用函数`PopFrame`
+* 恢复线程运行
+
+在弹出栈帧后，调用被调函数而获取的锁(例如被调函数是`synchronized`)和在被调函数因进入同步块而获取到的锁，都会被释放掉。注意，这种自动释放锁的机制，并不适用与本地代码获取的锁或`java.util.concurrent.locks`中的锁。
+
+执行该函数后，`finally`代码块不会执行。
+
+对全局状态的修改不会恢复。
+
+目标线程会被挂起，也就是说，目标线程不能是当前线程。
+
+被调方法和调用方法必须是Java方法。
+
+执行该函数不会触发JVMTI事件。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 80
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+    * `can_pop_frame`: 是否能弹出栈帧
+* 参数：
+    * `thread`: 类型为`jthread`，目标线程
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_pop_frame`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_OPAQUE_FRAME`: 调用方法或被调方法是本地方法，导致无法弹出栈帧
+    * `JVMTI_ERROR_THREAD_NOT_SUSPENDED`: 目标线程无法挂起
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 调用栈中栈帧数量少于2个
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 线程不是存活状态，可能还未启动或已经死亡
 
 <a name="2.6.4.6"></a>
 #### 2.6.4.6 GetFrameLocation
 
+    ```c
+    jvmtiError GetFrameLocation(jvmtiEnv* env, jthread thread, jint depth, jmethodID* method_ptr, jlocation* location_ptr)
+    ```
+
+对于Java代码的调用栈帧，返回当前指令的位置。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 80
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+    * `can_pop_frame`: 是否能获取监视器的属主信息
+* 参数：
+    * `thread`: 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `depth`: 类型为`jint`，目标栈帧的深度
+    * `method_ptr`: 
+        * 类型为`jmethodID*`，出参，指向当前指令位置的方法
+        * 调用者传入指向`jmethodID`的指针，函数返回的时候，会设置该值
+    * `location_ptr`: 
+        * 类型为`jlocation*`，出参，指向当前执行指令的索引位置。若当前方法为本地方法，则置为`-1`
+        * 调用者传入指向`jlocation`的指针，函数返回的时候，会设置该值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 线程不是存活状态，可能还未启动或已经死亡
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`depth`小于0
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 参数`depth`所指定的位置没有栈帧
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`method_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`location_ptr`为`NULL`
+
 <a name="2.6.4.7"></a>
 #### 2.6.4.7 NotifyFramePop
 
+    ```c
+    jvmtiError NotifyFramePop(jvmtiEnv* env, jthread thread, jint depth)
+    ```
 
+在将指定栈帧从调用栈中弹出后，会产生一个`FramePop`事件。有关事件`FramePop`的详细内容，参见这里。只有非Java方法能接收栈帧弹出事件的通知。
 
+目标线程必须是当前线程，或者是被挂起的。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 80
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+    * `can_generate_frame_pop_events`: 是否能发送/接收`FramePop`事件
+* 参数：
+    * `thread`: 类型为`jthread`，弹出栈帧的线程，若为`NULL`，则为当前线程
+    * `depth`: 类型为`jint`，被弹出栈帧的深度
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_generate_frame_pop_events`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_OPAQUE_FRAME`: 调用方法或被调方法是本地方法，导致无法弹出栈帧
+    * `JVMTI_ERROR_THREAD_NOT_SUSPENDED`: 目标线程不是挂起状态，也不是当前线程
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 线程不是存活状态，可能还未启动或已经死亡
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`depth`小于0
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 参数`depth`所指定的位置没有栈帧
 
 <a name="2.6.5"></a>
 ### 2.6.5 强制提前返回
