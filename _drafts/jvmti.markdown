@@ -63,6 +63,12 @@ tags:       [java, jvm, jvmti]
             * [2.6.4.6 GetFrameLocation][92]
             * [2.6.4.7 NotifyFramePop][93]
         * [2.6.5 强制提前返回][32]
+            * [2.6.5.1 ForceEarlyReturnObject][94]
+            * [2.6.5.2 ForceEarlyReturnInt][95]
+            * [2.6.5.3 ForceEarlyReturnLong][96]
+            * [2.6.5.4 ForceEarlyReturnFloat][97]
+            * [2.6.5.5 ForceEarlyReturnDouble][98]
+            * [2.6.5.6 ForceEarlyReturnVoid][99]
         * [2.6.6 堆][33]
         * [2.6.7 堆1.0][34]
         * [2.6.8 局部变量][35]
@@ -403,8 +409,8 @@ JVMTI函数永远不会抛出异常，通过返回值表示执行状态。在调
 
 内存管理的函数包括：
 
-* [`Allocate`][66]
-* [`deallocate`][67]
+* [2.6.1.1 Allocate][66]
+* [2.6.1.2 Deallocate][67]
 
 这两个函数JVMTI代理可以通过JVMTI分配/释放内存，需要注意的是，JVMTI的管理机制与其他内存管理库的机制不兼容。
 
@@ -461,22 +467,22 @@ JVMTI函数永远不会抛出异常，通过返回值表示执行状态。在调
 
 线程相关的函数包括：
 
-* [GetThreadState][68]
-* [GetCurrentThread][69]
-* [GetAllThreads][70]
-* [SuspendThread][71]
-* [SuspendThreadList][72]
-* [ResumeThread][73]
-* [ResumeThreadList][74]
-* [StopThread][75]
-* [InterruptThread][76]
-* [GetThreadInfo][77]
-* [GetOwnedMonitorInfo][78]
-* [GetOwnedMonitorStackDepthInfo][79]
-* [GetCurrentContendedMonitor][80]
-* [RunAgentThread][81]
-* [SetThreadLocalStorage][82]
-* [GetThreadLocalStorage][83]
+* [2.6.2.1 GetThreadState][68]
+* [2.6.2.2 GetCurrentThread][69]
+* [2.6.2.3 GetAllThreads][70]
+* [2.6.2.4 SuspendThread][71]
+* [2.6.2.5 SuspendThreadList][72]
+* [2.6.2.6 ResumeThread][73]
+* [2.6.2.7 ResumeThreadList][74]
+* [2.6.2.8 StopThread][75]
+* [2.6.2.9 InterruptThread][76]
+* [2.6.2.10 GetThreadInfo][77]
+* [2.6.2.11 GetOwnedMonitorInfo][78]
+* [2.6.2.12 GetOwnedMonitorStackDepthInfo][79]
+* [2.6.2.13 GetCurrentContendedMonitor][80]
+* [2.6.2.14 RunAgentThread][81]
+* [2.6.2.15 SetThreadLocalStorage][82]
+* [2.6.2.16 GetThreadLocalStorage][83]
 
 <a name="2.6.2.1"></a>
 #### 2.6.2.1 GetThreadState
@@ -1105,9 +1111,9 @@ JVM中内部保存了执行环境和所属线程关联关系，并用一个指�
 
 线程组相关函数包括：
 
-* [GetTopThreadGroups][84]
-* [GetThreadGroupInfo][85]
-* [GetThreadGroupChildren][86]
+* [2.6.3.1 GetTopThreadGroups][84]
+* [2.6.3.2 GetThreadGroupInfo][85]
+* [2.6.3.3 GetThreadGroupChildren][86]
 
 <a name="2.6.3.1"></a>
 #### 2.6.3.1 GetTopThreadGroups
@@ -1227,13 +1233,13 @@ JVM中内部保存了执行环境和所属线程关联关系，并用一个指�
 
 栈帧相关函数包括：
 
-* [GetStackTrace][87]
-* [GetAllStackTraces][88]
-* [GetThreadListStackTraces][89]
-* [GetFrameCount][90]
-* [PopFrame][91]
-* [GetFrameLocation][92]
-* [NotifyFramePop][93]
+* [2.6.4.1 GetStackTrace][87]
+* [2.6.4.2 GetAllStackTraces][88]
+* [2.6.4.3 GetThreadListStackTraces][89]
+* [2.6.4.4 GetFrameCount][90]
+* [2.6.4.5 PopFrame][91]
+* [2.6.4.6 GetFrameLocation][92]
+* [2.6.4.7 NotifyFramePop][93]
 
 这些函数可用于获取目标线程的栈信息，栈帧由深度值来引用，深度值为0表示为当前帧。
 
@@ -1580,6 +1586,27 @@ JVMTI实现可能会通过方法调用来载入线程，而这些函数所获取
 <a name="2.6.5"></a>
 ### 2.6.5 强制提前返回
 
+强制提前返回相关的函数包括：
+
+* [2.6.5.1 ForceEarlyReturnObject][94]
+* [2.6.5.2 ForceEarlyReturnInt][95]
+* [2.6.5.3 ForceEarlyReturnLong][96]
+* [2.6.5.4 ForceEarlyReturnFloat][97]
+* [2.6.5.5 ForceEarlyReturnDouble][98]
+* [2.6.5.6 ForceEarlyReturnVoid][99]
+
+这一系列函数使JVMTI代理可以强制在方法执行的任意位置提前退出。被提前返回的方法称为被调用方法。对于目标线程来说，调用该函数的方法即为被调用方法。
+
+调用该方法时，目标线程必须是挂起状态，或者是当前线程。强制返回的时机发生在Java代码恢复运行时。在调用该系列函数之后，线程恢复执行之前，调用栈的状态是未定义的。
+
+执行该系列函数时，被调用方法不会再继续执行指令。特别的，`finally`代码块也不会执行。这可能会导致应用程序的不一致状态，需要特别注意。
+
+在调用该系列函数后，调用被调函数时获取的锁(`synchronized`代码块)会被释放掉。注意，对于本地代码中的锁和`java.util.concurrent.locks`中的锁，并不会被释放掉。
+
+在调用该系列函数后，会按正常的函数返回顺序，产生相应的事件，例如`MethodExit`。
+
+被调函数必须是非Java代码。调用该系列函数时，若线程只有一个栈帧，则线程恢复运行时会退出。
+
 <a name="2.6.6"></a>
 ### 2.6.6 堆
 
@@ -1788,6 +1815,12 @@ JVMTI实现可能会通过方法调用来载入线程，而这些函数所获取
 [91]:     #2.6.4.5
 [92]:     #2.6.4.6
 [93]:     #2.6.4.7
+[94]:     #2.6.5.1
+[95]:     #2.6.5.2
+[96]:     #2.6.5.3
+[97]:     #2.6.5.4
+[98]:     #2.6.5.5
+[99]:     #2.6.5.6
 
 [100]:    https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html
 [101]:    http://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#5.1.2
