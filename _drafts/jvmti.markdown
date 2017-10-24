@@ -701,7 +701,7 @@ JVMTI线程状态与Java线程状态的对应关系：
 * Since： 1.0
 * 功能： 
     * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
-    * `can_suspend`: 是否能暂停/恢复线程
+        * `can_suspend`: 是否能暂停/恢复线程
 * 参数：
     * `thread`: 类型为`jthread`，要暂停的目标线程，若为`NULL`，则表示当前线程
 * 返回：
@@ -726,7 +726,7 @@ JVMTI线程状态与Java线程状态的对应关系：
 * Since： 1.0
 * 功能： 
     * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
-    * `can_suspend`: 是否能暂停/恢复线程
+        * `can_suspend`: 是否能暂停/恢复线程
 * 参数：
     * `request_count`: 类型为`jint`，要暂停的线程的数目
     * `request_list`: 
@@ -758,7 +758,7 @@ JVMTI线程状态与Java线程状态的对应关系：
 * Since： 1.0
 * 功能： 
     * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
-    * `can_suspend`: 是否能暂停/恢复线程
+        * `can_suspend`: 是否能暂停/恢复线程
 * 参数：
     * `thread`: 类型为`jthread`，要恢复运行的线程
 * 返回：
@@ -784,7 +784,7 @@ JVMTI线程状态与Java线程状态的对应关系：
 * Since： 1.0
 * 功能： 
     * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
-    * `can_suspend`: 是否能暂停/恢复线程
+        * `can_suspend`: 是否能暂停/恢复线程
 * 参数：
     * `request_count`: 类型为`jint`，要恢复的线程的数量
     * `request_list`: 
@@ -816,7 +816,7 @@ JVMTI线程状态与Java线程状态的对应关系：
 * Since： 1.0
 * 功能： 
     * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
-    * `can_signal_thread`: 是否能中断/终止线程
+        * `can_signal_thread`: 是否能中断/终止线程
 * 参数：
     * `thread`: 类型为`jthread`，要终止的线程
     * `exception`: 类型为`jobejct`，异步异常对象
@@ -842,7 +842,7 @@ JVMTI线程状态与Java线程状态的对应关系：
 * Since： 1.0
 * 功能： 
     * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
-    * `can_signal_thread`: 是否能中断/终止线程
+        * `can_signal_thread`: 是否能中断/终止线程
 * 参数：
     * `thread`: 类型为`jthread`，要中断的线程
 * 返回：
@@ -917,7 +917,7 @@ JVMTI线程状态与Java线程状态的对应关系：
 * Since： 1.0
 * 功能： 
     * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
-    * `can_get_owned_monitor_info`: 是否能获取监视器的属主信息
+        * `can_get_owned_monitor_info`: 是否能获取监视器的属主信息
 * 参数：
     * `thread`: 类型为`jthread`，目标线程，若为`NULL`，则表示当前线程
     * `owned_monitor_count_ptr`: 
@@ -1506,7 +1506,7 @@ JVMTI实现可能会通过方法调用来载入线程，而这些函数所获取
 * Since： 1.0
 * 功能： 
     * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
-    * `can_pop_frame`: 是否能弹出栈帧
+        * `can_pop_frame`: 是否能弹出栈帧
 * 参数：
     * `thread`: 类型为`jthread`，目标线程
 * 返回：
@@ -1533,7 +1533,7 @@ JVMTI实现可能会通过方法调用来载入线程，而这些函数所获取
 * Since： 1.0
 * 功能： 
     * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
-    * `can_pop_frame`: 是否能获取监视器的属主信息
+        * `can_pop_frame`: 是否能获取监视器的属主信息
 * 参数：
     * `thread`: 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
     * `depth`: 类型为`jint`，目标栈帧的深度
@@ -1569,7 +1569,7 @@ JVMTI实现可能会通过方法调用来载入线程，而这些函数所获取
 * Since： 1.0
 * 功能： 
     * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
-    * `can_generate_frame_pop_events`: 是否能发送/接收`FramePop`事件
+        * `can_generate_frame_pop_events`: 是否能发送/接收`FramePop`事件
 * 参数：
     * `thread`: 类型为`jthread`，弹出栈帧的线程，若为`NULL`，则为当前线程
     * `depth`: 类型为`jint`，被弹出栈帧的深度
@@ -1606,6 +1606,181 @@ JVMTI实现可能会通过方法调用来载入线程，而这些函数所获取
 在调用该系列函数后，会按正常的函数返回顺序，产生相应的事件，例如`MethodExit`。
 
 被调函数必须是非Java代码。调用该系列函数时，若线程只有一个栈帧，则线程恢复运行时会退出。
+
+<a name="2.6.5.1"></a>
+#### 2.6.5.1 ForceEarlyReturnObject
+
+    ```c
+    jvmtiError ForceEarlyReturnObject(jvmtiEnv* env, jthread thread, jobject value)
+    ```
+
+该函数用于从目标线程的当前方法中强制提前返回，当前方法的返回值是`Object`或其子类。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 88
+* Since： 1.1
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_force_early_return`: 是否能从方法强制提前返回
+* 参数：
+    * `thread`: 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `value`: 类型为`jobject`，从被调用方法的栈帧中返回的值，可以为`NULL`
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_force_early_return`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_OPAQUE_FRAME`: 调用方法或被调方法是本地方法，或者JVM的实现无法提供此功能
+    * `JVMTI_ERROR_TYPE_MISMATCH`: 被调用函数的返回值的类型不是`Object`或`Object`的子类
+    * `JVMTI_ERROR_TYPE_MISMATCH`: 参数`value`的实际类型与被调函数返回值的类型bu兼容
+    * `JVMTI_ERROR_THREAD_NOT_SUSPENDED`: 目标线程不是挂起状态，也不是当前线程
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 目标线程中已经没有栈帧了
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 线程不是存活状态，可能还未启动或已经死亡
+    * `JVMTI_ERROR_INVALID_OBJECT`: 参数`value`不是一个对象
+
+<a name="2.6.5.2"></a>
+#### 2.6.5.2 ForceEarlyReturnInt
+
+    ```c
+    jvmtiError ForceEarlyReturnInt(jvmtiEnv* env, jthread thread, jint value)
+    ```
+
+该函数用于从目标线程的当前方法中强制提前返回，当前方法的返回值是`int` `short` `char`或`boolean`。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 82
+* Since： 1.1
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_force_early_return`: 是否能从方法强制提前返回
+* 参数：
+    * `thread`: 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `value`: 类型为`jint`，从被调用方法的栈帧中返回的值，可以为`NULL`
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_force_early_return`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_OPAQUE_FRAME`: 调用方法或被调方法是本地方法，或者JVM的实现无法提供此功能
+    * `JVMTI_ERROR_TYPE_MISMATCH`: 被调用函数的返回值的类型不是`int` `short` `char`或`boolean`
+    * `JVMTI_ERROR_THREAD_NOT_SUSPENDED`: 目标线程不是挂起状态，也不是当前线程
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 目标线程中已经没有栈帧了
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 线程不是存活状态，可能还未启动或已经死亡
+
+<a name="2.6.5.3"></a>
+#### 2.6.5.3 ForceEarlyReturnLong
+
+    ```c
+    jvmtiError ForceEarlyReturnLong(jvmtiEnv* env, jthread thread, jlong value)
+    ```
+该函数用于从目标线程的当前方法中强制提前返回，当前方法的返回值是`long`
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 83
+* Since： 1.1
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_force_early_return`: 是否能从方法强制提前返回
+* 参数：
+    * `thread`: 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `value`: 类型为`jlong`，从被调用方法的栈帧中返回的值，可以为`NULL`
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_force_early_return`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_OPAQUE_FRAME`: 调用方法或被调方法是本地方法，或者JVM的实现无法提供此功能
+    * `JVMTI_ERROR_TYPE_MISMATCH`: 被调用函数的返回值的类型不是`long`
+    * `JVMTI_ERROR_THREAD_NOT_SUSPENDED`: 目标线程不是挂起状态，也不是当前线程
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 目标线程中已经没有栈帧了
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 线程不是存活状态，可能还未启动或已经死亡
+
+<a name="2.6.5.4"></a>
+#### 2.6.5.4 ForceEarlyReturnFloat
+
+    ```c
+    jvmtiError ForceEarlyReturnFloat(jvmtiEnv* env, jthread thread, jfloat value)
+    ```
+
+该函数用于从目标线程的当前方法中强制提前返回，当前方法的返回值是`float`
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 84
+* Since： 1.1
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_force_early_return`: 是否能从方法强制提前返回
+* 参数：
+    * `thread`: 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `value`: 类型为`jfloat`，从被调用方法的栈帧中返回的值，可以为`NULL`
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_force_early_return`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_OPAQUE_FRAME`: 调用方法或被调方法是本地方法，或者JVM的实现无法提供此功能
+    * `JVMTI_ERROR_TYPE_MISMATCH`: 被调用函数的返回值的类型不是`float`
+    * `JVMTI_ERROR_THREAD_NOT_SUSPENDED`: 目标线程不是挂起状态，也不是当前线程
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 目标线程中已经没有栈帧了
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 线程不是存活状态，可能还未启动或已经死亡
+
+<a name="2.6.5.5"></a>
+#### 2.6.5.5 ForceEarlyReturnDouble
+
+    ```c
+    jvmtiError ForceEarlyReturnDouble(jvmtiEnv* env, jthread thread, jdouble value)
+    ```
+
+该函数用于从目标线程的当前方法中强制提前返回，当前方法的返回值是`double`
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 85
+* Since： 1.1
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_force_early_return`: 是否能从方法强制提前返回
+* 参数：
+    * `thread`: 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `value`: 类型为`jdouble`，从被调用方法的栈帧中返回的值，可以为`NULL`
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_force_early_return`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_OPAQUE_FRAME`: 调用方法或被调方法是本地方法，或者JVM的实现无法提供此功能
+    * `JVMTI_ERROR_TYPE_MISMATCH`: 被调用函数的返回值的类型不是`double`
+    * `JVMTI_ERROR_THREAD_NOT_SUSPENDED`: 目标线程不是挂起状态，也不是当前线程
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 目标线程中已经没有栈帧了
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 线程不是存活状态，可能还未启动或已经死亡
+
+
+<a name="2.6.5.6"></a>
+#### 2.6.5.6 ForceEarlyReturnVoid
+
+    ```c
+    jvmtiError ForceEarlyReturnVoid(jvmtiEnv* env, jthread thread)
+    ```
+
+该函数用于从目标线程的当前方法中强制提前返回，当前方法的不能有返回值。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 86
+* Since： 1.1
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_force_early_return`: 是否能从方法强制提前返回
+* 参数：
+    * `thread`: 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_force_early_return`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_OPAQUE_FRAME`: 调用方法或被调方法是本地方法，或者JVM的实现无法提供此功能
+    * `JVMTI_ERROR_TYPE_MISMATCH`: 被调用函数的有返回值
+    * `JVMTI_ERROR_THREAD_NOT_SUSPENDED`: 目标线程不是挂起状态，也不是当前线程
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 目标线程中已经没有栈帧了
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 线程不是存活状态，可能还未启动或已经死亡
 
 <a name="2.6.6"></a>
 ### 2.6.6 堆
