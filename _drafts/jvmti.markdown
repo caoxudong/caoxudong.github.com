@@ -70,6 +70,12 @@ tags:       [java, jvm, jvmti]
             * [2.6.5.5 ForceEarlyReturnDouble][98]
             * [2.6.5.6 ForceEarlyReturnVoid][99]
         * [2.6.6 堆][33]
+            * [2.6.6.1 FollowReferences][103]
+            * [2.6.6.2 IterateThroughHeap][104]
+            * [2.6.6.3 GetTag][105]
+            * [2.6.6.4 SetTag][106]
+            * [2.6.6.5 GetObjectsWithTags][107]
+            * [2.6.6.6 ForceGarbageCollection][108]
         * [2.6.7 堆1.0][34]
         * [2.6.8 局部变量][35]
         * [2.6.9 断点][36]
@@ -1785,6 +1791,82 @@ JVMTI实现可能会通过方法调用来载入线程，而这些函数所获取
 <a name="2.6.6"></a>
 ### 2.6.6 堆
 
+堆处理相关的函数包括：
+
+* [2.6.6.1 FollowReferences][103]
+* [2.6.6.2 IterateThroughHeap][104]
+* [2.6.6.3 GetTag][105]
+* [2.6.6.4 SetTag][106]
+* [2.6.6.5 GetObjectsWithTags][107]
+* [2.6.6.6 ForceGarbageCollection][108]
+
+堆处理相关的函数类型包括：
+
+* [jvmtiHeapIterationCallback]
+* [jvmtiHeapReferenceCallback]
+* [jvmtiPrimitiveFieldCallback]
+* [jvmtiArrayPrimitiveValueCallback]
+* [jvmtiStringPrimitiveValueCallback]
+* [jvmtiReservedCallback]
+
+堆的类型包括：
+
+* [jvmtiHeapReferenceKind] - Heap Reference Enumeration
+* [jvmtiPrimitiveType] - Primitive Type Enumeration
+* [jvmtiHeapReferenceInfoField] - Reference information structure for Field references
+* [jvmtiHeapReferenceInfoArray] - Reference information structure for Array references
+* [jvmtiHeapReferenceInfoConstantPool] - Reference information structure for Constant Pool references
+* [jvmtiHeapReferenceInfoStackLocal] - Reference information structure for Local Variable references
+* [jvmtiHeapReferenceInfoJniLocal] - Reference information structure for JNI local references
+* [jvmtiHeapReferenceInfoReserved] - Reference information structure for Other references
+* [jvmtiHeapReferenceInfo] - Reference information structure
+* [jvmtiHeapCallbacks] - Heap callback function structure
+
+相关常量包括：
+
+* [Heap Filter Flags]
+* [Heap Visit Control Flags]
+
+这一系列函数用于分析堆，查看堆中对象，以及给对象打标签。
+
+对象标签是与堆中对象相关联的值，在JVMTI代理中可以通过函数`SetTag`或回调函数`jvmtiHeapIterationCallback`来设置。
+
+对象标签是与执行环境相关联的，因此，在一个执行环境设置的标签，在其他执行环境中是不可见的。
+
+标签的值是`jlong`类型的，可用于标记一个对象或存储一个指向更复杂信息的指针。在没有被打标签的对象中，标签的值为`0`，因此将该值设置为`0`，即可将对象的标签解除。
+
+JVMTI代理可以使用堆相关的函数来遍历堆，按照对象引用递归的访问所有对象，获取相关信息。
+
+使用回调函数时，需要遵守以下规则： 
+
+* **回调函数中禁止使用JNI函数**
+* **除非特别说明，回调函数中禁止使用JVMTI函数**，例如原始监视器、内存管理和线程局部存储函数
+
+某些JVM实现，可能会使用内部线程来调用回调函数，也可能会使用调用迭代函数的线程来调用回调函数。堆的回调时单线程运行的，一次只会调用一个回调函数。
+
+可以使用过滤标记(**Heap Filter Flags**)来控制过滤条件：
+
+    Constant	                        Value	Description
+    JVMTI_HEAP_FILTER_TAGGED	        0x4	    过滤掉已加标签的对象
+    JVMTI_HEAP_FILTER_UNTAGGED	        0x8	    过滤掉未加标签的对象
+    JVMTI_HEAP_FILTER_CLASS_TAGGED	    0x10	过滤掉已加标签的类
+    JVMTI_HEAP_FILTER_CLASS_UNTAGGED	0x20	过滤掉未加标签的类
+
+
+堆回调函数返回的访问控制标记(**Heap Visit Control Flags**)可用于退出当前迭代。对于回调函数`jvmtiHeapReferenceCallback`来说，可用于减小遍历对象引用工作量。
+The Heap Visit Control Flags are returned by the heap callbacks and can be used to abort the iteration. For the Heap Reference Callback, it can also be used to prune the graph of traversed references (JVMTI_VISIT_OBJECTS is not set).
+
+    Constant	            Value	Description
+    JVMTI_VISIT_OBJECTS	    0x100	若程序正在访问对象，且If we are visiting an object and if this callback was initiated by FollowReferences, traverse the references of this object. Otherwise ignored.
+    JVMTI_VISIT_ABORT	    0x8000	Abort the iteration. Ignore all other bits.
+
+
+
+<a name="2.6.6.1"></a>
+#### 2.6.6.1 FollowReferences
+
+
+
 <a name="2.6.7"></a>
 ### 2.6.7 堆1.0
 
@@ -1996,7 +2078,14 @@ JVMTI实现可能会通过方法调用来载入线程，而这些函数所获取
 [97]:     #2.6.5.4
 [98]:     #2.6.5.5
 [99]:     #2.6.5.6
-
 [100]:    https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html
 [101]:    http://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#5.1.2
 [102]:    https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6
+[103]:    #2.6.6.1
+[104]:    #2.6.6.2
+[105]:    #2.6.6.3
+[106]:    #2.6.6.4
+[107]:    #2.6.6.5
+[108]:    #2.6.6.6
+
+
