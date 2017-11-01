@@ -1,5 +1,5 @@
 ---
-title:      JVMTI
+title:      JVMTI 参考
 layout:     post
 category:   blog
 tags:       [java, jvm, jvmti]

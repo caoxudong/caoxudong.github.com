@@ -82,12 +82,12 @@
                 sweetAlert("Oops...", "Please select codec at first!", "error");
                 return;
               }
-              var source = $(sourceTextArea).val();
+              var source = sourceTextArea.val();
               var target = null;
               if (source !== null) {
                 target = codecScriptsMap[codec][operation](source);
               }
-              $(targetTextArea).val(target);
+              targetTextArea.val(target);
             };
             convertCode2DecodeButton.click(function() {
               var codec = codecSelect.val();
