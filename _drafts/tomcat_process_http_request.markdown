@@ -93,14 +93,33 @@ Tomcat中通过NIO对HTTP请求的处理，最终会落到[NioEndpoint][2]类来
 
 # 处理HTTP请求
 
-对HTTP请求的处理，实际是在[`Http11Processor`][8]中通过[`AbstractProcessorLight#process`][9]方法完成的。
+对HTTP请求的处理，实际是在[`Http11Processor`][8]中通过[`AbstractProcessorLight#process`][9]方法完成的：
 
-* 
-
-
-
-
-
+* 准备输入/输出缓冲： [`Http11InputBuffer`][10] [`Http11OutputBuffer`][11]
+* 解析请求行，[`Http11InputBuffer#parseRequestLine`][10]
+* 解析请求头，[`Http11InputBuffer#parseHeaders`][10]
+* 是否要升级协议，将请求头`Connection`中的值，转换为小写，判断是否包含`upgrade`字样
+* 准备请求对象，[`Http11Processor#prepareRequest`]
+    * 检查`COnnection`请求头，判断是`close`还是`keep-alive`
+    * 若是HTTP 1.1协议的话，检查是否有`expect`请求头
+    * 检查`user-agent`请求头
+    * 若uri是完整的HTTP地址，即格式为`protocol://host:port/)`的，则解析出真实的uri
+    * 添加输入过滤器[`InputFilter`][12]
+        * [`BufferedInputFilter`][13]
+        * [`ChunkedInputFilter`][14]
+        * [`ChunkedOutputFilter`][15]
+        * [`GzipOutputFilter`][16]
+        * [`IdentityInputFilter`][17]
+        * [`IdentityOutputFilter`][18]
+        * [`SavedRequestInputFilter`][19]
+        * [`VoidInputFilter`][20]
+        * [`VoidOutputFilter`][21]
+    * 解析`content-length`请求头
+    * 解析`host`请求头
+* 调用适配器[`CoyoteAdapter#service`][22]处理请求
+    * 以[`Connector`][23]为起点，按照逐级调用容器，处理请求
+        * `connector.getService().getContainer().getPipeline().getFirst().invoke(request, response);`
+    * 进入业务处理层，处理业务
 
 
 
@@ -116,3 +135,17 @@ Tomcat中通过NIO对HTTP请求的处理，最终会落到[NioEndpoint][2]类来
 [7]:    http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/coyote/AbstractProtocol.java
 [8]:    http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/coyote/http11/Http11Processor.java
 [9]:    http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/coyote/AbstractProcessorLight.java
+[10]:   http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/coyote/http11/Http11InputBuffer.java
+[11]:   http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/coyote/http11/Http11OutputBuffer.java
+[12]:   http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/coyote/http11/InputFilter.java
+[13]:   http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/coyote/http11/filters/BufferedInputFilter.java
+[14]:   http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/coyote/http11/filters/ChunkedInputFilter.java
+[15]:   http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/coyote/http11/filters/ChunkedOutputFilter.java
+[16]:   http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/coyote/http11/filters/GzipOutputFilter.java
+[17]:   http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/coyote/http11/filters/IdentityInputFilter.java
+[18]:   http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/coyote/http11/filters/IdentityOutputFilter.java
+[19]:   http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/coyote/http11/filters/SavedRequestInputFilter.java
+[20]:   http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/coyote/http11/filters/VoidInputFilter.java
+[21]:   http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/coyote/http11/filters/VoidOutputFilter.java
+[22]:   http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/catalina/connector/CoyoteAdapter.java
+[23]:   http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/catalina/connector/Connector.java
