@@ -2,7 +2,7 @@
 title:      Tomcat中通过NIO对HTTP请求的处理
 layout:     post
 category:   blog
-tags:       [lambda, java, jvm]
+tags:       [java, tomcat]
 ---
 
 >Tomcat版本 8.5.x
