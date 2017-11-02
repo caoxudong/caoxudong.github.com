@@ -126,6 +126,7 @@ Tomcat中通过NIO对HTTP请求的处理，最终会落到[NioEndpoint][2]类来
 
 
 
+
 [1]:    http://blog.caoxudong.info/blog/2016/03/24/tomcat_study_initialization
 [2]:    http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/tomcat/util/net/NioEndpoint.java
 [3]:    http://svn.apache.org/repos/asf/tomcat/tc8.5.x/tags/TOMCAT_8_5_23/java/org/apache/tomcat/util/net/NioEndpoint.java
