@@ -120,6 +120,7 @@ Tomcat中通过NIO对HTTP请求的处理，最终会落到[NioEndpoint][2]类来
     * 以[`Connector`][23]为起点，按照逐级调用容器，处理请求
         * `connector.getService().getContainer().getPipeline().getFirst().invoke(request, response);`
     * 进入业务处理层，处理业务
+* 完成请求处理，退出
 
 
 
