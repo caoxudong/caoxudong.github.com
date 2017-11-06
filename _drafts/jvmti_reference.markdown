@@ -70,16 +70,47 @@ tags:       [java, jvm, jvmti]
             * [2.6.5.5 ForceEarlyReturnDouble][98]
             * [2.6.5.6 ForceEarlyReturnVoid][99]
         * [2.6.6 堆][33]
-            * [2.6.6.1 FollowReferences][103]
-            * [2.6.6.2 IterateThroughHeap][104]
-            * [2.6.6.3 GetTag][105]
-            * [2.6.6.4 SetTag][106]
-            * [2.6.6.5 GetObjectsWithTags][107]
-            * [2.6.6.6 ForceGarbageCollection][108]
+            * [2.6.6.1 jvmtiHeapIterationCallback][109]
+            * [2.6.6.2 jvmtiHeapReferenceCallback][110]
+            * [2.6.6.3 jvmtiPrimitiveFieldCallback][111]
+            * [2.6.6.4 jvmtiArrayPrimitiveValueCallback][112]
+            * [2.6.6.5 jvmtiStringPrimitiveValueCallback][113]
+            * [2.6.6.6 jvmtiReservedCallback][114]
+            * [2.6.6.7 FollowReferences][103]
+            * [2.6.6.8 IterateThroughHeap][104]
+            * [2.6.6.9 GetTag][105]
+            * [2.6.6.10 SetTag][106]
+            * [2.6.6.11 GetObjectsWithTags][107]
+            * [2.6.6.12 ForceGarbageCollection][108]
         * [2.6.7 堆1.0][34]
+            * [2.6.7.1 jvmtiHeapObjectCallback][115]
+            * [2.6.7.2 jvmtiHeapRootCallback][116]
+            * [2.6.7.3 jvmtiStackReferenceCallback][117]
+            * [2.6.7.4 jvmtiObjectReferenceCallback][118]
+            * [2.6.7.5 IterateOverObjectsReachableFromObject][119]
+            * [2.6.7.6 IterateOverReachableObjects][120]
+            * [2.6.7.7 IterateOverHeap][121]
+            * [2.6.7.8 IterateOverInstancesOfClass][122]
         * [2.6.8 局部变量][35]
+            * [2.6.8.1 GetLocalObject][123]
+            * [2.6.8.2 GetLocalInstance][124]
+            * [2.6.8.3 GetLocalInt][125]
+            * [2.6.8.4 GetLocalLong][126]
+            * [2.6.8.5 GetLocalFloat][127]
+            * [2.6.8.6 GetLocalDouble][128]
+            * [2.6.8.7 SetLocalObject][129]
+            * [2.6.8.8 SetLocalInt][130]
+            * [2.6.8.9 SetLocalLong][131]
+            * [2.6.8.10 SetLocalFloat][132]
+            * [2.6.8.11 SetLocalDouble][133]
         * [2.6.9 断点][36]
-        * [2.6.10 探查属性值][37]
+            * [2.6.9.1 SetBreakpoint][134]
+            * [2.6.9.2 ClearBreakpoint][135]
+        * [2.6.10 监察属性值][37]
+            * [2.6.10.1 SetFieldAccessWatch][136]
+            * [2.6.10.2 ClearFieldAccessWatch][137]
+            * [2.6.10.3 SetFieldModificationWatch][138]
+            * [2.6.10.4 ClearFieldModificationWatch][139]
         * [2.6.11 类][38]
         * [2.6.12 对象][39]
         * [2.6.13 属性][40]
@@ -1793,21 +1824,21 @@ JVMTI实现可能会通过方法调用来载入线程，而这些函数所获取
 
 堆处理相关的函数包括：
 
-* [2.6.6.1 FollowReferences][103]
-* [2.6.6.2 IterateThroughHeap][104]
-* [2.6.6.3 GetTag][105]
-* [2.6.6.4 SetTag][106]
-* [2.6.6.5 GetObjectsWithTags][107]
-* [2.6.6.6 ForceGarbageCollection][108]
+* [2.6.6.7 FollowReferences][103]
+* [2.6.6.8 IterateThroughHeap][104]
+* [2.6.6.9 GetTag][105]
+* [2.6.6.10 SetTag][106]
+* [2.6.6.11 GetObjectsWithTags][107]
+* [2.6.6.12 ForceGarbageCollection][108]
 
 堆处理相关的函数类型包括：
 
-* [jvmtiHeapIterationCallback]
-* [jvmtiHeapReferenceCallback]
-* [jvmtiPrimitiveFieldCallback]
-* [jvmtiArrayPrimitiveValueCallback]
-* [jvmtiStringPrimitiveValueCallback]
-* [jvmtiReservedCallback]
+* [2.6.6.1 jvmtiHeapIterationCallback]
+* [2.6.6.2 jvmtiHeapReferenceCallback]
+* [2.6.6.3 jvmtiPrimitiveFieldCallback]
+* [2.6.6.4 jvmtiArrayPrimitiveValueCallback]
+* [2.6.6.5 jvmtiStringPrimitiveValueCallback]
+* [2.6.6.6 jvmtiReservedCallback]
 
 堆的类型包括：
 
@@ -1846,6 +1877,7 @@ JVMTI代理可以使用堆相关的函数来遍历堆，按照对象引用递归
 
 可以使用过滤标记(**Heap Filter Flags**)来控制过滤条件：
 
+                    Heap Filter Flags
     Constant	                        Value	Description
     JVMTI_HEAP_FILTER_TAGGED	        0x4	    过滤掉已加标签的对象
     JVMTI_HEAP_FILTER_UNTAGGED	        0x8	    过滤掉未加标签的对象
@@ -1854,33 +1886,1570 @@ JVMTI代理可以使用堆相关的函数来遍历堆，按照对象引用递归
 
 
 堆回调函数返回的访问控制标记(**Heap Visit Control Flags**)可用于退出当前迭代。对于回调函数`jvmtiHeapReferenceCallback`来说，可用于减小遍历对象引用工作量。
-The Heap Visit Control Flags are returned by the heap callbacks and can be used to abort the iteration. For the Heap Reference Callback, it can also be used to prune the graph of traversed references (JVMTI_VISIT_OBJECTS is not set).
 
+                Heap Visit Control Flags
     Constant	            Value	Description
-    JVMTI_VISIT_OBJECTS	    0x100	若程序正在访问对象，且If we are visiting an object and if this callback was initiated by FollowReferences, traverse the references of this object. Otherwise ignored.
-    JVMTI_VISIT_ABORT	    0x8000	Abort the iteration. Ignore all other bits.
+    JVMTI_VISIT_OBJECTS	    0x100	若程序正在访问对象，且该回调时由函数"FollowReferences"发起的，则遍历该对象的引用；否则，忽略。
+    JVMTI_VISIT_ABORT	    0x8000	中断当前迭代。使用该选项会忽略掉其他的标志位。
 
+堆引用枚举(**Heap Reference Enumeration**)由堆引用回调(**Heap Reference Callback**)和原生属性回调(**Primitive Field Callback**)提供，用于描述引用的具体类型，如下所示：
 
+            Heap Reference Enumeration (jvmtiHeapReferenceKind)
+    Constant	                            Value	Description
+    JVMTI_HEAP_REFERENCE_CLASS	            1	    从对象实例指向其类对象的引用
+    JVMTI_HEAP_REFERENCE_FIELD	            2	    从对象实例指向其成员变量的引用
+    JVMTI_HEAP_REFERENCE_ARRAY_ELEMENT	    3	    从数组对象实例指向其某个数组元素的引用
+    JVMTI_HEAP_REFERENCE_CLASS_LOADER	    4	    从类对象实例指向其类加载器的引用
+    JVMTI_HEAP_REFERENCE_SIGNERS	        5	    从类对象实例指向其签字信息数组的引用
+    JVMTI_HEAP_REFERENCE_PROTECTION_DOMAIN	6	    从类对象实例指向其保护域(protection domain)的引用
+    JVMTI_HEAP_REFERENCE_INTERFACE	        7	    从类对象实例指向其实现的某个接口的引用。注意，接口被定义为常量池中的某个引用，所以被引用的接口可能会被报告为是"JVMTI_HEAP_REFERENCE_CONSTANT_POOL"类型的引用
+    JVMTI_HEAP_REFERENCE_STATIC_FIELD	    8	    从类对象实例指向其某个静态变量的值的引用
+    JVMTI_HEAP_REFERENCE_CONSTANT_POOL	    9	    从类对象实例指向常量池中某个已解析的条目的引用
+    JVMTI_HEAP_REFERENCE_SUPERCLASS	        10	    从类对象实例指向其父类的引用。如果父类是"java.lang.Object"，则触发回调。注意，已载入的类是通过常量池的引用来定义父类的，因此被引用的父类可能会被报告为是"JVMTI_HEAP_REFERENCE_CONSTANT_POOL"类型的引用
+    JVMTI_HEAP_REFERENCE_JNI_GLOBAL	        21	    堆的根集合引用，JNI全局引用
+    JVMTI_HEAP_REFERENCE_SYSTEM_CLASS	    22	    堆的根集合引用，系统类
+    JVMTI_HEAP_REFERENCE_MONITOR	        23	    堆的根集合引用，监视器
+    JVMTI_HEAP_REFERENCE_STACK_LOCAL	    24	    堆的根集合引用，栈上的局部变量
+    JVMTI_HEAP_REFERENCE_JNI_LOCAL	        25	    堆的根集合引用，JNI局部引用
+    JVMTI_HEAP_REFERENCE_THREAD	            26	    堆的根集合引用，线程
+    JVMTI_HEAP_REFERENCE_OTHER	            27	    堆的根集合引用，其他类型的堆根引用
+
+原生类型使用单字符的类型描述符时，对应关系如下所示：
+
+            Primitive Type Enumeration (jvmtiPrimitiveType)
+    Constant	                    Value	Description
+    JVMTI_PRIMITIVE_TYPE_BOOLEAN	90	    'Z' - Java programming language boolean - JNI jboolean
+    JVMTI_PRIMITIVE_TYPE_BYTE	    66	    'B' - Java programming language byte    - JNI jbyte
+    JVMTI_PRIMITIVE_TYPE_CHAR	    67	    'C' - Java programming language char    - JNI jchar
+    JVMTI_PRIMITIVE_TYPE_SHORT	    83	    'S' - Java programming language short   - JNI jshort
+    JVMTI_PRIMITIVE_TYPE_INT	    73	    'I' - Java programming language int     - JNI jint
+    JVMTI_PRIMITIVE_TYPE_LONG	    74	    'J' - Java programming language long    - JNI jlong
+    JVMTI_PRIMITIVE_TYPE_FLOAT	    70	    'F' - Java programming language float   - JNI jfloat
+    JVMTI_PRIMITIVE_TYPE_DOUBLE	    68	    'D' - Java programming language double  - JNI jdouble
+
+对于`JVMTI_HEAP_REFERENCE_FIELD`和`JVMTI_HEAP_REFERENCE_STATIC_FIELD`类型的引用，有如下结构：
+
+    ```c
+    typedef struct {
+        jint index;
+    } jvmtiHeapReferenceInfoField;
+    ```
+
+对于`JVMTI_HEAP_REFERENCE_FIELD`类型的引用来说，引用对象不是类或接口，此时`index`的值是目标属性在引用对象中的索引位置。
+
+对于`JVMTI_HEAP_REFERENCE_STATIC_FIELD`类型的引用来说，引用对象是类(下文中，称该类为`C`)或接口(下文中，称该类为`I`)，此时`index`的值是目标属性在类或接口中的索引位置。
+
+如果引用对象不是接口，则属性索引值由以下规则决定：
+
+1. 列出`C`及其父类的所有属性
+1. 按顺序排序所有属性，顺序由函数`GetClassFields`指定
+1. 给属性按顺序赋值，值分别为`n` `n+1`...，其中`n`为`C`的所有接口中的属性的个数
+
+如果引用对象是接口，则属性索引值由以下规则决定：
+
+1. 列出`I`直接声明的所有属性
+1. 按顺序排序所有属性，顺序由函数`GetClassFields`指定
+1. 给属性按顺序赋值，值分别为`n` `n+1`...，其中`n`为`I`的所有父接口中的属性的个数
+
+通过上述两种规则，就可以将所有种类的属性都包含进来了(static, public, private, 等等)。
+
+示例：
+
+    ```java
+    interface I0 {
+        int p = 0;
+    }
+
+    interface I1 extends I0 {
+        int x = 1;
+    }
+
+    interface I2 extends I0 {
+        int y = 2;
+    }
+
+    class C1 implements I1 {
+        public static int a = 3;
+        private int b = 4;
+    }
+
+    class C2 extends C1 implements I2 {
+        static int q = 5;
+        final int r = 6;
+    }
+    ```
+
+假设在`C1`上调用函数`GetClassFields`，返回`C1`的属性顺序为`a,b`，在`C2`上调用函数`GetClassFields`，返回`C1`的属性顺序为`q,q`。
+
+类`C1`实例中属性的索引值为：
+
+    field   index   desc
+    a	    2	    C1实现的接口中包含了两个属性，I0中的p和I1中的x，因此n=2
+    b	    3	    从n=2开始，顺次排序，因此为3
+
+类`C1`具有相同的属性索引值。
+
+类`C2`实例中属性的索引值为：
+
+    field   index   desc
+    a	    3	    C2实现的接口中包含了两个属性，I0中的p、I1中的x和I2中的y，因此n=3，注意，I0中的p只会计算一次
+    b	    4	    从n=3开始，顺次排序，因此为4
+    q	    5	    从n=3开始，顺次排序，因此为5
+    r	    6	    从n=3开始，顺次排序，因此为6
+
+类`C2`具有相同的属性索引值。注意，属性的索引值取决于从哪个对象来观察他，例如，上面示例中的属性`a`。此外，并非所有的属性索引值都能在回调中得到，但所有的属性索引值都是为了展示使用的。
+
+接口`I1`的属性索引为：
+
+    field   index   desc
+    x	    1	    I1的父接口中属性的个数为1，即I0中的p
+
+对于`JVMTI_HEAP_REFERENCE_ARRAY_ELEMENT`类型的引用，有如下结构：
+
+    ```c
+    typedef struct {
+        jint index;
+    } jvmtiHeapReferenceInfoArray;
+    ```
+
+其中，`index`的值为目标元素在数组中的索引位置。
+
+对于`JVMTI_HEAP_REFERENCE_CONSTANT_POOL`类型的引用，有如下结构：
+
+    ```c
+    typedef struct {
+        jint index;
+    } jvmtiHeapReferenceInfoConstantPool;
+    ```
+
+其中，`index`的值为目标在类的常量池中的索引位置。
+
+对于`JVMTI_HEAP_REFERENCE_STACK_LOCAL`类型的引用，有如下结构：
+
+    ```c
+    typedef struct {
+        jlong thread_tag;
+        jlong thread_id;
+        jint depth;
+        jmethodID method;
+        jlocation location;
+        jint slot;
+    } jvmtiHeapReferenceInfoStackLocal;
+    ```
+
+属性说明如下：
+
+    jvmtiHeapReferenceInfoStackLocal - Reference information structure for Local Variable references
+    Field	        Type	    Description
+    thread_tag	    jlong	    与目标栈关联的线程的标签，若没有标签，则为0
+    thread_id	    jlong	    与目标栈关联的线程的唯一ID
+    depth	        jint	    目标栈的栈帧深度
+    method	        jmethodID	当前栈帧所执行的方法的ID
+    location	    jlocation	当前栈帧的执行位置
+    slot	        jint	    局部变量的槽的数量
+
+对于`JVMTI_HEAP_REFERENCE_JNI_LOCAL`类型的引用，有如下结构：
+
+    ```c
+    typedef struct {
+        jlong thread_tag;
+        jlong thread_id;
+        jint depth;
+        jmethodID method;
+    } jvmtiHeapReferenceInfoJniLocal;
+    ```
+
+属性说明如下：
+
+    jvmtiHeapReferenceInfoJniLocal - Reference information structure for JNI local references
+    Field	    Type	    Description
+    thread_tag	jlong	    与目标栈关联的线程的标签，若没有标签，则为0
+    thread_id	jlong	    与目标栈关联的线程的唯一ID
+    depth	    jint	    目标栈的栈帧深度
+    method	    jmethodID	当前栈帧所执行的方法的ID
+
+对于`JVMTI_HEAP_REFERENCE_OTHER`类型的引用，有如下结构：
+
+    ```c
+    typedef struct {
+        jlong reserved1;
+        jlong reserved2;
+        jlong reserved3;
+        jlong reserved4;
+        jlong reserved5;
+        jlong reserved6;
+        jlong reserved7;
+        jlong reserved8;
+    } jvmtiHeapReferenceInfoReserved;
+    ```
+
+属性说明如下：
+
+    jvmtiHeapReferenceInfoReserved - Reference information structure for Other references
+    Field	    Type	Description
+    reserved1	jlong	reserved for future use.
+    reserved2	jlong	reserved for future use.
+    reserved3	jlong	reserved for future use.
+    reserved4	jlong	reserved for future use.
+    reserved5	jlong	reserved for future use.
+    reserved6	jlong	reserved for future use.
+    reserved7	jlong	reserved for future use.
+    reserved8	jlong	reserved for future use.
+
+引用信息的数据结构是一个联合体，包含了各种类型的引用，如下所示：
+
+    ```c
+    typedef union {
+        jvmtiHeapReferenceInfoField field;
+        jvmtiHeapReferenceInfoArray array;
+        jvmtiHeapReferenceInfoConstantPool constant_pool;
+        jvmtiHeapReferenceInfoStackLocal stack_local;
+        jvmtiHeapReferenceInfoJniLocal jni_local;
+        jvmtiHeapReferenceInfoReserved other;
+    } jvmtiHeapReferenceInfo;
+    ```
+
+属性说明如下：
+
+    jvmtiHeapReferenceInfo - Reference information structure
+    Field	        Type	                            Description
+    field	        jvmtiHeapReferenceInfoField	        引用类型是JVMTI_HEAP_REFERENCE_FIELD和JVMTI_HEAP_REFERENCE_STATIC_FIELD
+    array	        jvmtiHeapReferenceInfoArray	        引用类型是JVMTI_HEAP_REFERENCE_ARRAY_ELEMENT
+    constant_pool	jvmtiHeapReferenceInfoConstantPool	引用类型是JVMTI_HEAP_REFERENCE_CONSTANT_POOL
+    stack_local	    jvmtiHeapReferenceInfoStackLocal	引用类型是JVMTI_HEAP_REFERENCE_STACK_LOCAL
+    jni_local	    jvmtiHeapReferenceInfoJniLocal	    引用类型是JVMTI_HEAP_REFERENCE_JNI_LOCAL
+    other	        jvmtiHeapReferenceInfoReserved	    引用类型是为将来预留的
+
+堆回调函数结构体，如下所示：
+
+    ```c
+    typedef struct {
+        jvmtiHeapIterationCallback heap_iteration_callback;
+        jvmtiHeapReferenceCallback heap_reference_callback;
+        jvmtiPrimitiveFieldCallback primitive_field_callback;
+        jvmtiArrayPrimitiveValueCallback array_primitive_value_callback;
+        jvmtiStringPrimitiveValueCallback string_primitive_value_callback;
+        jvmtiReservedCallback reserved5;
+        jvmtiReservedCallback reserved6;
+        jvmtiReservedCallback reserved7;
+        jvmtiReservedCallback reserved8;
+        jvmtiReservedCallback reserved9;
+        jvmtiReservedCallback reserved10;
+        jvmtiReservedCallback reserved11;
+        jvmtiReservedCallback reserved12;
+        jvmtiReservedCallback reserved13;
+        jvmtiReservedCallback reserved14;
+        jvmtiReservedCallback reserved15;
+    } jvmtiHeapCallbacks;
+    ```
+
+具体说明如下：
+
+            jvmtiHeapCallbacks - Heap callback function structure
+    Field	                            Type	                            Description
+    heap_iteration_callback	            jvmtiHeapIterationCallback	        该回调函数用于获取堆中对象的描述信息，由函数IterateThroughHeap使用，但会被函数FollowReferences忽略
+    heap_reference_callback	            jvmtiHeapReferenceCallback	        该回调函数用于获取堆中对象的描述信息，由函数FollowReferences使用，但会被函数IterateThroughHeap忽略
+    primitive_field_callback	        jvmtiPrimitiveFieldCallback	        该回调函数用于获取原生类型属性的描述信息
+    array_primitive_value_callback	    jvmtiArrayPrimitiveValueCallback	该回调函数用于获取原生类型数组的描述信息
+    string_primitive_value_callback	    jvmtiStringPrimitiveValueCallback	该回调函数用于获取字符串数据的描述信息
+    reserved5	                        jvmtiReservedCallback	            为将来预留
+    reserved6	                        jvmtiReservedCallback	            为将来预留
+    reserved7	                        jvmtiReservedCallback	            为将来预留
+    reserved8	                        jvmtiReservedCallback	            为将来预留
+    reserved9	                        jvmtiReservedCallback	            为将来预留
+    reserved10	                        jvmtiReservedCallback	            为将来预留
+    reserved11	                        jvmtiReservedCallback	            为将来预留
+    reserved12	                        jvmtiReservedCallback	            为将来预留
+    reserved13	                        jvmtiReservedCallback	            为将来预留
+    reserved14	                        jvmtiReservedCallback	            为将来预留
+    reserved15	                        jvmtiReservedCallback	            为将来预留
+
+注意，堆转储功能会对每个对象使用回调函数。尽管使用缓冲的方式进行处理看起来吞吐量更高一些，但实际测试的结果并不是这样，可能是由于内存引用的局部性或数组访问的开销而导致的。
 
 <a name="2.6.6.1"></a>
-#### 2.6.6.1 FollowReferences
+#### 2.6.6.1 jvmtiHeapIterationCallback
 
+    ```c
+    typedef jint (JNICALL *jvmtiHeapIterationCallback)(jlong class_tag, jlong size, jlong* tag_ptr, jint length, void* user_data);
+    ```
 
+为JVMTI代理提供的回调函数，用于获取堆中对象的描述信息，但并不是传入对象。
+
+该回调函数应该返回一个包含了访问控制标记(visit control flags)的位向量，这个值将决定了整个迭代过程是否中止，`JVMTI_VISIT_OBJECTS`标记会被忽略。
+
+参见堆回调函数限制。
+
+参数信息如下：
+
+    Name	        Type	Description
+    class_tag	    jlong	对象的类的标签，若没有标签，则为0。若对象是一个运行时类，则该参数的值与`java.lang.Class`的标签相同，若没有标签，则为0
+    size	        jlong	对象大小，单位是字节。参见函数GetObjectSize
+    tag_ptr	        jlong*	对象标签的值的指针，若没有标签，则为0。JVMTI可以对该指针指向的内容赋值，从而完成对对象标签的赋值
+    length	        jint	若当前对象是数组，则该值为数组的长度；否则为-1
+    user_data	    void*	传入到迭代函数中的、用户提供的数据
+
+<a name="2.6.6.2"></a>
+#### 2.6.6.2 jvmtiHeapReferenceCallback
+
+    ```c
+    typedef jint (JNICALL *jvmtiHeapReferenceCallback)(jvmtiHeapReferenceKind reference_kind, const jvmtiHeapReferenceInfo* reference_info, jlong class_tag, jlong referrer_class_tag, jlong size, jlong* tag_ptr, jlong* referrer_tag_ptr, jint length, void* user_data);
+    ```
+
+为JVMTI代理提供的回调函数，用于获取引用的描述信息，引用关系是从一个对象或JVM指向另一个对象，或者是堆的跟指向某个对象。
+
+该回调函数应该返回一个包含了访问控制标记(visit control flags)的位向量，这个值将决定了被引用的对象是否要被访问，或者整个迭代是否要中止。
+
+参见堆回调函数限制。
+
+参数信息如下：
+
+    Name	            Type	                            Description
+    reference_kind	    jvmtiHeapReferenceKind	            引用类型
+    reference_info      const jvmtiHeapReferenceInfo *      引用详细信息。当参数reference_kind的值为JVMTI_HEAP_REFERENCE_FIELD, JVMTI_HEAP_REFERENCE_STATIC_FIELD, JVMTI_HEAP_REFERENCE_ARRAY_ELEMENT, JVMTI_HEAP_REFERENCE_CONSTANT_POOL, JVMTI_HEAP_REFERENCE_STACK_LOCAL, 或JVMTI_HEAP_REFERENCE_JNI_LOCAL时，会设置该值；否则为NULL
+    class_tag	        jlong	                            被引用对象的类的标签，若没有标签，则为0。若被引用对象是一个运行时类，则该参数的值与`java.lang.Class`的标签相同，若没有标签，则为0
+    referrer_class_tag  jlong                               引用对象的类的标签，若没有标签，则为0。若引用对象是一个运行时类，则该参数的值与`java.lang.Class`的标签相同，若没有标签，则为0
+    size                jlong                               被引用对象的大小，单位为字节，参见函数GetObjectSize
+    tag_ptr             jlong*                              指向被引用对象标签值的指针。JVMTI代理可以对该指针指向的值进行赋值，从而完成对对象标签的赋值
+    referrer_tag_ptr    jlong*                              指向引用对象标签值的指针。JVMTI代理可以对该指针指向的值进行赋值，从而完成对对象标签的赋值
+    length              jint                                若当前对象是数组，则该值为数组的长度；否则为-1
+    user_data	        void*	                            传入到迭代函数中的、用户提供的数据
+
+<a name="2.6.6.3"></a>
+#### 2.6.6.3 jvmtiPrimitiveFieldCallback
+
+    ```c
+    typedef jint (JNICALL *jvmtiPrimitiveFieldCallback)(jvmtiHeapReferenceKind kind, const jvmtiHeapReferenceInfo* info, jlong object_class_tag, jlong* object_tag_ptr, jvalue value, jvmtiPrimitiveType value_type, void* user_data);
+    ```
+
+为JVMTI代理提供的回调函数，用于获取对象的原生类型属性的描述信息。若当前对象是类对象，则该回调函数得到的是静态属性，否则为实例属性。
+
+该回调函数应该返回一个包含了访问控制标记(visit control flags)的位向量，这个值将决定了整个迭代是否要中止，`JVMTI_VISIT_OBJECTS`标记会被忽略。
+
+参见堆回调函数限制。
+
+参数信息如下：
+
+    Name	            Type	                            Description
+    kind	            jvmtiHeapReferenceKind	            属性类型，静态属性或实例属性，即JVMTI_HEAP_REFERENCE_FIELD或JVMTI_HEAP_REFERENCE_STATIC_FIELD.
+    info	            const jvmtiHeapReferenceInfo *	    目标属性信息
+    object_class_tag	jlong	                            目标对象的类的标签，若没有标签，则为0。若被引用对象是一个运行时类，则该参数的值与`java.lang.Class`的标签相同，若没有标签，则为0
+    object_tag_ptr	    jlong*	                            指向对象标签值的指针，若没有标签，则为0。JVMTI代理可以对该指针指向的值进行赋值，从而完成对对象标签的赋值
+    value	            jvalue	                            目标属性的值
+    value_type	        jvmtiPrimitiveType	                目标属性的类型
+    user_data	        void*	                            传入到迭代函数中的、用户提供的数据
+
+<a name="2.6.6.4"></a>
+#### 2.6.6.4 jvmtiArrayPrimitiveValueCallback
+
+    ```c
+    typedef jint (JNICALL *jvmtiArrayPrimitiveValueCallback)(jlong class_tag, jlong size, jlong* tag_ptr, jint element_count, jvmtiPrimitiveType element_type, const void* elements, void* user_data);
+    ```
+
+为JVMTI代理提供的回调函数，用于获取原生类型数组中某个元素的描述信息。
+
+该回调函数应该返回一个包含了访问控制标记(visit control flags)的位向量，这个值将决定了整个迭代是否要中止，`JVMTI_VISIT_OBJECTS`标记会被忽略。
+
+参见堆回调函数限制。
+
+参数信息如下：
+
+    Name	        Type	                Description
+    class_tag	    jlong	                目标对象的类的标签，若没有标签，则为0。
+    size	        jlong	                数组对象的大小，单位为字节，参见函数GetObjectSize
+    tag_ptr	        jlong*	                指向数组对象的标签值的指针，若没有标签，则为0。JVMTI代理可以对该指针指向的值进行赋值，从而完成对对象标签的赋值
+    element_count	jint	                数组的长度
+    element_type	jvmtiPrimitiveType	    数组元素的类型
+    elements	    const void*	            数组中的元素
+    user_data	    void*	                传入到迭代函数中的、用户提供的数据
+
+<a name="2.6.6.5"></a>
+#### 2.6.6.5 jvmtiStringPrimitiveValueCallback
+
+    ```c
+    typedef jint (JNICALL *jvmtiStringPrimitiveValueCallback)(jlong class_tag, jlong size, jlong* tag_ptr, const jchar* value, jint value_length, void* user_data);
+    ```
+
+为JVMTI代理提供的回调函数，用于获取字符串数据(`java.lang.String`)的描述信息。
+
+该回调函数应该返回一个包含了访问控制标记(visit control flags)的位向量，这个值将决定了整个迭代是否要中止，`JVMTI_VISIT_OBJECTS`标记会被忽略。
+
+参见堆回调函数限制。
+
+参数信息如下：
+
+    Name	        Type	        Description
+    class_tag	    jlong	        目标对象的类的标签，若没有标签，则为0。
+    size	        jlong	        字符串对象的大小，单位为字节，参见函数GetObjectSize
+    tag_ptr	        jlong*	        指向数组对象的标签值的指针，若没有标签，则为0。JVMTI代理可以对该指针指向的值进行赋值，从而完成对对象标签的赋值
+    value	        const jchar*	字符串的内容，使用Unicode编码
+    value_length	jint	        字符串的长度，该值等于字符串中16位Unicode字符的数量
+    user_data	    void*	        传入到迭代函数中的、用户提供的数据
+
+<a name="2.6.6.6"></a>
+#### 2.6.6.6 jvmtiReservedCallback
+
+    ```c
+    typedef jint (JNICALL *jvmtiReservedCallback)();
+    ```
+
+为将来预留。
+
+<a name="2.6.6.7"></a>
+#### 2.6.6.7 FollowReferences
+
+    ```c
+    jvmtiError FollowReferences(jvmtiEnv* env, jint heap_filter, jclass klass, jobject initial_object, const jvmtiHeapCallbacks* callbacks, const void* user_data)
+    ```
+
+该函数用于遍历堆中的对象，包括从指定对象或从堆的根集合(未指定参数`initial_object`时)中可访问的全部对象。堆的根集合包括系统类、JNI全局引用、线程栈中的引用和其他可用作垃圾回收根集合的对象。
+
+假设`A`和`B`表示对象，当访问`A`指向`B`的引用时，或访问从堆的根集合指向`B`的引用时，或以`B`作为初始对象时，则称为`B`"被访问到"。对于从`A`指向`B`的引用，如果没有访问到`A`时，则也不会遍历`A`到`B`的引用。报告引用的顺序与遍历的顺序相同，报告的形式是调用回调函数`jvmtiHeapReferenceCallback`。在`A`到`B`的引用中，`A`被称为引用者，`B`被称为被引用者。每个引用者发出的引用只会触发一次回调，即使存在循环引用或多个指向引用者的路径，也只会回调一次。引用者和被引用者之间存在多条引用时，每条引用都会报告，报告时，回调函数`jvmtiHeapReferenceCallback`的参数`reference_kind`和`reference_info`的数值可能不尽相同。
+
+该函数报告的对象引用时从Java语言的角度来看的，而非JVM的角度。当下面的这些引用非空时，会进行报告：
+
+* 实例对象会报告其指向每个非原生类型属性的引用，包括继承得来的属性
+* 实例对象会报告其指向类对象的引用
+* 类对象会报告其指向父类和直接实现/继承的接口的引用
+* 类对象会报告其指向类载入器，保护域(protection domain)，签字信息和常量池中已解析的常量项的引用
+* 类对象会报告其指向每个直接声明的非原生类型的静态属性的引用
+* 数组会报告其指向数组类型和每个数组元素的引用
+* 原生类型数组会报告其指向数组类型的引用
+
+该函数还可用于检查原生类型的值。原生类型数组或字符串会在访问对象后加以报告，报告的形式是调用回调函数`jvmtiArrayPrimitiveValueCallback`或`jvmtiStringPrimitiveValueCallback`。原生类型的属性，则会在访问对象后，通过回调函数`jvmtiPrimitiveFieldCallback`来报告。
+
+JVMTI代理是否提供回调函数的实现，只决定了回调函数是否被调用，并不会影响对象遍历，及相应回调函数的调用。但是，`jvmtiHeapReferenceCallback`返回的访问控制标记却会决定当前对象引用的对象是否要被访问。堆过滤器标记(heap filter flags)和参数`klass`不会控制哪个对象要被访问，但会控制哪个对象和原生数据会以回调函数的形式来报告。例如，如果只设置了回调函数`array_primitive_value_callback`，并且参数`klass`设置为字节数组类型，则只会报告字节数组。总结如下：
+
+	                                                                        Controls objects visited	    Controls objects reported	            Controls primitives reported
+    the Heap Visit Control Flags returned by jvmtiHeapReferenceCallback     Yes	                            Yes, since visits are controlled	    Yes, since visits are controlled
+    array_primitive_value_callback	                                        No	                            Yes	                                    No
+    heap filter                                                             No	                            Yes	                                    Yes
+    klass	                                                                No	                            Yes	                                    Yes
+
+在执行该函数的过程中，堆的状态不会更改：不会新分配对象，不会执行垃圾回收，对象的状态也不会发生改变。其结果是，正在执行Java代码的线程，试图恢复Java代码运行的线程，和试图恢复执行JNI函数的线程，都会暂停。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 115
+* Since： 1.1
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_tag_objects`: 能够获取/设置对象标签
+* 参数：
+    * `heap_filter`: 
+        * 类型为`jint`，表示堆过滤器标记位向量，用于限制针对哪些对象会调用回调函数
+        * 该参数对对象和原生类型的回调函数都生效
+    * `klass`: 
+        * 类型为`jclass`
+        * 回调函数只会报告由该参数指定的类型的实例。该类型的子类型的实例对象不会被报告。如果`klass`是一个接口，则不会报告任何对象
+        * 该参数对对象和原生类型的回调函数都生效
+        * 若参数值为`NULL`，则回调函数不会受限于某个具体类型
+    * `initial_object`:
+        * 类型为`jobject`，表示从指定的对象开始遍历堆中的对象
+        * 若为`NULL`，则从堆的根集合开始遍历
+    * `callbacks`:
+        * 类型为`const jvmtiHeapCallbacks *`，表示目标回调函数，JVMTI代理需要提供一个回调函数的指针
+    * `user_data`:
+        * 类型为`const void *`，用户提供的、回传给回调函数的数据
+        * JVMTI代理提供一个指向数据内容的指针，若为`NULL`，则会将`NULL`传给回调函数
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_tag_objects`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`不是有效的类对象
+    * `JVMTI_ERROR_INVALID_OBJECT`: 参数`initial_object`不是有效的对象
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`callbacks`为`NULL`
+
+<a name="2.6.6.8"></a>
+#### 2.6.6.8 IterateThroughHeap
+
+    ```c
+    jvmtiError IterateThroughHeap(jvmtiEnv* env, jint heap_filter, jclass klass, const jvmtiHeapCallbacks* callbacks, const void* user_data)
+    ```
+
+初始化迭代，遍历堆中所有对象，包括可达对象和不可达对象。遍历对象时，是无序的。
+
+遍历堆中对象时，会以回调函数`jvmtiHeapIterationCallback`的形式来报告。对象前的引用信息不会报告。如果只想遍历可达对象，或者需要获取对象引用信息，则需要使用函数`FollowReferences`。
+
+该函数还可用于检查原生类型的值。原生类型数组或字符串会在访问对象后加以报告，报告的形式是调用回调函数`jvmtiArrayPrimitiveValueCallback`或`jvmtiStringPrimitiveValueCallback`。原生类型的属性，则会在访问对象后，通过回调函数`jvmtiPrimitiveFieldCallback`来报告。
+
+使用该函数后，堆中所有的对象都会被访问到，除非是在回调函数中返回的访问控制标记指明了要终止迭代。无论JVMTI代理是否提供了回调函数的实现，只会决定该回调函数是否会被调用，而不会影响遍历哪些对象和这些对象的回调函数的调用。堆过滤器标记和`klass`参数并不会控制哪些对象会被遍历，他们只会控制哪些对象和原生类型数据是否会触发回调函数。例如，如果JVMTI代理提供了回调函数`array_primitive_value_callback`的实现，并且参数`klass`设置为字节数组类型，则只会报告字节数组。总结如下：
+
+                                                                            Controls objects visited	            Controls objects reported	            Controls primitives reported
+    the Heap Visit Control Flags returned by jvmtiHeapIterationCallback	    No(unless they abort the iteration)	    No(unless they abort the iteration)	    No(unless they abort the iteration)
+    array_primitive_value_callback in callbacks set	                        No	                                    Yes	                                    No
+    heap_filter	                                                            No	                                    Yes	                                    Yes
+    klass	                                                                No	                                    Yes	                                    Yes
+
+在执行该函数的过程中，堆的状态不会更改：不会新分配对象，不会执行垃圾回收，对象的状态也不会发生改变。其结果是，正在执行Java代码的线程，试图恢复Java代码运行的线程，和试图恢复执行JNI函数的线程，都会暂停。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 116
+* Since： 1.1
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_tag_objects`: 能够获取/设置对象标签
+* 参数：
+    * `heap_filter`: 
+        * 类型为`jint`，表示堆过滤器标记位向量，用于限制针对哪些对象会调用回调函数
+        * 该参数对对象和原生类型的回调函数都生效
+    * `klass`: 
+        * 类型为`jclass`
+        * 回调函数只会报告由该参数指定的类型的实例。该类型的子类型的实例对象不会被报告。如果`klass`是一个接口，则不会报告任何对象
+        * 该参数对对象和原生类型的回调函数都生效
+        * 若参数值为`NULL`，则回调函数不会受限于某个具体类型
+    * `callbacks`:
+        * 类型为`const jvmtiHeapCallbacks *`，表示目标回调函数，JVMTI代理需要提供一个回调函数的指针
+    * `user_data`:
+        * 类型为`const void *`，用户提供的、回传给回调函数的数据
+        * JVMTI代理提供一个指向数据内容的指针，若为`NULL`，则会将`NULL`传给回调函数
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_tag_objects`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`不是有效的类对象
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`callbacks`为`NULL`
+
+<a name="2.6.6.9"></a>
+#### 2.6.6.9 GetTag
+
+    ```c
+    jvmtiError GetTag(jvmtiEnv* env, jobject object, jlong* tag_ptr)
+    ```
+
+该函数用于获取目标对象的标签。标签的值是一个长整型，一般用于存储一个唯一的ID值或是指向对象信息的指针。设置标签值可以通过方法`SetTag`完成。若对象没有标签，则标签值为0。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 106
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_tag_objects`: 能够获取/设置对象标签
+* 参数：
+    * `object`: 
+        * 类型为`jobject`，目标对象
+    * `tag_ptr`: 
+        * 类型为`jlong*`，出参，指向标签的值
+        * JVMTI代理提供一个指向`jlong`的指针，函数返回时，会设置该指针指向的值。
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_tag_objects`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_OBJECT`: 参数`object`不是有效的对象
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`tag_ptr`为`NULL`
+
+<a name="2.6.6.10"></a>
+#### 2.6.6.10 SetTag
+
+    ```c
+    jvmtiError SetTag(jvmtiEnv* env, jobject object, jlong tag)
+    ```
+
+该函数用于设置对象的标签。标签值是一个长整数，一般用于存储一个唯一的ID值或是指向对象信息的指针。获取标签值可以通过方法`GetTag`完成。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 107
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_tag_objects`: 能够获取/设置对象标签
+* 参数：
+    * `object`: 
+        * 类型为`jobject`，目标对象
+    * `tag`: 
+        * 类型为`jlong`，要设置的标签值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_tag_objects`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_OBJECT`: 参数`object`不是有效的对象
+
+<a name="2.6.6.11"></a>
+#### 2.6.6.11 GetObjectsWithTags
+
+    ```c
+    jvmtiError GetObjectsWithTags(jvmtiEnv* env, jint tag_count, const jlong* tags, jint* count_ptr, jobject** object_result_ptr, jlong** tag_result_ptr)
+    ```
+
+该函数用于返回堆中带有指定标签的对象。返回的内容中，对象和标签的位置在出参数组中是一一对应的。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 114
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_tag_objects`: 能够获取/设置对象标签
+* 参数：
+    * `tag_count`: 
+        * 类型为`jint`，要扫描的标签的数量
+    * `tags`: 
+        * 类型为`const jlong *`，要扫描的标签的值，此时，标签值不能为0
+        * JVMTI代理需要提供一个长度为`tag_count`的`jlong`数组
+    * `count_ptr`:
+        * 类型为`jint *`，出参，返回扫描出的符合结果对象的数量
+        * JVMTI代理需要提供一个指向`jint`的指针，函数返回时，会设置该值
+    * `object_result_ptr`:
+        * 类型为`jobject **`，出参，返回扫描出的符合结果对象
+        * JVMTI代理需要提供一个指向`jobject*`的指针，函数返回时，会创建一个长度为`*count_ptr`的数组，并在数组中填充对象指针。新创建的数组需要使用函数`Deallocate`来释放。若`object_result_ptr`为`NULL`，则不会返回该信息。数组返回的对象是JNI局部引用，必须管理起来。
+    * `tag_result_ptr`:
+        * 类型为`jlong **`，出参，返回`object_result_ptr`中的每个对象的标签值，索引位置一一对应
+        * JVMTI代理需要提供一个指向`jlong*`的指针，函数返回时，会创建一个长度为`*count_ptr`的数组。新创建的数组需要使用函数`Deallocate`来释放。若`tag_result_ptr`为`NULL`，则不会返回该信息。数组返回的对象是JNI局部引用，必须管理起来。
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_tag_objects`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_OBJECT`: 参数`object`不是有效的对象
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`tags`中包含0
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`tag_count`小于0
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`tags`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`countr_ptr`为`NULL`
+
+<a name="2.6.6.12"></a>
+#### 2.6.6.12 ForceGarbageCollection
+
+    ```c
+    jvmtiError ForceGarbageCollection(jvmtiEnv* env)
+    ```
+
+该函数用于强制执行垃圾回收。垃圾回收会尽可能完整。需要注意的是，该函数并不会触发**finalizer**运行。在垃圾回收结束前，该函数都不会返回。
+
+垃圾回收会尽可能完整，但并不能保证所有的`ObjectEvent`事件都会在该函数返回时发出。特别的，某个对象可能正在等待执行**finalization**，因而无法被回收掉。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 108
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * 无
+* 返回：
+    * 无
 
 <a name="2.6.7"></a>
 ### 2.6.7 堆1.0
 
+堆1.0的相关函数包括：
+
+* [2.6.7.5 IterateOverObjectsReachableFromObject][119]
+* [2.6.7.6 IterateOverReachableObjects][120]
+* [2.6.7.7 IterateOverHeap][121]
+* [2.6.7.8 IterateOverInstancesOfClass][122]
+
+堆1.0的回调函数包括：
+
+* [2.6.7.1 jvmtiHeapObjectCallback][115]
+* [2.6.7.2 jvmtiHeapRootCallback][116]
+* [2.6.7.3 jvmtiStackReferenceCallback][117]
+* [2.6.7.4 jvmtiObjectReferenceCallback][118]
+
+堆1.0的类型包括：
+
+* [jvmtiHeapObjectFilter - Heap Object Filter Enumeration][]
+* [jvmtiHeapRootKind - Heap Root Kind Enumeration][]
+* [jvmtiObjectReferenceKind - Object Reference Enumeration][]
+* [jvmtiIterationControl - Iteration Control Enumeration][115]
+
+这些函数和数据类型是在JVMTI 1.0版本中引入的，现在已经被功能更强，更灵活的版本取代：
+
+* 允许访问原生数据，包括字符串、数组和原生类型的属性
+* 运行设置引用对象的标签值，增强了构建引用图的效率
+* 提供了更强的过滤能力
+* 扩展性更好，更能适应将来新版本JVMTI的功能
+
+请尽量使用当前版本的[堆函数][33]。
+
+            Heap Object Filter Enumeration (jvmtiHeapObjectFilter)
+    Constant	                Value	Description
+    JVMTI_HEAP_OBJECT_TAGGED	1	    只处理被标记的对象
+    JVMTI_HEAP_OBJECT_UNTAGGED	2	    只处理未被标记的对象
+    JVMTI_HEAP_OBJECT_EITHER	3	    标记和未被标记的对象都要处理
+
+
+            Heap Root Kind Enumeration (jvmtiHeapRootKind)
+    Constant	                    Value	Description
+    JVMTI_HEAP_ROOT_JNI_GLOBAL	    1	    JNI全局引用
+    JVMTI_HEAP_ROOT_SYSTEM_CLASS	2	    系统类
+    JVMTI_HEAP_ROOT_MONITOR	        3	    监视器
+    JVMTI_HEAP_ROOT_STACK_LOCAL	    4	    栈局部(stack local)
+    JVMTI_HEAP_ROOT_JNI_LOCAL	    5	    JNI局部引用
+    JVMTI_HEAP_ROOT_THREAD	        6	    线程
+    JVMTI_HEAP_ROOT_OTHER	        7	    其他
+
+
+            Object Reference Enumeration (jvmtiObjectReferenceKind)
+    Constant	                        Value	Description
+    JVMTI_REFERENCE_CLASS               1       从对象到其类对象的引用
+    JVMTI_REFERENCE_FIELD               2       从对象到其成员变量值的引用。此时，回调函数jvmtiObjectReferenceCallback的参数referrer_index，表示成员变量的索引位置。这个索引位置是基于目标对象所有属性顺次排序的，包括在类中直接声明的静态变量、成员变量，以及从父类、父接口中继承来的静态变量和实例变量，private和public的都有。因此，计算索引位置的值时，会在父类、父接口的属性的索引值的基础上，再加上当前类中目标属性的声明顺序而得。索引位置从0开始。
+    JVMTI_REFERENCE_ARRAY_ELEMENT       3       从数组对象指向其元素的引用。回调函数jvmtiObjectReferenceCallback的参数referrer_index，表示该元素的索引位置。
+    JVMTI_REFERENCE_CLASS_LOADER        4       从类指向其类加载器的引用
+    JVMTI_REFERENCE_SIGNERS             5       从类指向其签字信息数组的引用
+    JVMTI_REFERENCE_PROTECTION_DOMAIN   6       从类指向其保护域的引用
+    JVMTI_REFERENCE_INTERFACE           7       从类指向其某个接口的引用
+    JVMTI_REFERENCE_STATIC_FIELD        8       从类指向其静态变量值的引用。此时，回调函数jvmtiObjectReferenceCallback的参数referrer_index，表示静态变量的索引位置。这个索引位置是基于目标对象所有属性顺次排序的，包括在类中直接声明的静态变量、成员变量，以及从父类、父接口中继承来的静态变量和实例变量，private和public的都有。因此，计算索引位置的值时，会在父类、父接口的属性的索引值的基础上，再加上当前类中目标属性的声明顺序而得。索引位置从0开始。注意，这个定义不同于JVMTI 1.0规范中的定义。
+    JVMTI_REFERENCE_CONSTANT_POOL       9       从类对象实例指向常量池中某个已解析的条目的引用
+
+
+            Iteration Control Enumeration (jvmtiIterationControl)
+    Constant	                Value	Description
+    JVMTI_ITERATION_CONTINUE	1	    继续迭代，若当前是一个引用迭代，则沿着引用指向的对象继续进行
+    JVMTI_ITERATION_IGNORE	    2	    继续迭代，若当前是一个引用迭代，则忽略引用指向的对象
+    JVMTI_ITERATION_ABORT	    0	    终止迭代
+
+<a name="2.6.7.1"></a>
+#### 2.6.7.1 jvmtiHeapObjectCallback
+
+    ```c
+    typedef jvmtiIterationControl (JNICALL *jvmtiHeapObjectCallback)(jlong class_tag, jlong size, jlong* tag_ptr, void* user_data);
+    ```
+
+该回调函数用于获取堆中对象的描述信息。
+
+若要继续迭代，则应该返回`JVMTI_ITERATION_CONTINUE`，若要终止迭代，则返回`JVMTI_ITERATION_ABORT`。
+
+参见堆回调函数限制。
+
+                    Parameters
+    Name	        Type	    Description
+    class_tag	    jlong	    当前对象的类的标签，若没有标签，则为0。若当前对象是一个运行时类，则该值与java.lang.Class类的标签值相同，若没有标签，则为0。
+    size	        jlong	    对象的大小，单位为字节，参见GetObjectSize.
+    tag_ptr	        jlong*	    对象标签的值，若没有标签，则为0。通过该参数，可以设置对象标签的值。
+    user_data	    void*	    用户提供的、会在迭代中传入的数据
+
+<a name="2.6.7.2"></a>
+#### 2.6.7.2 jvmtiHeapRootCallback
+
+    ```c
+    typedef jvmtiIterationControl (JNICALL *jvmtiHeapRootCallback)(jvmtiHeapRootKind root_kind, jlong class_tag, jlong size, jlong* tag_ptr, void* user_data);
+    ```
+
+该回调函数用于获取堆中根集合对象的描述信息。
+
+若要继续迭代，则应该返回`JVMTI_ITERATION_CONTINUE`；若要继续迭代，但忽略引用所指向的对象，则应该返回`JVMTI_ITERATION_IGNORE`；若要终止迭代，则返回`JVMTI_ITERATION_ABORT`。
+
+参见堆回调函数限制。
+
+                    Parameters
+    Name	        Type	                Description
+    root_kind	    jvmtiHeapRootKind	    堆根集合的类型
+    class_tag	    jlong	                当前对象的类的标签，若没有标签，则为0。若当前对象是一个运行时类，则该值与java.lang.Class类的标签值相同，若没有标签，则为0。
+    size	        jlong	                对象的大小，单位为字节，参见GetObjectSize.
+    tag_ptr	        jlong*	                对象标签的值，若没有标签，则为0。通过该参数，可以设置对象标签的值。
+    user_data	    void*	                用户提供的、会在迭代中传入的数据
+
+<a name="2.6.7.3"></a>
+#### 2.6.7.3 jvmtiStackReferenceCallback
+
+    ```c
+    typedef jvmtiIterationControl (JNICALL *jvmtiStackReferenceCallback)(jvmtiHeapRootKind root_kind, jlong class_tag, jlong size, jlong* tag_ptr, jlong thread_tag, jint depth, jmethodID method, jint slot, void* user_data);
+    ```
+
+该回调函数用于获取栈中根集合对象的描述信息。
+
+若要继续迭代，则应该返回`JVMTI_ITERATION_CONTINUE`；若要继续迭代，但忽略引用所指向的对象，则应该返回`JVMTI_ITERATION_IGNORE`；若要终止迭代，则返回`JVMTI_ITERATION_ABORT`。
+
+参见堆回调函数限制。
+
+                    Parameters
+    Name	        Type	                Description
+    root_kind	    jvmtiHeapRootKind	    堆根集合的类型
+    class_tag	    jlong	                当前对象的类的标签，若没有标签，则为0。若当前对象是一个运行时类，则该值与java.lang.Class类的标签值相同，若没有标签，则为0。
+    size	        jlong	                对象的大小，单位为字节，参见GetObjectSize
+    tag_ptr	        jlong*	                对象标签的值，若没有标签，则为0。通过该参数，可以设置对象标签的值。
+    thread_tag      jlong                   当前栈的线程的标签，若没有标签，则为0
+    depth           jint                    栈帧的深度
+    method          jmethodID               当前栈帧正在执行的方法的ID
+    slot            jint                    当前栈帧的局部变量的槽的数量
+    user_data	    void*	                用户提供的、会在迭代中传入的数据
+
+<a name="2.6.7.4"></a>
+#### 2.6.7.4 jvmtiObjectReferenceCallback
+
+    ```c
+    typedef jvmtiIterationControl (JNICALL *jvmtiObjectReferenceCallback)(jvmtiObjectReferenceKind reference_kind, jlong class_tag, jlong size, jlong* tag_ptr, jlong referrer_tag, jint referrer_index, void* user_data);
+    ```
+
+该回调函数用于获取堆中对象间引用的描述信息。
+
+若要继续迭代，则应该返回`JVMTI_ITERATION_CONTINUE`；若要继续迭代，但忽略引用所指向的对象，则应该返回`JVMTI_ITERATION_IGNORE`；若要终止迭代，则返回`JVMTI_ITERATION_ABORT`。
+
+参见堆回调函数限制。
+
+                        Parameters
+    Name	            Type	                    Description
+    reference_kind	    jvmtiObjectReferenceKind	引用类型
+    class_tag	        jlong	                    当前对象的类的标签，若没有标签，则为0。若当前对象是一个运行时类，则该值与java.lang.Class类的标签值相同，若没有标签，则为0。
+    size	            jlong	                    对象的大小，单位为字节，参见GetObjectSize
+    tag_ptr	            jlong*	                    对象标签的值，若没有标签，则为0。通过该参数，可以设置对象标签的值。
+    referrer_tag        jlong                       引用对象的标签，若没有标签，则为0
+    referrer_index      jint                        引用的索引值。
+    user_data	        void*	                    用户提供的、会在迭代中传入的数据
+
+<a name="2.6.7.5"></a>
+#### 2.6.7.5 IterateOverObjectsReachableFromObject
+
+    ```c
+    jvmtiError IterateOverObjectsReachableFromObject(jvmtiEnv* env, jobject object, jvmtiObjectReferenceCallback object_reference_callback, const void* user_data)
+    ```
+
+该函数可用于遍历从指定对象开始的、所有的直接或间接可达对象。例如，对象`A`包含指向对象`B`的引用，遍历的时候会调用指定的回调函数，而且只会调用一次，即便包含循环引用或多条指向对象`A`的引用路径，对于`A`到`B`的引用，也只会触发一次回调函数。`A`到`B`的引用可能会有多种形式，此时参数`jvmtiObjectReferenceCallback.reference_kind`和`jvmtiObjectReferenceCallback.referrer_index`会不尽相同。对被引用对象的回调总是会在对引用对象的回调之后。
+
+有关对象引用的内容，参见函数[`FollowReferences`][103]。
+
+在执行该函数的过程中，堆的状态不会更改：不会新分配对象，不会执行垃圾回收，对象的状态也不会发生改变。其结果是，正在执行Java代码的线程，试图恢复Java代码运行的线程，和试图恢复执行JNI函数的线程，都会暂停。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 109
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_tag_objects`: 能够获取/设置对象标签
+* 参数：
+    * `object`: 
+        * 类型为`jobject`，目标对象
+    * `object_reference_callback`:
+        * 类型为`jvmtiObjectReferenceCallback`， 回调函数
+    * `user_data`:
+        * 类型为`const void *`，迭代过程中要传递的用户数据
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_tag_objects`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_OBJECT`: 参数`object`不是有效的对象
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`object_reference_callback`为`NULL`
+
+<a name="2.6.7.6"></a>
+#### 2.6.7.6 IterateOverReachableObjects
+
+    ```c
+    jvmtiError IterateOverReachableObjects(jvmtiEnv* env, jvmtiHeapRootCallback heap_root_callback, jvmtiStackReferenceCallback stack_ref_callback, jvmtiObjectReferenceCallback object_ref_callback, const void* user_data)
+    ```
+
+该函数用于遍历所有从根集合开始可到的对象。根集合包含系统类、JNI全局引用、线程栈和其他作为垃圾回收根起点的对象。
+
+对于每个根对象，都会触发回调函数`heap_root_callback`或`stack_ref_callback`。某个对象可能会因为各种原因而成为根对象，并调用对应的回调函数。
+
+对于每个对象引用，回调函数`object_ref_callback`都会被调用，并且只会被调用一次，几遍存在循环引用或多种引用路径，也是如此。在引用对象和被引用对象之间，可能存在多种引用关系，可以通过`jvmtiObjectReferenceCallback.reference_kind`或`jvmtiObjectReferenceCallback.referrer_index`的值来判断。回调函数的触发，只会发生在其引用对象的回调函数触发之后。
+
+更多有关对象引用的内容，参见函数`FollowReferences`。
+
+在报告对象引用之前，根已经报告给分析器了。换句话说，回调函数`object_ref_callback`会在所有的根对象的回调函数完成之后才触发。如果回调函数`object_ref_callback`为`NULL`，则在将根对象报告分析器后，该函数返回。
+
+在执行该函数的过程中，堆的状态不会更改：不会新分配对象，不会执行垃圾回收，对象的状态也不会发生改变。其结果是，正在执行Java代码的线程，试图恢复Java代码运行的线程，和试图恢复执行JNI函数的线程，都会暂停。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 110
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_tag_objects`: 能够获取/设置对象标签
+* 参数：
+    * `heap_root_callback`: 
+        * 类型为`jvmtiHeapRootCallback`
+        * 该回调函数用于报告所有指定类型的根对象，类型包括，`JVMTI_HEAP_ROOT_JNI_GLOBAL` `JVMTI_HEAP_ROOT_SYSTEM_CLASS` `JVMTI_HEAP_ROOT_MONITOR` `JVMTI_HEAP_ROOT_THREAD` `JVMTI_HEAP_ROOT_OTHER`
+        * 若为`NULL`，则不会报告根对象
+    * `stack_ref_callback`:
+        * 类型为`jvmtiStackReferenceCallback`
+        * 该回调函数用于报告所有指定类型的根对象，类型包括，`JVMTI_HEAP_ROOT_STACK_LOCAL` `JVMTI_HEAP_ROOT_JNI_LOCAL`
+        * 若为`NULL`，则不会报告栈引用
+    * `object_ref_callback`:
+        * 类型为`jvmtiObjectReferenceCallback`
+        * 该函数用于报告每个对象间引用
+        * 若为`NULL`，则不会报告来自根对象的引用
+    * `user_data`:
+        * 类型为`const void *`，迭代过程中要传递的用户数据
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_tag_objects`，需要调用`AddCapabilities`
+
+<a name="2.6.7.7"></a>
+#### 2.6.7.7 IterateOverHeap
+
+    ```c
+    jvmtiError IterateOverHeap(jvmtiEnv* env, jvmtiHeapObjectFilter object_filter, jvmtiHeapObjectCallback heap_object_callback, const void* user_data)
+    ```
+
+该函数用于遍历堆中所有对象，包括可达和不可达的。
+
+参数`object_filter`用于指定需要对哪些对象执行回调函数，若该参数的值为`JVMTI_HEAP_OBJECT_TAGGED`，则只会针对有标签的对象执行回调函数；若该参数的值为`JVMTI_HEAP_OBJECT_UNTAGGED`，则只会针对没有标签的对象执行回调函数；若该参数的值为`JVMTI_HEAP_OBJECT_EITHER`，则会对所有对象执行回调函数.
+
+在执行该函数的过程中，堆的状态不会更改：不会新分配对象，不会执行垃圾回收，对象的状态也不会发生改变。其结果是，正在执行Java代码的线程，试图恢复Java代码运行的线程，和试图恢复执行JNI函数的线程，都会暂停。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 111
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_tag_objects`: 能够获取/设置对象标签
+* 参数：
+    * `object_filter`: 
+        * 类型为`jvmtiHeapObjectFilter`，指定需要对哪些对象执行回调函数
+    * `heap_object_callback`:
+        * 类型为`jvmtiHeapObjectCallback`，指定对于符合规则(`jvmtiHeapObjectFilter`)的对象要执行的回调函数
+    * `user_data`:
+        * 类型为`const void *`，迭代过程中要传递的用户数据
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_tag_objects`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`object_filter`不是`jvmtiHeapObjectFilter`类型
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`heap_object_callback `为`NULL`
+
+<a name="2.6.7.8"></a>
+#### 2.6.7.8 IterateOverInstancesOfClass
+
+    ```c
+    jvmtiError IterateOverInstancesOfClass(jvmtiEnv* env, jclass klass, jvmtiHeapObjectFilter object_filter, jvmtiHeapObjectCallback heap_object_callback, const void* user_data)
+    ```
+
+该函数用于遍历堆中所有指定类的实例对象，包括直接继承和间接继承的，包括可达和不可达的。
+
+参数`object_filter`指定了哪些对象会调用回调函数，若该参数的值为`JVMTI_HEAP_OBJECT_TAGGED`，则只会针对有标签的对象执行回调函数；若该参数的值为`JVMTI_HEAP_OBJECT_UNTAGGED`，则只会针对没有标签的对象执行回调函数；若该参数的值为`JVMTI_HEAP_OBJECT_EITHER`，则会对所有对象执行回调函数.
+
+在执行该函数的过程中，堆的状态不会更改：不会新分配对象，不会执行垃圾回收，对象的状态也不会发生改变。其结果是，正在执行Java代码的线程，试图恢复Java代码运行的线程，和试图恢复执行JNI函数的线程，都会暂停。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 112
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_tag_objects`: 能够获取/设置对象标签
+* 参数：
+    * `klass`: 
+        * 类型为`jclass`，指定目标类型
+    * `object_filter`:
+        * 类型为`jvmtiHeapObjectFilter`，指定针对哪些对象触发回调函数
+    * `heap_object_callback`:
+        * 类型为`jvmtiHeapObjectCallback`，指定符合要求的对象要调用的回调函数
+    * `user_data`:
+        * 类型为`const void *`，迭代过程中要传递的用户数据
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_tag_objects`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`不是类对象
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`object_filter`不是`jvmtiHeapObjectFilter`类型
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`heap_object_callback `为`NULL`
+
 <a name="2.6.8"></a>
 ### 2.6.8 局部变量
+
+局部变量的相关函数包括：
+
+* [2.6.8.1 GetLocalObject][123]
+* [2.6.8.2 GetLocalInstance][124]
+* [2.6.8.3 GetLocalInt][125]
+* [2.6.8.4 GetLocalLong][126]
+* [2.6.8.6 GetLocalDouble][127]
+* [2.6.8.6 GetLocalDouble][128]
+* [2.6.8.7 SetLocalObject][129]
+* [2.6.8.8 SetLocalInt][130]
+* [2.6.8.9 SetLocalLong][131]
+* [2.6.8.10 SetLocalFloat][132]
+* [2.6.8.11 SetLocalDouble][133]
+
+这些函数用于获取/设置局部变量的值。局部变量是通过栈帧的深度和变量的槽值来定位的。通过函数`GetLocalVariableTable`可以获取变量操作。
+
+<a name="2.6.8.1"></a>
+#### 2.6.8.1 GetLocalObject
+
+    ```c
+    jvmtiError GetLocalObject(jvmtiEnv* env, jthread thread, jint depth, jint slot, jobject* value_ptr)
+    ```
+
+该函数用于获取`Object`类型或其子类型的局部变量。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 21
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_access_local_variables`: 能否获取/设置局部变量
+* 参数：
+    * `thread`: 
+        * 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `depth`:
+        * 类型为`jint`，包含了局部变量的栈帧的深度
+    * `slot`:
+        * 类型为`jint`，指定局部变量的槽值
+    * `value_ptr`:
+        * 类型为`jobject*`，出参，用于返回局部变量的值
+        * 返回的值是一个JNI局部引用，必须管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_access_local_variables`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_SLOT`: 参数`slot`无效
+    * `JVMTI_ERROR_TYPE_MISMATCH`: 变量类型不是`Object`或其子类型
+    * `JVMTI_ERROR_OPAQUE_FRAME`: 栈帧不可见
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 目标线程已死或未启动
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`depth`小于0
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 栈的指定的深度中没有栈帧
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`value_ptr `为`NULL`
+
+<a name="2.6.8.2"></a>
+#### 2.6.8.2 GetLocalInstance
+
+    ```c
+    jvmtiError GetLocalInstance(jvmtiEnv* env, jthread thread, jint depth, jobject* value_ptr)
+    ```
+
+该函数用于获取非静态栈帧中，局部变量槽值为`0`的变量值，即`this`。对于本地方法栈帧，使用该函数可以获取`this`的值，而函数`GetLocalObject`则会返回`JVMTI_ERROR_OPAQUE_FRAME`。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 155
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_access_local_variables`: 能否获取/设置局部变量
+* 参数：
+    * `thread`: 
+        * 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `depth`:
+        * 类型为`jint`，包含了局部变量的栈帧的深度
+    * `value_ptr`:
+        * 类型为`jobject*`，出参，用于返回局部变量的值
+        * 返回的值是一个JNI局部引用，必须管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_access_local_variables`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_SLOT`: 参数`slot`指定的不是非静态栈帧
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 目标线程已死或未启动
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`depth`小于0
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 栈的指定的深度中没有栈帧
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`value_ptr `为`NULL`
+
+<a name="2.6.8.3"></a>
+#### 2.6.8.3 GetLocalInt
+
+    ```c
+    jvmtiError GetLocalInt(jvmtiEnv* env, jthread thread, jint depth, jint slot, jint* value_ptr)
+    ```
+
+该函数用于获取类型为`int` `short` `char` `byte`或`boolean`的局部变量。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 22
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_access_local_variables`: 能否获取/设置局部变量
+* 参数：
+    * `thread`: 
+        * 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `depth`:
+        * 类型为`jint`，包含了局部变量的栈帧的深度
+    * `slot`:
+        * 类型为`jint`，指定局部变量的槽值
+    * `value_ptr`:
+        * 类型为`jint*`，出参，用于返回局部变量的值
+        * 返回的值是一个JNI局部引用，必须管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_access_local_variables`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_SLOT`: 参数`slot`无效
+    * `JVMTI_ERROR_TYPE_MISMATCH`: 变量类型不是`int` `short` `char` `byte`或`boolean`
+    * `JVMTI_ERROR_OPAQUE_FRAME`: 栈帧不可见
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 目标线程已死或未启动
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`depth`小于0
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 栈的指定的深度中没有栈帧
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`value_ptr `为`NULL`
+
+<a name="2.6.8.4"></a>
+#### 2.6.8.4 GetLocalLong
+
+    ```c
+    jvmtiError GetLocalLong(jvmtiEnv* env, jthread thread, jint depth, jint slot, jlong* value_ptr)
+    ```
+
+该函数用于获取类型为`long`的局部变量。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 23
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_access_local_variables`: 能否获取/设置局部变量
+* 参数：
+    * `thread`: 
+        * 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `depth`:
+        * 类型为`jint`，包含了局部变量的栈帧的深度
+    * `slot`:
+        * 类型为`jint`，指定局部变量的槽值
+    * `value_ptr`:
+        * 类型为`jlong*`，出参，用于返回局部变量的值
+        * 返回的值是一个JNI局部引用，必须管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_access_local_variables`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_SLOT`: 参数`slot`无效
+    * `JVMTI_ERROR_TYPE_MISMATCH`: 变量类型不是`long`
+    * `JVMTI_ERROR_OPAQUE_FRAME`: 栈帧不可见
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 目标线程已死或未启动
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`depth`小于0
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 栈的指定的深度中没有栈帧
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`value_ptr `为`NULL`
+
+<a name="2.6.8.5"></a>
+#### 2.6.8.5 GetLocalFloat
+
+    ```c
+    jvmtiError GetLocalFloat(jvmtiEnv* env, jthread thread, jint depth, jint slot, jfloat* value_ptr)
+    ```
+
+该函数用于获取类型为`float`的局部变量。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 24
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_access_local_variables`: 能否获取/设置局部变量
+* 参数：
+    * `thread`: 
+        * 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `depth`:
+        * 类型为`jint`，包含了局部变量的栈帧的深度
+    * `slot`:
+        * 类型为`jint`，指定局部变量的槽值
+    * `value_ptr`:
+        * 类型为`jfloat*`，出参，用于返回局部变量的值
+        * 返回的值是一个JNI局部引用，必须管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_access_local_variables`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_SLOT`: 参数`slot`无效
+    * `JVMTI_ERROR_TYPE_MISMATCH`: 变量类型不是`float`
+    * `JVMTI_ERROR_OPAQUE_FRAME`: 栈帧不可见
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 目标线程已死或未启动
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`depth`小于0
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 栈的指定的深度中没有栈帧
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`value_ptr `为`NULL`
+
+<a name="2.6.8.6"></a>
+#### 2.6.8.6 GetLocalDouble
+
+    ```c
+    jvmtiError GetLocalDouble(jvmtiEnv* env, jthread thread, jint depth, jint slot, jdouble* value_ptr)
+    ```
+
+该函数用于获取类型为`double`的局部变量。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 25
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_access_local_variables`: 能否获取/设置局部变量
+* 参数：
+    * `thread`: 
+        * 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `depth`:
+        * 类型为`jint`，包含了局部变量的栈帧的深度
+    * `slot`:
+        * 类型为`jint`，指定局部变量的槽值
+    * `value_ptr`:
+        * 类型为`jdouble*`，出参，用于返回局部变量的值
+        * 返回的值是一个JNI局部引用，必须管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_access_local_variables`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_SLOT`: 参数`slot`无效
+    * `JVMTI_ERROR_TYPE_MISMATCH`: 变量类型不是`double`
+    * `JVMTI_ERROR_OPAQUE_FRAME`: 栈帧不可见
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 目标线程已死或未启动
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`depth`小于0
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 栈的指定的深度中没有栈帧
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`value_ptr `为`NULL`
+
+<a name="2.6.8.7"></a>
+#### 2.6.8.7 SetLocalObject
+
+    ```c
+    jvmtiError SetLocalObject(jvmtiEnv* env, jthread thread, jint depth, jint slot, jobject value)
+    ```
+
+该函数用于设置类型为`Object`或其子类型的局部变量。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 26
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_access_local_variables`: 能否获取/设置局部变量
+* 参数：
+    * `thread`: 
+        * 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `depth`:
+        * 类型为`jint`，包含了局部变量的栈帧的深度
+    * `slot`:
+        * 类型为`jint`，指定局部变量的槽值
+    * `value`:
+        * 类型为`jobject`，待设置的局部变量值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_access_local_variables`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_SLOT`: 参数`slot`无效
+    * `JVMTI_ERROR_TYPE_MISMATCH`: 变量类型不是`Object`或其子类型
+    * `JVMTI_ERROR_TYPE_MISMATCH`: 参数`value`的类型有局部变量的类型不兼容
+    * `JVMTI_ERROR_OPAQUE_FRAME`: 栈帧不可见
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 目标线程已死或未启动
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`depth`小于0
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 栈的指定的深度中没有栈帧
+    * `JVMTI_ERROR_INVALID_OBJECT`: 参数`value`不是一个对象
+
+<a name="2.6.8.8"></a>
+#### 2.6.8.8 SetLocalInt
+
+    ```c
+    jvmtiError SetLocalInt(jvmtiEnv* env, jthread thread, jint depth, jint slot, jint value)
+    ```
+
+该函数用于设置类型为`int` `short` `char` `byte`或`boolean`的局部变量。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 27
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_access_local_variables`: 能否获取/设置局部变量
+* 参数：
+    * `thread`: 
+        * 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `depth`:
+        * 类型为`jint`，包含了局部变量的栈帧的深度
+    * `slot`:
+        * 类型为`jint`，指定局部变量的槽值
+    * `value`:
+        * 类型为`jint`，待设置的局部变量值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_access_local_variables`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_SLOT`: 参数`slot`无效
+    * `JVMTI_ERROR_TYPE_MISMATCH`: 变量类型不是`int` `short` `char` `byte`或`boolean`
+    * `JVMTI_ERROR_OPAQUE_FRAME`: 栈帧不可见
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 目标线程已死或未启动
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`depth`小于0
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 栈的指定的深度中没有栈帧
+
+<a name="2.6.8.9"></a>
+#### 2.6.8.9 SetLocalLong
+
+    ```c
+    jvmtiError SetLocalLong(jvmtiEnv* env, jthread thread, jint depth, jint slot, jlong value)
+    ```
+
+该函数用于设置类型为`long`的局部变量。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 28
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_access_local_variables`: 能否获取/设置局部变量
+* 参数：
+    * `thread`: 
+        * 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `depth`:
+        * 类型为`jint`，包含了局部变量的栈帧的深度
+    * `slot`:
+        * 类型为`jint`，指定局部变量的槽值
+    * `value`:
+        * 类型为`jlong`，待设置的局部变量值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_access_local_variables`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_SLOT`: 参数`slot`无效
+    * `JVMTI_ERROR_TYPE_MISMATCH`: 变量类型不是`long`
+    * `JVMTI_ERROR_OPAQUE_FRAME`: 栈帧不可见
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 目标线程已死或未启动
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`depth`小于0
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 栈的指定的深度中没有栈帧
+
+<a name="2.6.8.10"></a>
+#### 2.6.8.10 SetLocalFloat
+
+    ```c
+    jvmtiError SetLocalFloat(jvmtiEnv* env, jthread thread, jint depth, jint slot, jfloat value)
+    ```
+
+该函数用于设置类型为`float`的局部变量。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 29
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_access_local_variables`: 能否获取/设置局部变量
+* 参数：
+    * `thread`: 
+        * 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `depth`:
+        * 类型为`jint`，包含了局部变量的栈帧的深度
+    * `slot`:
+        * 类型为`jint`，指定局部变量的槽值
+    * `value`:
+        * 类型为`jfloat`，待设置的局部变量值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_access_local_variables`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_SLOT`: 参数`slot`无效
+    * `JVMTI_ERROR_TYPE_MISMATCH`: 变量类型不是`float`
+    * `JVMTI_ERROR_OPAQUE_FRAME`: 栈帧不可见
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 目标线程已死或未启动
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`depth`小于0
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 栈的指定的深度中没有栈帧
+
+<a name="2.6.8.11"></a>
+#### 2.6.8.11 SetLocalDouble
+
+    ```c
+    jvmtiError SetLocalDouble(jvmtiEnv* env, jthread thread, jint depth, jint slot, jdouble value)
+    ```
+
+该函数用于设置类型为`double`的局部变量。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 30
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_access_local_variables`: 能否获取/设置局部变量
+* 参数：
+    * `thread`: 
+        * 类型为`jthread`，目标线程，若为`NULL`，则为当前线程
+    * `depth`:
+        * 类型为`jint`，包含了局部变量的栈帧的深度
+    * `slot`:
+        * 类型为`jint`，指定局部变量的槽值
+    * `value`:
+        * 类型为`jdouble`，待设置的局部变量值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_access_local_variables`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_SLOT`: 参数`slot`无效
+    * `JVMTI_ERROR_TYPE_MISMATCH`: 变量类型不是`double`
+    * `JVMTI_ERROR_OPAQUE_FRAME`: 栈帧不可见
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 目标线程已死或未启动
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`depth`小于0
+    * `JVMTI_ERROR_NO_MORE_FRAMES`: 栈的指定的深度中没有栈帧
 
 <a name="2.6.9"></a>
 ### 2.6.9 断点
 
+断点相关的函数包括：
+
+* [2.6.9.1 SetBreakpoint][134]
+* [2.6.9.2 ClearBreakpoint][135]
+
+<a name="2.6.9.1"></a>
+#### 2.6.9.1 SetBreakpoint
+
+    ```c
+    jvmtiError SetBreakpoint(jvmtiEnv* env, jmethodID method, jlocation location)
+    ```
+
+该函数用于在指定指令上设置断点，具体的指令由参数`method`和`location`指定。每个指令上只能有一个断点。
+
+当目标指令要被执行时，会生成一个`Breakpoint`事件。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 38
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_breakpoint_events`: 能否获取/设置断点事件
+* 参数：
+    * `method`: 
+        * 类型为`jmethod`，目标方法ID
+    * `location`:
+        * 类型为`jlocation`，目标方法中目标指令的索引位置
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_generate_breakpoint_events`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_DUPLICATE`: 目标指令上已经有断点了
+    * `JVMTI_ERROR_INVALID_METHODID`: 参数`method`不是方法ID
+    * `JVMTI_ERROR_INVALID_LOCATION`: 参数`location`不是有效的索引位置
+
+
+<a name="2.6.9.2"></a>
+#### 2.6.9.2 ClearBreakpoint
+
+    ```c
+    jvmtiError ClearBreakpoint(jvmtiEnv* env, jmethodID method, jlocation location)
+    ```
+
+该函数用于在指定指令上清除断点，具体的指令由参数`method`和`location`指定。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 39
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_breakpoint_events`: 能否获取/设置断点事件
+* 参数：
+    * `method`: 
+        * 类型为`jmethod`，目标方法ID
+    * `location`:
+        * 类型为`jlocation`，目标方法中目标指令的索引位置
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_generate_breakpoint_events`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_NOT_FOUND`: 目标指令上没有断点
+    * `JVMTI_ERROR_INVALID_METHODID`: 参数`method`不是方法ID
+    * `JVMTI_ERROR_INVALID_LOCATION`: 参数`location`不是有效的索引位置
+
 <a name="2.6.10"></a>
-### 2.6.10 探查属性值
+### 2.6.10 监察属性值
+
+检查属性值的函数包括：
+
+* [2.6.10.1 SetFieldAccessWatch][136]
+* [2.6.10.2 ClearFieldAccessWatch][137]
+* [2.6.10.3 SetFieldModificationWatch][138]
+* [2.6.10.4 ClearFieldModificationWatch][139]
+
+<a name="2.6.10.1"></a>
+#### 2.6.10.1 SetFieldAccessWatch
+
+    ```c
+    jvmtiError SetFieldAccessWatch(jvmtiEnv* env, jclass klass, jfieldID field)
+    ```
+
+该函数用于生成一个`FieldAccess`事件，目标属性由参数`klass`和`field`指定。每次访问目标属性时，都会生成一个事件，直到调用函数`ClearFieldAccessWatch`显式撤销。这里说到的**访问监察**是指在Java代码或JNI代码中访问属性，通过其他方法访问属性不算作**访问监察**的范围。JVMTI的使用者需要注意，他们对属性的访问也会触发相应的事件。每个属性只能有一个属性访问监察集合。修改属性的操作并不算作是访问属性，因此需要使用函数`SetFieldModificationWatch`来**访问监察**对属性修改的操作。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 41
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_field_access_events`: 能否对目标属性设置访问监察
+* 参数：
+    * `klass`: 
+        * 类型为`jclass`，目标类型
+    * `field`:
+        * 类型为`jfieldID`，目标属性的ID值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_generate_field_access_events`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_DUPLICATE`: 目标属性上已经有了访问监察
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`不是类对象，或者指定的类还没有载入
+    * `JVMTI_ERROR_INVALID_FIELDID`: 参数`field`不是属性ID
+
+<a name="2.6.10.2"></a>
+#### 2.6.10.2 ClearFieldAccessWatch
+
+    ```c
+    jvmtiError ClearFieldAccessWatch(jvmtiEnv* env, jclass klass, jfieldID field)
+    ```
+
+该函数用于撤销在函数`SetFieldAccessWatch`中对目标属性设置的访问监察。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 42
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_field_access_events`: 能否对目标属性设置访问监察
+* 参数：
+    * `klass`: 
+        * 类型为`jclass`，目标类型
+    * `field`:
+        * 类型为`jfieldID`，目标属性的ID值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_generate_field_access_events`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_NOT_FOUND`: 目标属性上没有设置访问监察
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`不是类对象，或者指定的类还没有载入
+    * `JVMTI_ERROR_INVALID_FIELDID`: 参数`field`不是属性ID
+
+<a name="2.6.10.3"></a>
+#### 2.6.10.3 SetFieldModificationWatch
+
+    ```c
+    jvmtiError SetFieldModificationWatch(jvmtiEnv* env, jclass klass, jfieldID field)
+    ```
+
+该函数用于生成一个`FieldModification`事件，目标属性由参数`klass`和`field`指定。每次修改目标属性时，都会生成一个事件，直到调用函数`ClearFieldModificationWatch`显式撤销。这里说到的**修改监察**是指在Java代码或JNI代码中修改属性会被**监察**到，通过其他方法修改属性不算作**监察**的范围。JVMTI的使用者需要注意，他们对属性的修改也会触发相应的事件。每个属性只能有一个属性修改监察集合。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 43
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_field_modification_events`: 能否对目标属性设置修改监察
+* 参数：
+    * `klass`: 
+        * 类型为`jclass`，目标类型
+    * `field`:
+        * 类型为`jfieldID`，目标属性的ID值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_generate_field_modification_events`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_DUPLICATE`: 目标属性上已经有了修改监察
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`不是类对象，或者指定的类还没有载入
+    * `JVMTI_ERROR_INVALID_FIELDID`: 参数`field`不是属性ID
+
+<a name="2.6.10.4"></a>
+#### 2.6.10.4 ClearFieldModificationWatch
+
+    ```c
+    jvmtiError ClearFieldModificationWatch(jvmtiEnv* env, jclass klass, jfieldID field)
+    ```
+
+该函数用于撤销在函数`SetFieldModificationWatch`中对目标属性设置的修改监察。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 44
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_field_modification_events`: 能否对目标属性设置修改监察
+* 参数：
+    * `klass`: 
+        * 类型为`jclass`，目标类型
+    * `field`:
+        * 类型为`jfieldID`，目标属性的ID值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_generate_field_modification_events`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_NOT_FOUND`: 目标属性上没有设置修改监察
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`不是类对象，或者指定的类还没有载入
+    * `JVMTI_ERROR_INVALID_FIELDID`: 参数`field`不是属性ID
 
 <a name="2.6.11"></a>
 ### 2.6.11 类
+
+类操作相关的函数包括：
+
+
 
 <a name="2.6.12"></a>
 ### 2.6.12 对象
@@ -1974,8 +3543,6 @@ The Heap Visit Control Flags are returned by the heap callbacks and can be used 
 # Resources
 
 * [JVM Tool Interface][100]
-
-
 
 
 
@@ -2081,11 +3648,40 @@ The Heap Visit Control Flags are returned by the heap callbacks and can be used 
 [100]:    https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html
 [101]:    http://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#5.1.2
 [102]:    https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6
-[103]:    #2.6.6.1
-[104]:    #2.6.6.2
-[105]:    #2.6.6.3
-[106]:    #2.6.6.4
-[107]:    #2.6.6.5
-[108]:    #2.6.6.6
-
-
+[103]:    #2.6.6.7
+[104]:    #2.6.6.8
+[105]:    #2.6.6.9
+[106]:    #2.6.6.10
+[107]:    #2.6.6.11
+[108]:    #2.6.6.12
+[109]:    #2.6.6.1
+[110]:    #2.6.6.2
+[111]:    #2.6.6.3
+[112]:    #2.6.6.4
+[113]:    #2.6.6.5
+[114]:    #2.6.6.6
+[115]:    #2.6.7.1
+[116]:    #2.6.7.2
+[117]:    #2.6.7.3
+[118]:    #2.6.7.4
+[119]:    #2.6.7.5
+[120]:    #2.6.7.6
+[121]:    #2.6.7.7
+[122]:    #2.6.7.8
+[123]:    #2.6.8.1
+[124]:    #2.6.8.2
+[125]:    #2.6.8.3
+[126]:    #2.6.8.4
+[127]:    #2.6.8.5
+[128]:    #2.6.8.6
+[129]:    #2.6.8.7
+[130]:    #2.6.8.8
+[131]:    #2.6.8.9
+[132]:    #2.6.8.10
+[133]:    #2.6.8.11
+[134]:    #2.6.9.1
+[135]:    #2.6.9.2
+[136]:    #2.6.10.1
+[137]:    #2.6.10.2
+[138]:    #2.6.10.3
+[139]:    #2.6.10.4
