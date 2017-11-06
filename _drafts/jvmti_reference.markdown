@@ -112,6 +112,8 @@ tags:       [java, jvm, jvmti]
             * [2.6.10.3 SetFieldModificationWatch][138]
             * [2.6.10.4 ClearFieldModificationWatch][139]
         * [2.6.11 类][38]
+            * [2.6.11.1 GetLoadedClasses][140]
+            * [2.6.11.2 GetClassLoaderClasses][142]
         * [2.6.12 对象][39]
         * [2.6.13 属性][40]
         * [2.6.14 方法][41]
@@ -3450,6 +3452,108 @@ JVMTI代理是否提供回调函数的实现，只决定了回调函数是否被
 类操作相关的函数包括：
 
 
+<a name="2.6.11.1"></a>
+#### 2.6.11.1 GetLoadedClasses
+
+    ```c
+    jvmtiError GetLoadedClasses(jvmtiEnv* env, jint* class_count_ptr, jclass** classes_ptr)
+    ```
+
+该函数用于返回JVM中所有已载入的类。已载入类的属性会放在出参`class_count_ptr`中，已载入类的列表会放在出参`classes_ptr`中。
+
+已载入类中包含了原生类型数组的类型，但不会包含原生类型。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 78
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `class_count_ptr`: 
+        * 类型为`jint*`，出参，用于返回已载入类的数量
+        * JVMTI代理需要提供一个指向`jint`的指针
+    * `classes_ptr`:
+        * 类型为`jclass**`，出参，用于返回已载入的类
+        * JVMTI代理需要提供一个指向`jclass*`的指针，该函数会创建一个长度为`*class_count_ptr`的数组，并赋值给该出参。
+        * 新创建的数组需要使用函数`Deallocate`加以释放，`class_ptr`返回的是JNI局部引用，必须管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`class_count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`classes_ptr`为`NULL`
+
+<a name="2.6.11.2"></a>
+#### 2.6.11.2 GetClassLoaderClasses
+
+    ```c
+    jvmtiError GetClassLoaderClasses(jvmtiEnv* env, jobject initiating_loader, jint* class_count_ptr, jclass** classes_ptr)
+    ```
+
+该函数用于返回以指定的类载入器为**初始类载入器**的类。JVM中的每个类都是由其类载入器创建的，创建方式可以是直接定义的，也可以是委托给其他类载入器定义的。参见[JVM规范][141]。
+
+对于JDK 1.1来说，它不能区分初始类载入器和定义类载入器，因此该函数会返回JVM中所有已载入的类。要返回的类的数量放在出参`class_count_ptr`中，要返回的类放在出参`classes_ptr`中。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 79
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `initiating_loader`:
+        * 类型为`jobejct`，初始类载入器，若为`NULL`，则返回由启动类载入器`bootstrap loader`初始化的类
+    * `class_count_ptr`: 
+        * 类型为`jint*`，出参，用于返回已载入类的数量
+        * JVMTI代理需要提供一个指向`jint`的指针
+    * `classes_ptr`:
+        * 类型为`jclass**`，出参，用于返回已载入的类
+        * JVMTI代理需要提供一个指向`jclass*`的指针，该函数会创建一个长度为`*class_count_ptr`的数组，并赋值给该出参。
+        * 新创建的数组需要使用函数`Deallocate`加以释放，`class_ptr`返回的是JNI局部引用，必须管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`class_count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`classes_ptr`为`NULL`
+
+<a name="2.6.11.3"></a>
+#### 2.6.11.3 GetClassSignature
+
+    ```c
+    jvmtiError GetClassSignature(jvmtiEnv* env, jclass klass, char** signature_ptr, char** generic_ptr)
+    ```
+
+该函数用于获取目标类的JNI类型签名和类型的泛型信息。例如，对于类型`java.util.List`来说，签名是`Ljava/util/List;`，类型`int[]`的签名是`[I`。`java.lang.Integer.TYPE`是`I`。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 48
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `klass`:
+        * 类型为`jclass`，目标类型
+    * `signature_ptr`: 
+        * 类型为`char**`，出参，用于返回类型的签名信息，使用自定义UTF-8编码
+        * JVMTI代理需要提供一个指向`char*`的指针，该函数会创建一个数组来存在签名信息，新创建的数组需要使用函数`Deallocate`加以释放
+        * 若`signature_ptr`为`NULL`，则不会返回签名信息
+    * `generic_ptr`:
+        * 类型为`char**`，出参，用于返回泛型信息，使用自定义UTF-8编码
+        * JVMTI代理需要提供一个指向`char*`的指针，新创建的数组需要使用函数`Deallocate`加以释放
+        * 若类型没有泛型，则不会返回泛型信息，该参数为`NULL`
+        * 若`signature_ptr`为`NULL`，则不会返回泛型信息
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`为不是类对象
+
+
+
+
+
+
+
+
+
+
 
 <a name="2.6.12"></a>
 ### 2.6.12 对象
@@ -3685,3 +3789,6 @@ JVMTI代理是否提供回调函数的实现，只决定了回调函数是否被
 [137]:    #2.6.10.2
 [138]:    #2.6.10.3
 [139]:    #2.6.10.4
+[140]:    #2.6.11.1
+[141]:    https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-5.html#jvms-5.3
+[142]:    #2.6.11.2
