@@ -114,6 +114,21 @@ tags:       [java, jvm, jvmti]
         * [2.6.11 类][38]
             * [2.6.11.1 GetLoadedClasses][140]
             * [2.6.11.2 GetClassLoaderClasses][142]
+            * [2.6.11.3 GetClassSignature][143]
+            * [2.6.11.4 GetClassStatus][144]
+            * [2.6.11.5 GetSourceFileName][145]
+            * [2.6.11.6 GetClassModifiers][146]
+            * [2.6.11.7 GetClassMethods][148]
+            * [2.6.11.8 GetClassFields][149]
+            * [2.6.11.9 GetImplementedInterfaces][150]
+            * [2.6.11.10 GetClassVersionNumbers][151]
+            * [2.6.11.11 GetConstantPool][152]
+            * [2.6.11.12 IsInterface][153]
+            * [2.6.11.13 IsArrayClass][154]
+            * [2.6.11.14 IsModifiableClass][155]
+            * [2.6.11.15 GetClassLoader][156]
+            * [2.6.11.16 GetSourceDebugExtension][157]
+            * [2.6.11.17 RetransformClasses][158]
         * [2.6.12 对象][39]
         * [2.6.13 属性][40]
         * [2.6.14 方法][41]
@@ -3545,10 +3560,435 @@ JVMTI代理是否提供回调函数的实现，只决定了回调函数是否被
     * 通用错误码 
     * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`为不是类对象
 
+<a name="2.6.11.4"></a>
+#### 2.6.11.4 GetClassStatus
+
+    ```c
+    jvmtiError GetClassStatus(jvmtiEnv* env, jclass klass, jint* status_ptr)
+    ```
+
+该函数用于获取目标类型的状态，状态标志位中可能会同事存在多个状态值。
+
+类型的状态包括：
+
+            Class Status Flags
+    Constant	                        Value	Description
+    JVMTI_CLASS_STATUS_VERIFIED	        1	    类型的字节码已经校验
+    JVMTI_CLASS_STATUS_PREPARED	        2	    类型的准备已经完成
+    JVMTI_CLASS_STATUS_INITIALIZED	    4	    类型的初始化已经完成，静态初始化器已经运行
+    JVMTI_CLASS_STATUS_ERROR	        8	    类型初始化失败，类不可用
+    JVMTI_CLASS_STATUS_ARRAY	        16	    类型是数组，若设置了该标志位，则其他标志位置0
+    JVMTI_CLASS_STATUS_PRIMITIVE	    32	    类型是原生类型，例如java.lang.Integer.TYPE，若设置了该标志位，则其他标志位置0
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 49
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `klass`:
+        * 类型为`jclass`，目标类型
+    * `status_ptr`: 
+        * 类型为`jint*`，出参，用于返回类型的状态，可能会同时包含多个标志位
+        * JVMTI代理需要提供一个指向`jint*`的指针，函数返回时会设置该值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`为不是类对象
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`status_ptr`为`NULL`
+
+<a name="2.6.11.5"></a>
+#### 2.6.11.5 GetSourceFileName
+
+    ```c
+    jvmtiError GetSourceFileName(jvmtiEnv* env, jclass klass, char** source_name_ptr)
+    ```
+
+该函数用于获取指定累的源文件名，注意，只是文件名，不包含路径。
+
+对于原生类型(例如`java.lang.Integer.TYPE`)和数组，该函数返回`JVMTI_ERROR_ABSENT_INFORMATION`。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 50
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_get_source_file_name`: 能否对目标属性设置修改监察
+* 参数：
+    * `klass`:
+        * 类型为`jclass`，目标类型
+    * `source_name_ptr`: 
+        * 类型为`char**`，出参，用于源文件名，使用自定义UTF-8编码
+        * JVMTI代理需要提供一个指向`char*`的指针，函数会创建一个新的数组并返回，需要调用函数`Deallocate`释放
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_get_source_file_name`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_ABSENT_INFORMATION`: 类信息中不包括源文件名，原生类型(例如`java.lang.Integer.TYPE`)和数组，返回该值
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`为不是类对象或还未载入
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`source_name_ptr`为`NULL`
+
+<a name="2.6.11.6"></a>
+#### 2.6.11.6 GetClassModifiers
+
+    ```c
+    jvmtiError GetClassModifiers(jvmtiEnv* env, jclass klass, jint* modifiers_ptr)
+    ```
+
+该函数用于获取指定类型的访问标记，通过出参`modifiers_ptr`返回。访问标记定义在[JVM规范第4章][147]。
+
+若目标类型是对象数组，则其`public` `private`和`protected`标记与其数组元素类型相同。对于原生类型数组，则元素类型由原生类型决定，例如`java.lang.Integer.TYPE`。
+
+若目标类型是原生类型，则其`public`标记永远为`true`，其`private`和`protected`标记永远为`false`。
+
+若目标类型是数组或原生类型，则其`final`标记永远为`true`，其`interface`标记，永远为`false`。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 51
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `klass`:
+        * 类型为`jclass`，目标类型
+    * `modifiers_ptr`: 
+        * 类型为`jint*`，出参，用于获取类型的访问标记，JVMTI代理需要提供一个指向`jint`的指针
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`为不是类对象或还未载入
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`modifiers_ptr`为`NULL`
+
+<a name="2.6.11.7"></a>
+#### 2.6.11.7 GetClassMethods
+
+    ```c
+    jvmtiError GetClassMethods(jvmtiEnv* env, jclass klass, jint* method_count_ptr, jmethodID** methods_ptr)
+    ```
+
+该函数用于获取指定类型的方法，数量放在`method_count_ptr`，方法ID放在`methods_ptr`。这里面包含了构造函数、静态初始化方法和真实的方法。需要注意的是，这里只包含了目标类型直接声明的方法，不包括继承得来的方法。对于数组和原生类型，例如`java.lang.Integer.TYPE`，该方法返回空列表。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 52
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_maintain_original_method_order`: 是否能获取目标类文件中的方法
+* 参数：
+    * `klass`:
+        * 类型为`jclass`，目标类型
+    * `method_count_ptr`: 
+        * 类型为`jint*`，出参，返回方法的个数，JVMTI代理需要提供一个指向`jint`的指针
+    * `methods_ptr`:
+        * 类型为`jmethodID**`，出参，返回方法ID
+        * JVMTI代理需要提供一个指向`jmethodID*`的指针，函数会创建一个长度为`*method_count_ptr`的数组，需要显式调用函数`Deallocate`来释放
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_CLASS_NOT_PREPARED`: 目标类型还未准备好
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`为不是类对象或还未载入
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`method_count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`methods_ptr`为`NULL`
+
+<a name="2.6.11.8"></a>
+#### 2.6.11.8 GetClassFields
+
+    ```c
+    jvmtiError GetClassFields(jvmtiEnv* env, jclass klass, jint* field_count_ptr, jfieldID** fields_ptr)
+    ```
+
+该函数用于获取指定类型的属性，数量放在`field_count_ptr`，属性ID放在`fields_ptr`。这里只会返回类型直接声明的属性，不包括继承的来属性。返回的属性的顺序与其在类型文件中的出现顺序相同。对于数组和原生类型，例如`java.lang.Integer.TYPE`，该方法返回空列表。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 53
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `klass`:
+        * 类型为`jclass`，目标类型
+    * `field_count_ptr`: 
+        * 类型为`jint*`，出参，返回属性的个数，JVMTI代理需要提供一个指向`jint`的指针
+    * `fields_ptr`:
+        * 类型为`jfieldID**`，出参，返回属性ID
+        * JVMTI代理需要提供一个指向`jfieldID*`的指针，函数会创建一个长度为`*field_count_ptr`的数组，需要显式调用函数`Deallocate`来释放
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_CLASS_NOT_PREPARED`: 目标类型还未准备好
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`为不是类对象或还未载入
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`field_count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`fields_ptr`为`NULL`
+
+<a name="2.6.11.9"></a>
+#### 2.6.11.9 GetImplementedInterfaces
+
+    ```c
+    jvmtiError GetImplementedInterfaces(jvmtiEnv* env, jclass klass, jint* interface_count_ptr, jclass** interfaces_ptr)
+    ```
+
+该方法用于返回目标类的直接父接口。对于普通类，该函数返回在其`implements`语句中声明的接口；对于接口，该函数返回其`extends`语句中声明的接口。对于数组和原生类型，例如`java.lang.Integer.TYPE`，该方法返回空列表。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 54
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `klass`:
+        * 类型为`jclass`，目标类型
+    * `interface_count_ptr`: 
+        * 类型为`jint*`，出参，返回接口的个数，JVMTI代理需要提供一个指向`jint`的指针
+    * `interfaces_ptr`:
+        * 类型为`jclass**`，出参，返回接口类型
+        * JVMTI代理需要提供一个指向`jclass*`的指针，函数会创建一个长度为`*interface_count_ptr`的数组，需要显式调用函数`Deallocate`来释放
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_CLASS_NOT_PREPARED`: 目标类型还未准备好
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`为不是类对象或还未载入
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`interface_count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`interfaces_ptr`为`NULL`
+
+<a name="2.6.11.10"></a>
+#### 2.6.11.10 GetClassVersionNumbers
+
+    ```c
+    jvmtiError GetClassVersionNumbers(jvmtiEnv* env, jclass klass, jint* minor_version_ptr, jint* major_version_ptr)
+    ```
+
+该函数用于获取指定类的主版本号和次版本号，参见[JVM规范第4章][147]。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 145
+* Since： 1.1
+* 功能： 
+    * 必选
+* 参数：
+    * `klass`:
+        * 类型为`jclass`，目标类型
+    * `minor_version_ptr`: 
+        * 类型为`jint*`，出参，返回次版本号，JVMTI代理需要提供一个指向`jint`的指针
+    * `major_version_ptr`:
+        * 类型为`jint*`，出参，返回主版本号，JVMTI代理需要提供一个指向`jint`的指针
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_ABSENT_INFORMATION`: 目标类型是原生类型或数组
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`为不是类对象或还未载入
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`minor_version_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`major_version_ptr`为`NULL`
+
+<a name="2.6.11.11"></a>
+#### 2.6.11.11 GetConstantPool
+
+    ```c
+    jvmtiError GetConstantPool(jvmtiEnv* env, jclass klass, jint* constant_pool_count_ptr, jint* constant_pool_byte_count_ptr, unsigned char** constant_pool_bytes_ptr)
+    ```
+
+该函数用于获取目标类型的常量池信息，以原始字节码的形式返回，常量池的内容参见[JVM规范第4章][147]。常量池的格式取决于类文件格式的版本，因此需要检查主版本号和次版本号的兼容性。
+
+该函数返回的常量池的布局和内容可能与类文件中的定义不同。函数`GetConstantPool()`返回的常量池的内容可能会比类文件中定义的多，也有可能会少，且常量池中条目的顺序也与类文件中的定义不尽相同。函数`GetConstantPool()`返回的常量池与函数`GetBytecodes()`的常量池相匹配。即，函数`GetBytecodes`返回的字节码的索引值与函数`GetConstantPool`常量项相对应。注意，由于函数`RetransformClasses`和`RedefineClasses`可以改变常量池，该函数返回的常量池也会相应的变化，因此如果存在有对类的转换或重定义，则函数`GetConstantPool()`和`GetBytecodes()`返回的内容可能无法保持一致。指定字节码中常量项的值与定义的类文件中相匹配，即使索引值不匹配，也没关系。不会被字节码直接或间接使用的常量项(例如,与注解关联的UTF-8zifuch )，不一定会存在于返回的常量池中。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 146
+* Since： 1.1
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_get_constant_pool`: 是否能获取目标类的常量池
+* 参数：
+    * `klass`:
+        * 类型为`jclass`，目标类型
+    * `constant_pool_count_ptr`: 
+        * 类型为`jint*`，出参，返回值等于常量池中常量项的个数+1，与JVM规范中的定义相同
+        * JVMTI代理需要提供一个指向`jint`的指针
+    * `constant_pool_byte_count_ptr`:
+        * 类型为`jint*`，出参，返回以字节形式表示的常量池的个数
+        * JVMTI代理需要提供一个指向`jint`的指针
+    * `constant_pool_bytes_ptr`:
+        * 类型为`unsigned char**`，出参，返回原始常量池，即在类文件中定义的`constant_pool`内容
+        * JVMTI代理需要提供一个指向`unsigned char*`的指针，函数返回时，会创建一个长度为`*constant_pool_byte_count_ptr`的数组，需要调用函数`Deallocate`释放
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_get_constant_pool`，需要调用`AddCapabilities
+    * `JVMTI_ERROR_ABSENT_INFORMATION`: 目标类型是原生类型或数组
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`为不是类对象或还未载入
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`constant_pool_count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`constant_pool_byte_count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`constant_pool_bytes_ptr`为`NULL`
+
+<a name="2.6.11.12"></a>
+#### 2.6.11.12 IsInterface
+
+    ```c
+    jvmtiError IsInterface(jvmtiEnv* env, jclass klass, jboolean* is_interface_ptr)
+    ```
+
+该函数用于判断指定的类对象是否是接口。若是，出参`is_interface_ptr`置为`JNI_TRUE`，否则置为`JNI_FALSE`。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 55
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `klass`:
+        * 类型为`jclass`，目标类型
+    * `is_interface_ptr`: 
+        * 类型为`jboolean*`，出参，表示目标类型是否是接口
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`为不是类对象或还未载入
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`is_interface_ptr`为`NULL`
+
+<a name="2.6.11.13"></a>
+#### 2.6.11.13 IsArrayClass
+
+    ```c
+    jvmtiError IsArrayClass(jvmtiEnv* env, jclass klass, jboolean* is_array_class_ptr)
+    ```
+
+该函数用于判断指定的类对象是否是数组。若是，出参`is_interface_ptr`置为`JNI_TRUE`，否则置为`JNI_FALSE`。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 55
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `klass`:
+        * 类型为`jclass`，目标类型
+    * `is_array_class_ptr`: 
+        * 类型为`jboolean*`，出参，表示目标类型是否是数组
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`为不是类对象或还未载入
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`is_array_class_ptr`为`NULL`
+
+<a name="2.6.11.14"></a>
+#### 2.6.11.14 IsModifiableClass
+
+    ```c
+    jvmtiError IsModifiableClass(jvmtiEnv* env, jclass klass, jboolean* is_modifiable_class_ptr)
+    ```
+
+该函数用判断目标类是否可修改。若类是可修改的(出参`is_modifiable_class_ptr`被置为`JNI_TRUE`)，则可以通过`RedefineClasses`或`RetransformClasses`对类进行修改。若类不可修改，则无法执行重定义或重转换操作。
+
+原生类型(例如`java.lang.Integer.TYPE`)和数组类型永远不可修改。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 45
+* Since： 1.1
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_redefine_any_class`: 是否能获重定义所有类，不包括原生类型和数组类型
+        * `can_redefine_classes`: 对于该函数没有作用。但使用`RedefineClasses`重定义类时，必须加上
+        * `can_retransform_classes`: 对于该函数没有作用。但使用`RetransformClasses`重转换类时，必须加上
+* 参数：
+    * `klass`:
+        * 类型为`jclass`，目标类型
+    * `is_modifiable_class_ptr`: 
+        * 类型为`jboolean*`，出参，表示目标类型是否可修改
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`为不是类对象或还未载入
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`is_modifiable_class_ptr`为`NULL`
+
+<a name="2.6.11.15"></a>
+#### 2.6.11.15 GetClassLoader
+
+    ```c
+    jvmtiError GetClassLoader(jvmtiEnv* env, jclass klass, jobject* classloader_ptr)
+    ```
+
+该函数用于获取指定类的类载入器，以出参`classloader_ptr`返回。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 57
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `klass`:
+        * 类型为`jclass`，目标类型
+    * `classloader_ptr`: 
+        * 类型为`jobject*`，出参，用于获取类载入器
+        * 返回的内容是JNI局部引用，必须管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`为不是类对象或还未载入
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`classloader_ptr`为`NULL`
+
+<a name="2.6.11.16"></a>
+#### 2.6.11.16 GetSourceDebugExtension
+
+    ```c
+    jvmtiError GetSourceDebugExtension(jvmtiEnv* env, jclass klass,char** source_debug_extension_ptr)
+    ```
+
+该函数用于获取指定类的调试扩展信息，以出参`source_debug_extension_ptr`返回。返回的字符串中包含了在类文件中定义的调试扩展信息。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 90
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_get_source_debug_extension`: 是否能获取调试扩展信息
+* 参数：
+    * `klass`:
+        * 类型为`jclass`，目标类型
+    * `source_debug_extension_ptr`: 
+        * 类型为`char**`，出参，用于获取调试扩展信息
+        * JVMTI代理需要提供一个指向`char*`的指针，函数返回时会创建一个数组，需要调用函数`Deallocate`释放
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_get_source_debug_extension`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_ABSENT_INFORMATION`: 类文件中没有调试扩展信息
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`为不是类对象或还未载入
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`source_debug_extension_ptr`为`NULL`
+
+<a name="2.6.11.17"></a>
+#### 2.6.11.17 RetransformClasses
+
+    ```c
+    jvmtiError RetransformClasses(jvmtiEnv* env, jint class_count, const jclass* classes)
+    ```
+
+该函数用于对已载入的类做字节码增强。在某些场景下，用户无法访问类的字节码，但却想要替换掉某些类定义(例如使用"fix-and-continue"调试模式时，会从源代码重新编译)，此时需要使用函数`RedefineClasses`。
 
 
+当类首次被载入时，或是被重定义时，原始的类文件字节可以通过`ClassFileLoadHook`事件进行转换。该函数会返回转换过程(不论之前是否已经做过转换)。转换过程按以下步骤执行：
 
+* 获取原始类文件字节
+* 对于不能执行转换的JVMTI代理来说，在载入和重定义时，会接收到`ClassFileLoadHook`事件，它所返回的字节会作为转换的输出，这相当于没做任何修改就返回了，相当于`ClassFileLoadHook`事件没有发给这类JVMTI代理
+* 对于可以执行转换的JVMTI代理来说，会发出`ClassFileLoadHook`事件，允许执行转换
+* 转换过的字节作为新的类定义来安装
 
+更多详细内容参见事件`ClassFileLoadHook`。
+
+原始类文件字节会被传入到函数`ClassLoader.defineClass`或`RedefineClasses`(对于`RedefineClasses`来说，会在任何类转换之前)中但是可能不会和他们精准匹配。常量池可能会与函数`GetConstantPool`中的返回不尽相同。在方法字节码中的常量池索引会相关联。某些属性可能不会出现。这里面，常量项的顺序没有意义，也不会特意保留。
+
+类的重转换会触发安装新版本的方法实现。老版本的方法实现会被废弃，在下一次方法调用的时候，会调用新版本的方法。如果方法已经在调用栈中执行，那么该方法会继续执行老版本的方法实现。
+
+该函数不会触发任何初始化，除非是JVM实现有特殊的自定义实现。换句话说，类的重转换不会触发类的初始化，静态变量的值不会变化。
+
+线程不会挂起。
+
+目标类中的断点会被清除。
+
+所有的属性都会更新。
+
+被转换的类的实例不会受影响，实例变量的值不会变化。实例的标签值也不会变化。
+
+在该函数的响应中，只会发送`ClassFileLoadHook`事件，其他的都不会发送。
+
+The retransformation may change method bodies, the constant pool and attributes. The retransformation must not add, remove or rename fields or methods, change the signatures of methods, change modifiers, or change inheritance. These restrictions may be lifted in future versions. See the error return description below for information on error codes returned if an unsupported retransformation is attempted. The class file bytes are not verified or installed until they have passed through the chain of ClassFileLoadHook events, thus the returned error code reflects the result of the transformations. If any error code is returned other than JVMTI_ERROR_NONE, none of the classes to be retransformed will have a new definition installed. When this function returns (with the error code of JVMTI_ERROR_NONE) all of the classes to be retransformed will have their new definitions installed.
 
 
 
@@ -3792,3 +4232,19 @@ JVMTI代理是否提供回调函数的实现，只决定了回调函数是否被
 [140]:    #2.6.11.1
 [141]:    https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-5.html#jvms-5.3
 [142]:    #2.6.11.2
+[143]:    #2.6.11.3
+[144]:    #2.6.11.4
+[145]:    #2.6.11.5
+[146]:    #2.6.11.6
+[147]:    https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html
+[148]:    #2.6.11.7
+[149]:    #2.6.11.8
+[150]:    #2.6.11.9
+[151]:    #2.6.11.10
+[152]:    #2.6.11.11
+[153]:    #2.6.11.12
+[154]:    #2.6.11.13
+[155]:    #2.6.11.14
+[156]:    #2.6.11.15
+[157]:    #2.6.11.16
+[158]:    #2.6.11.17
