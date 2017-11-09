@@ -129,7 +129,11 @@ tags:       [java, jvm, jvmti]
             * [2.6.11.15 GetClassLoader][156]
             * [2.6.11.16 GetSourceDebugExtension][157]
             * [2.6.11.17 RetransformClasses][158]
+            * [2.6.11.18 RedefineClasses][159]
         * [2.6.12 对象][39]
+            * [2.6.12.1 GetObjectSize][160]
+            * [2.6.12.2 GetObjectHashCode][161]
+            * [2.6.12.3 GetObjectMonitorUsage][162]
         * [2.6.13 属性][40]
         * [2.6.14 方法][41]
         * [2.6.15 原始监视器][42]
@@ -3466,6 +3470,24 @@ JVMTI代理是否提供回调函数的实现，只决定了回调函数是否被
 
 类操作相关的函数包括：
 
+* [2.6.11.1 GetLoadedClasses][140]
+* [2.6.11.2 GetClassLoaderClasses][142]
+* [2.6.11.3 GetClassSignature][143]
+* [2.6.11.4 GetClassStatus][144]
+* [2.6.11.5 GetSourceFileName][145]
+* [2.6.11.6 GetClassModifiers][146]
+* [2.6.11.7 GetClassMethods][148]
+* [2.6.11.8 GetClassFields][149]
+* [2.6.11.9 GetImplementedInterfaces][150]
+* [2.6.11.10 GetClassVersionNumbers][151]
+* [2.6.11.11 GetConstantPool][152]
+* [2.6.11.12 IsInterface][153]
+* [2.6.11.13 IsArrayClass][154]
+* [2.6.11.14 IsModifiableClass][155]
+* [2.6.11.15 GetClassLoader][156]
+* [2.6.11.16 GetSourceDebugExtension][157]
+* [2.6.11.17 RetransformClasses][158]
+* [2.6.11.18 RedefineClasses][159]
 
 <a name="2.6.11.1"></a>
 #### 2.6.11.1 GetLoadedClasses
@@ -3988,15 +4010,231 @@ JVMTI代理是否提供回调函数的实现，只决定了回调函数是否被
 
 在该函数的响应中，只会发送`ClassFileLoadHook`事件，其他的都不会发送。
 
-The retransformation may change method bodies, the constant pool and attributes. The retransformation must not add, remove or rename fields or methods, change the signatures of methods, change modifiers, or change inheritance. These restrictions may be lifted in future versions. See the error return description below for information on error codes returned if an unsupported retransformation is attempted. The class file bytes are not verified or installed until they have passed through the chain of ClassFileLoadHook events, thus the returned error code reflects the result of the transformations. If any error code is returned other than JVMTI_ERROR_NONE, none of the classes to be retransformed will have a new definition installed. When this function returns (with the error code of JVMTI_ERROR_NONE) all of the classes to be retransformed will have their new definitions installed.
+重转换可能会改变方法的实现，常量池和属性。因此，重转换**禁止**添加、移除、重命名方法或和方法，**禁止**改变方法签名，**禁止**改变方法修饰符，**禁止**改变继承关系。在将来的版本中，可能会解除。如果试图执行不支持的重转换，则会返回相应的错误码。类文件的字节码，在经过`ClassFileLoadHook`事件调用链之前，都不会被校验或安装，因此返回的错误码可以表示转换的结果。如果函数返回了非`JVMTI_ERROR_NONE`的错误码，则被转换的目标类不会安装新的定义。在该函数返回，且错误码为`JVMTI_ERROR_NONE`时，所有被转换的类都会完成新定义的安装。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 152
+* Since： 1.1
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_retransform_classes`: 是否能通过函数`RetransformClasses`转换类定义。除了各个JVM实现对该函数的限制之外，该项功能**必须**在`ClassFileLoadHook`首次启用之前设置。
+        * `can_retransform_any_class`: 是否能对任意类调用函数`RetransformClasses`(必须先设置功能`can_retransform_classes `)
+* 参数：
+    * `class_count`:
+        * 类型为`jint`，要转换的类的个数
+    * `classes`: 
+        * 类型为`const jclass**`，要转换的类的数组，数组长度为`class_count`
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_retransform_classes`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_UNMODIFIABLE_CLASS`: 参数`classes`中的某个类无法修改，参见`IsModifiableClass`
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`classes`中的某个类无效
+    * `JVMTI_ERROR_UNSUPPORTED_VERSION`: 参数`classes`中的某个类的版本不受当前JVM支持
+    * `JVMTI_ERROR_INVALID_CLASS_FORMAT`: 参数`classes`中的某个类的格式错误，JVM返回`ClassFormatError`
+    * `JVMTI_ERROR_CIRCULAR_CLASS_DEFINITION`: 转换之后的类定义将导致循环定义，JVM返回`ClassCircularityError`
+    * `JVMTI_ERROR_FAILS_VERIFICATION`: 转换之后的类定义校验失败
+    * `JVMTI_ERROR_NAMES_DONT_MATCH`: 转换之后的类的名字与转换之前的类的名字不同
+    * `JVMTI_ERROR_UNSUPPORTED_REDEFINITION_METHOD_ADDED`: 转换之后的类添加了新的方法
+    * `JVMTI_ERROR_UNSUPPORTED_REDEFINITION_SCHEMA_CHANGED`: 转换之后的类改变了属性
+    * `JVMTI_ERROR_UNSUPPORTED_REDEFINITION_HIERARCHY_CHANGED`: 转换之后的类改变了继承关系
+    * `JVMTI_ERROR_UNSUPPORTED_REDEFINITION_METHOD_DELETED`: 转换之后的类删除了转换之前的类中声明的方法
+    * `JVMTI_ERROR_UNSUPPORTED_REDEFINITION_CLASS_MODIFIERS_CHANGED`： 转换之后了类改变了类的修饰符
+    * `JVMTI_ERROR_UNSUPPORTED_REDEFINITION_METHOD_MODIFIERS_CHANGED`: 转换之后了类改变了方法的修饰符
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`class_count`小于0
+    * `JVMTI_ERROR_NULL_POINTER`:参数`classes`为`NULL`
+
+<a name="2.6.11.18"></a>
+#### 2.6.11.18 RedefineClasses
+
+    ```c
+    jvmtiError RedefineClasses(jvmtiEnv* env, jint class_count, const jvmtiClassDefinition* class_definitions)
+    ```
+
+其中参数`jvmtiClassDefinition`的定义如下：
+
+    ```c
+    typedef struct {
+        jclass klass;
+        jint class_byte_count;
+        const unsigned char* class_bytes;
+    } jvmtiClassDefinition;
+    ```
+
+字段定义如下：
+
+* `klass`:
+    * 类型为`jclass`，当前类对象
+* `class_byte_count`: 
+    * 类型为`jint`，要定义的类的字节的数量
+* `class_bytes`:
+    * 类型为`const unsigned char*`，要定义的类的字节
 
 
+该函数用于重新定义那些已经定义的类，具体场景可能是使用"fix-and-continue"调试模式。若要对已经存在的类进行转换，例如字节码增强，则需要使用函数`RetransformClasses`。
 
+重新定义类将会为安装新版本的方法实现，同时将之前的方法实现标记为"废弃的"，在下一次调用该方法时，会调用新版本的方法实现。若目标方法已经创建了调用栈帧，则会继续使用旧版本的方法实现，此时如果想使用新版本的方法实现，可以调用函数`PopFrame`抛出已经栈帧。
 
+该函数不会触发任何初始化，除非是JVM实现有特殊的自定义实现。换句话说，类的重转换不会触发类的初始化，静态变量的值不会变化。
 
+线程不会挂起。
+
+目标类中的断点会被清除。
+
+所有的属性都会更新。
+
+被转换的类的实例不会受影响，实例变量的值不会变化。实例的标签值也不会变化。
+
+JVM在响应该函数时，会发送事件`ClassFileLoadHook`(如果启用了的话)，而非其他事件。
+
+重定义可能会改变方法的实现，常量池和属性。因此，重定义**禁止**添加、移除、重命名方法或和方法，**禁止**改变方法签名，**禁止**改变方法修饰符，**禁止**改变继承关系。在将来的版本中，可能会解除。如果试图执行不支持的重定义，则会返回相应的错误码。类文件的字节码，在经过`ClassFileLoadHook`事件调用链之前，都不会被校验或安装，因此返回的错误码可以表示转换的结果。如果函数返回了非`JVMTI_ERROR_NONE`的错误码，则被转换的目标类不会安装新的定义。在该函数返回，且错误码为`JVMTI_ERROR_NONE`时，所有被转换的类都会完成新定义的安装。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 87
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_redefine_classes`: 是否能通过函数`RedefineClasses`重定义类
+        * `can_redefine_any_class`: 是否能修改任意非原生类型、非数组类型调用函数，参见`IsModifiableClass`
+* 参数：
+    * `class_count`:
+        * 类型为`jint`，要定义的类的个数
+    * `class_definitions`: 
+        * 类型为`const jvmtiClassDefinition*`，要定义的类的数组，数组长度为`class_count`
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_redefine_classes`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`class_definitions`中某个元素的`class_bytes`字段为`NULL`
+    * `JVMTI_ERROR_UNMODIFIABLE_CLASS`: 参数`class_definitions`中的某个类无法修改，参见`IsModifiableClass`
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`class_definitions`中的某个类无效
+    * `JVMTI_ERROR_UNSUPPORTED_VERSION`: 参数`class_definitions`中的某个类的版本不受当前JVM支持
+    * `JVMTI_ERROR_INVALID_CLASS_FORMAT`: 参数`class_definitions`中的某个类的格式错误，JVM返回`ClassFormatError`
+    * `JVMTI_ERROR_CIRCULAR_CLASS_DEFINITION`: 重定义之后的类定义将导致循环定义，JVM返回`ClassCircularityError`
+    * `JVMTI_ERROR_FAILS_VERIFICATION`: 重定义之后的类定义校验失败
+    * `JVMTI_ERROR_NAMES_DONT_MATCH`: 重定义之后的类的名字与转换之前的类的名字不同
+    * `JVMTI_ERROR_UNSUPPORTED_REDEFINITION_METHOD_ADDED`: 重定义之后的类添加了新的方法
+    * `JVMTI_ERROR_UNSUPPORTED_REDEFINITION_SCHEMA_CHANGED`: 重定义之后的类改变了属性
+    * `JVMTI_ERROR_UNSUPPORTED_REDEFINITION_HIERARCHY_CHANGED`: 重定义之后的类改变了继承关系
+    * `JVMTI_ERROR_UNSUPPORTED_REDEFINITION_METHOD_DELETED`: 重定义之后的类删除了转换之前的类中声明的方法
+    * `JVMTI_ERROR_UNSUPPORTED_REDEFINITION_CLASS_MODIFIERS_CHANGED`： 重定义之后了类改变了类的修饰符
+    * `JVMTI_ERROR_UNSUPPORTED_REDEFINITION_METHOD_MODIFIERS_CHANGED`: 重定义之后了类改变了方法的修饰符
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`class_count`小于0
+    * `JVMTI_ERROR_NULL_POINTER`:参数`class_definitions`为`NULL`
 
 <a name="2.6.12"></a>
 ### 2.6.12 对象
+
+对象相关的函数包括：
+
+* [2.6.12.1 GetObjectSize][160]
+* [2.6.12.2 GetObjectHashCode][161]
+* [2.6.12.3 GetObjectMonitorUsage][162]
+
+<a name="2.6.12.1"></a>
+#### 2.6.12.1 GetObjectSize
+
+    ```c
+    jvmtiError GetObjectSize(jvmtiEnv* env, jobject object, jlong* size_ptr)
+    ```
+
+该函数用于获取指定对象的大小，以出参`size_ptr`返回。对象的大小与JVM的具体实现相关，是该对象所占用存储空间的近似值，可能会包含某些或所有对象的开销，因此对象大小的比较，只在某个JVM实现内有意义，在不同JVM实现之间没有比较意思。对象的大小，在单次调用期间，也可能会发生变化。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 154
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `object`:
+        * 类型为`jobject`，目标对象
+    * `size_ptr`: 
+        * 类型为`jlong*`，出参，返回目标对象的大小，JVMTI提供一个指向`jlong`的指针
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_OBJECT`: 参数`object`不是对象
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`size_ptr`为`NULL`
+
+<a name="2.6.12.2"></a>
+#### 2.6.12.2 GetObjectHashCode
+
+    ```c
+    jvmtiError GetObjectHashCode(jvmtiEnv* env, jobject object, jint* hash_code_ptr)
+    ```
+
+该函数用于获取指定对象的哈希值，以出参`hash_code_ptr`返回。哈希值可用于维护对象引用的哈希表，但是在某些JVM实现中，这可能会导致较大性能损耗，在大多数场景下，使用对象标签值来关联相应的数据是一个更有效率的方法。该函数保证了，对象的哈希值会在对象的整个生命周期内有效。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 58
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `object`:
+        * 类型为`jobject`，目标对象
+    * `hash_code_ptr`: 
+        * 类型为`jint*`，出参，返回目标对象的哈希值，JVMTI提供一个指向`jint`的指针
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_OBJECT`: 参数`object`不是对象
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`hash_code_ptr`为`NULL`
+
+<a name="2.6.12.3"></a>
+#### 2.6.12.3 GetObjectMonitorUsage
+
+    ```c
+    jvmtiError GetObjectMonitorUsage(jvmtiEnv* env, jobject object, jvmtiMonitorUsage* info_ptr)
+    ```
+
+该函数用于获取指定对象的监视器。
+
+其中参数`jvmtiMonitorUsage`的定义如下：
+
+    ```c
+    typedef struct {
+        jthread owner;
+        jint entry_count;
+        jint waiter_count;
+        jthread* waiters;
+        jint notify_waiter_count;
+        jthread* notify_waiters;
+    } jvmtiMonitorUsage;
+    ```
+
+字段说明如下：
+
+* `owner`: 类型为`jthread`，表示持有该监视器的线程，若为`NULL`，则表示没有现成持有该监视器
+* `entry_count`: 类型为`jint`，表示持有该监视器的线程进入监视器的次数
+* `waiter_count`: 类型为`jint`，表示等待该监视器的线程的数量
+* `waiters`: 类型为`jthread*`，表示等待该监视器的线程
+* `notify_waiter_count`: 类型为`jint`，表示等待该监视器通知的线程的数量
+* `notify_waiters`: 类型为`jthread*`，表示等待该监视器通知的线程
+
+调用信息如下：
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 59
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_get_monitor_info`: 是否能获取监视器信息
+* 参数：
+    * `object`:
+        * 类型为`jobject`，目标对象
+    * `info_ptr`: 
+        * 类型为`jvmtiMonitorUsage*`，出参，返回目标对象的监视器信息
+        * JVMTI代理提供一个指向`jvmtiMonitorUsage`的指针
+            * `owner`字段返回的是JNI局部引用，需要管理起来
+            * `waiters`字段指向一个新分配的数组，需要显式调用函数`Deallocate`释放，并且数组中的元素也是JNI局部引用，需要管理起来
+            * `notify_waiters`字段指向一个新分配的数组，需要显式调用函数`Deallocate`释放，并且数组中的元素也是JNI局部引用，需要管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_get_monitor_info`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_OBJECT`: 参数`object`不是对象
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`into_ptr`为`NULL`
 
 <a name="2.6.13"></a>
 ### 2.6.13 属性
@@ -4248,3 +4486,7 @@ The retransformation may change method bodies, the constant pool and attributes.
 [156]:    #2.6.11.15
 [157]:    #2.6.11.16
 [158]:    #2.6.11.17
+[159]:    #2.6.11.18
+[160]:    #2.6.12.1
+[161]:    #2.6.12.2
+[162]:    #2.6.12.3
