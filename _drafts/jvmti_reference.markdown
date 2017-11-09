@@ -4239,6 +4239,79 @@ JVM在响应该函数时，会发送事件`ClassFileLoadHook`(如果启用了的
 <a name="2.6.13"></a>
 ### 2.6.13 属性
 
+属性相关的函数包括：
+
+
+
+<a name="2.6.13.1"></a>
+#### 2.6.13.1 GetFieldName
+
+    ```c
+    jvmtiError GetFieldName(jvmtiEnv* env, jclass klass, jfieldID field, char** name_ptr, char** signature_ptr, char** generic_ptr)
+    ```
+
+该函数用于获取指定类和属性的信息，出参`name_ptr`返回属性名，出参`signature_ptr`返回属性签名。
+
+属性签名参见[JNI规范][163]和[JVM规范第4章][147]。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 59
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `klass`:
+        * 类型为`jclass`，目标类
+    * `field`:
+        * 类型为`jfield`，目标属性
+    * `name_ptr`:
+        * 类型为`char **`，出参返回属性名，以自定义UTF-8编码
+        * JVMTI代理需要传入一个指向`char *`的指针，函数返回时，会创建一个新的数组，需要显式调用`Deallocate`函数释放
+        * 若参数`name_ptr`为`NULL`，则不会返回属性名
+    * `signature_ptr`
+        * 类型为`char **`，出参返回属性签名，以自定义UTF-8编码
+        * JVMTI代理需要传入一个指向`char *`的指针，函数返回时，会创建一个新的数组，需要显式调用`Deallocate`函数释放
+        * 若参数`signature_ptr`为`NULL`，则不会返回属性签名
+    * `generic_ptr`
+        * 类型为`char **`，出参返回属性的泛型签名，以自定义UTF-8编码
+        * JVMTI代理需要传入一个指向`char *`的指针，函数返回时，会创建一个新的数组，需要显式调用`Deallocate`函数释放
+        * 若参数`generic_ptr`为`NULL`，则不会返回属性的泛型签名
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`不是对象或还未载入
+    * `JVMTI_ERROR_INVALID_FIELDID`: 参数`field`不是属性ID
+
+<a name="2.6.13.2"></a>
+#### 2.6.13.2 GetFieldDeclaringClass
+
+    ```c
+    jvmtiError GetFieldDeclaringClass(jvmtiEnv* env, jclass klass, jfieldID field, jclass* declaring_class_ptr)
+    ```
+
+该函数用于返回指定类和属性，通过出参`declaring_class_ptr`返回定义了该属性的类。定义类可以是类、父类或接口。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 61
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `klass`:
+        * 类型为`jclass`，目标类
+    * `field`:
+        * 类型为`jfield`，目标属性
+    * `declaring_class_ptr`:
+        * 类型为`jclass *`，出参，返回定义该属性的类
+        * JVMTI代理需要传入一个指向`jclass`的指针，函数返回一个JNI局部引用，必须管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`不是对象或还未载入
+    * `JVMTI_ERROR_INVALID_FIELDID`: 参数`field`不是属性ID
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`declaring_class_ptr`为`NULL`
+
+
 <a name="2.6.14"></a>
 ### 2.6.14 方法
 
@@ -4490,3 +4563,6 @@ JVM在响应该函数时，会发送事件`ClassFileLoadHook`(如果启用了的
 [160]:    #2.6.12.1
 [161]:    #2.6.12.2
 [162]:    #2.6.12.3
+[163]:    http://blog.caoxudong.info/blog/2017/10/11/jni_functions_note
+[164]:    #2.6.13.1
+[165]:    #2.6.13.2
