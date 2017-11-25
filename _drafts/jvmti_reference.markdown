@@ -135,7 +135,23 @@ tags:       [java, jvm, jvmti]
             * [2.6.12.2 GetObjectHashCode][161]
             * [2.6.12.3 GetObjectMonitorUsage][162]
         * [2.6.13 属性][40]
+            * [2.6.13.1 GetFieldName][164]
+            * [2.6.13.2 GetFieldDeclaringClass][165]
+            * [2.6.13.3 GetFieldModifiers][166]
+            * [2.6.13.4 IsFieldSynthetic][167]
         * [2.6.14 方法][41]
+            * [2.6.14.1 GetMethodName][168]
+            * [2.6.14.2 GetMethodDeclaringClass][169]
+            * [2.6.14.3 GetMethodModifiers][170]
+            * [2.6.14.4 GetMaxLocals][171]
+            * [2.6.14.5 GetArgumentsSize][172]
+            * [2.6.14.6 GetLineNumberTable][173]
+            * [2.6.14.7 GetMethodLocation][174]
+            * [2.6.14.8 GetLocalVariableTable][175]
+            * [2.6.14.9 GetBytecodes][176]
+            * [2.6.14.10 IsMethodNative][177]
+            * [2.6.14.11 IsMethodSynthetic][178]
+            * [2.6.14.12 IsMethodObsolete][179]
         * [2.6.15 原始监视器][42]
         * [2.6.16 JNI方法拦截][43]
         * [2.6.17 事件管理][44]
@@ -4241,7 +4257,10 @@ JVM在响应该函数时，会发送事件`ClassFileLoadHook`(如果启用了的
 
 属性相关的函数包括：
 
-
+* [2.6.13.1 GetFieldName][164]
+* [2.6.13.2 GetFieldDeclaringClass][165]
+* [2.6.13.3 GetFieldModifiers][166]
+* [2.6.13.4 IsFieldSynthetic][167]
 
 <a name="2.6.13.1"></a>
 #### 2.6.13.1 GetFieldName
@@ -4311,9 +4330,554 @@ JVM在响应该函数时，会发送事件`ClassFileLoadHook`(如果启用了的
     * `JVMTI_ERROR_INVALID_FIELDID`: 参数`field`不是属性ID
     * `JVMTI_ERROR_NULL_POINTER`: 参数`declaring_class_ptr`为`NULL`
 
+<a name="2.6.13.3"></a>
+#### 2.6.13.3 GetFieldModifiers
+
+    ```c
+    jvmtiError GetFieldModifiers(jvmtiEnv* env, jclass klass, jfieldID field, jint* modifiers_ptr)
+    ```
+
+该函数用于获取指定类的指定属性的访问标记，以出参`modifiers_ptr`返回。访问标记参见[JVM规范第4章][147]。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 62
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `klass`:
+        * 类型为`jclass`，目标类
+    * `field`:
+        * 类型为`jfield`，目标属性
+    * `modifiers_ptr`:
+        * 类型为`jint *`，出参，返回目标属性的访问标记
+        * JVMTI代理需要传入一个指向`jint`的指针
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`不是对象或还未载入
+    * `JVMTI_ERROR_INVALID_FIELDID`: 参数`field`不是属性ID
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`modifiers_ptr`为`NULL`
+
+<a name="2.6.13.4"></a>
+#### 2.6.13.4 IsFieldSynthetic
+
+    ```c
+    jvmtiError IsFieldSynthetic(jvmtiEnv* env, jclass klass, jfieldID field, jboolean* is_synthetic_ptr)
+    ```
+
+该函数用于获取指定类的指定属性是否合成构造的，以出参`is_synthetic_ptr`返回。合成构造的属性是指由编译器生成的，而非源代码中原本就存在的。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 63
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_get_synthetic_attribute`: 是否能测试某个属性/方法是合成构造的，参建方法`IsFieldSynthetic`和`IsMethodSynthetic`
+* 参数：
+    * `klass`:
+        * 类型为`jclass`，目标类
+    * `field`:
+        * 类型为`jfield`，目标属性
+    * `is_synthetic_ptr`:
+        * 类型为`jboolean *`，出参，返回目标属性是否是合成构造的
+        * JVMTI代理需要传入一个指向`jboolean`的指针
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_get_synthetic_attribute`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_CLASS`: 参数`klass`不是对象或还未载入
+    * `JVMTI_ERROR_INVALID_FIELDID`: 参数`field`不是属性ID
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`is_synthetic_ptr`为`NULL`
 
 <a name="2.6.14"></a>
 ### 2.6.14 方法
+
+方法相关的函数包括：
+
+这些函数用于提供方法的相关信息，以及设置方法该如何执行。
+
+函数`RetransformClasses`和`RedefineClasses`会安装方法实现的新版本，新版本和老版本如果满足以下全部条件，则认为是等同的：
+
+* 新版本和旧版本的方法的字节码，除了在常量池中的索引值不同之外，其他都相同
+* 新版本和旧版本的方法的字节码引用的常量项相同
+
+若新版本和旧版本的方法不同，则认为旧版本的方法被认为是**废弃的**，会被赋值一个新的方法ID，旧的方法ID会指向新版本的方法实现。使用方法`IsMethodObsolete`可以测试方法ID所指向的方法是否已经被废弃。
+
+<a name="2.6.14.1"></a>
+#### 2.6.14.1 GetMethodName
+
+    ```c
+    jvmtiError GetMethodName(jvmtiEnv* env, jmethodID method, char** name_ptr, char** signature_ptr, char** generic_ptr)
+    ```
+
+该函数用于返回目标方法的名字和方法签名。
+
+方法签名的定义参见[JNI规范][163]，在JVM规范中表示为[方法描述符][147]。需要注意的是，这与Java语言规范中定义的方法签名不同。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 64
+* Since： 1.0
+* 功能： 
+    * 自选
+* 参数：
+    * `method`:
+        * 类型为`jmethodID`，目标方法
+    * `name_ptr`:
+        * 类型为`char**`，出参，返回目标方法的名字，以自定义UTF-8编码
+        * JVMTI代理需要提供一个指向`char*`的指针，函数返回时会创建一个数组，需要调用方法`Deallocate`显式释放
+        * 若参数`name_ptr`为`NULL`，则不会返回方法名
+    * `signature_ptr`:
+        * 类型为`char**`，出参，返回目标方法的签名，以自定义UTF-8编码
+        * JVMTI代理需要提供一个指向`char*`的指针，函数返回时会创建一个数组，需要调用方法`Deallocate`显式释放
+        * 若参数`signature_ptr`为`NULL`，则不会返回方法签名
+    * `generic_ptr`:
+        * 类型为`char**`，出参，返回目标方法的泛型签名，以自定义UTF-8编码
+        * JVMTI代理需要提供一个指向`char*`的指针，函数返回时会创建一个数组，需要调用方法`Deallocate`显式释放
+        * 若参数`generic_ptr`为`NULL`，则不会返回方法的泛型签名
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_METHODID`: 参数`method`不是方法ID
+
+<a name="2.6.14.2"></a>
+#### 2.6.14.2 GetMethodDeclaringClass
+
+    ```c
+    jvmtiError GetMethodDeclaringClass(jvmtiEnv* env, jmethodID method, jclass* declaring_class_ptr)
+    ```
+
+该函数用于获取定义了目标方法的类。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 65
+* Since： 1.0
+* 功能： 
+    * 自选
+* 参数：
+    * `method`:
+        * 类型为`jmethodID`，目标方法
+    * `declaring_class_ptr`:
+        * 类型为`jclass*`，出参，返回定义了目标方法的类
+        * JVMTI代理需要提供一个指向`jclass`的指针，函数返回时会设置该值，该值是一个JNI局部引用，必须管理起来
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_METHODID`: 参数`method`不是方法ID
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`declaring_class_ptr`为`NULL`
+
+<a name="2.6.14.3"></a>
+#### 2.6.14.3 GetMethodModifiers
+
+    ```c
+    jvmtiError GetMethodModifiers(jvmtiEnv* env, jmethodID method, jint* modifiers_ptr)
+    ```
+
+该函数用于获取定义了目标方法的访问标记，访问标记参见[JVM规范第4章][147]。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 66
+* Since： 1.0
+* 功能： 
+    * 自选
+* 参数：
+    * `method`:
+        * 类型为`jmethodID`，目标方法
+    * `modifiers_ptr`:
+        * 类型为`jint*`，出参，返回定义了目标方法的类
+        * JVMTI代理需要提供一个指向`jint`的指针，函数返回时会设置该值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_METHODID`: 参数`method`不是方法ID
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`modifiers_ptr`为`NULL`
+
+<a name="2.6.14.4"></a>
+#### 2.6.14.4 GetMaxLocals
+
+    ```c
+    jvmtiError GetMaxLocals(jvmtiEnv* env, jmethodID method, jint* max_ptr)
+    ```
+
+该函数用于获取定义了目标方法所用到的局部变量槽的数量，局部变量槽包括局部变量和传给目标方法的参数。
+
+参见[JVM规范4.7.3节][147]中对`max_locals`的介绍。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 66
+* Since： 1.0
+* 功能： 
+    * 自选
+* 参数：
+    * `method`:
+        * 类型为`jmethodID`，目标方法
+    * `max_ptr`:
+        * 类型为`jint*`，出参，返回定义了目标方法所用到的局部变量槽的数量
+        * JVMTI代理需要提供一个指向`jint`的指针，函数返回时会设置该值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_METHODID`: 参数`method`不是方法ID
+    * `JVMTI_ERROR_NATIVE_METHOD`: 参数`method`是本地方法
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`max_ptr`为`NULL`
+
+<a name="2.6.14.5"></a>
+#### 2.6.14.5 GetArgumentsSize
+
+    ```c
+    jvmtiError GetArgumentsSize(jvmtiEnv* env, jmethodID method, jint* size_ptr)
+    ```
+
+该方法用于获取目标方法的参数所占用的局部变量槽的数量，注意，两个字长的参数会占用两个槽。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 69
+* Since： 1.0
+* 功能： 
+    * 自选
+* 参数：
+    * `method`:
+        * 类型为`jmethodID`，目标方法
+    * `size_ptr`:
+        * 类型为`jint*`，出参，返回定义了目标方法的参数所用到的局部变量槽的数量
+        * JVMTI代理需要提供一个指向`jint`的指针，函数返回时会设置该值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_METHODID`: 参数`method`不是方法ID
+    * `JVMTI_ERROR_NATIVE_METHOD`: 参数`method`是本地方法
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`size_ptr`为`NULL`
+
+<a name="2.6.14.6"></a>
+#### 2.6.14.6 GetLineNumberTable
+
+    ```c
+    jvmtiError GetLineNumberTable(jvmtiEnv* env, jmethodID method, jint* entry_count_ptr, jvmtiLineNumberEntry** table_ptr)
+    ```
+
+其中参数`jvmtiLineNumberEntry`的定义如下：
+
+    ```c
+    typedef struct {
+        jlocation start_location;
+        jint line_number;
+    } jvmtiLineNumberEntry;
+    ```
+
+字段定义如下：
+
+* `start_location`: 类型为`jlocation`，表示当前源代码行的起始位置
+* `line_number`: 类型为`jint`，表示行号
+
+该方法与用于获取目标方法的源代码行号记录表。表的大小通过参数`entry_count_ptr`返回，表本身通过参数`table_ptr`返回。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 70
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_get_line_numbers`: 是否能目标方法的行号记录表
+* 参数：
+    * `method`: 类型为`jmethod`，目标方法
+    * `entry_count_ptr`: 类型为`jint*`，出参，用于返回源代码行号记录中记录项的个数
+    * `table_ptr`: 
+        * 类型为`jvmtiLineNumberEntry**`，出参，用于返回源代码行号记录表
+        * 函数返回时会创建一个长度为`entry_count_ptr`的数组，必须通过函数`Deallocate`释放
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_get_line_numbers`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_ABSENT_INFORMATION`: 类信息不包含行号记录表
+    * `JVMTI_ERROR_INVALID_METHODID`: 参数`method`不是方法ID
+    * `JVMTI_ERROR_NATIVE_METHOD`: 参数`method`是本地方法
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`entry_count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`table_ptr`为`NULL`
+
+<a name="2.6.14.7"></a>
+#### 2.6.14.7 GetMethodLocation
+
+    ```c
+    jvmtiError GetMethodLocation(jvmtiEnv* env, jmethodID method, jlocation* start_location_ptr, jlocation* end_location_ptr)
+    ```
+
+该方法用于获取目标方法的起止地址和结束地址，分别以出参`start_location_ptr`和`end_location_ptr`返回。在传统的字节码索引方式中，`start_location_ptr`指向的值总是0，`end_location_ptr`指向的值总是字节码数量减一。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 71
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `method`: 类型为`jmethod`，目标方法
+    * `start_location_ptr`: 
+        * 类型为`jlocation*`，出参，用于方法的起始位置
+        * 若无法获取方法位置信息，则返回`-1`
+        * 若可以获取方法位置信息，且函数`GetJLocationFormat`返回`JVMTI_JLOCATION_JVMBCI`，则该值始终为`0`
+    * `end_location_ptr`: 
+        * 类型为`jlocation*`，出参，用于方法的结束位置
+        * 若无法获取方法位置信息，则返回`-1`
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_ABSENT_INFORMATION`: 类信息不包含方法大小
+    * `JVMTI_ERROR_INVALID_METHODID`: 参数`method`不是方法ID
+    * `JVMTI_ERROR_NATIVE_METHOD`: 参数`method`是本地方法
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`start_location_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`end_location_ptr`为`NULL`
+
+<a name="2.6.14.8"></a>
+#### 2.6.14.8 GetLocalVariableTable
+
+    ```c
+    jvmtiError GetLocalVariableTable(jvmtiEnv* env, jmethodID method, jint* entry_count_ptr, jvmtiLocalVariableEntry** table_ptr)
+    ```
+
+其中参数`jvmtiLocalVariableEntry`的定义如下：
+
+    ```c
+    typedef struct {
+        jlocation start_location;
+        jint length;
+        char* name;
+        char* signature;
+        char* generic_signature;
+        jint slot;
+    } jvmtiLocalVariableEntry;
+    ```
+
+其中字段含义如下：
+
+* `start_location`: 类型为`jlocation`，表示局部变量在代码的什么位置首次生效，即在什么位置开始必须有值
+* `length`: 类型为`jint`，表示该局部变量的有效区域的长度，即局部变量有效区域的结束位置为`start_location + length`
+* `name`: 类型为`char*`，表示局部变量的名字，使用自定义UTF-8编码
+* `signature`: 类型为`char*`，表示局部变量的类型签名，使用自定义UTF-8编码，签名的格式参见[JVM规范4.3.2节][147]
+* `generic_signature`: 类型为`char*`，表示局部变量的泛型类型签名，使用自定义UTF-8编码，若局部变量没有泛型，则该值为`NULL`
+* `slot`: 类型为`jint`，表示局部变量的槽
+
+该方法用于获取局部变量信息。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 72
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_access_local_variables`: 是否能获取/设置局部变量
+* 参数：
+    * `method`: 类型为`jmethodID`，目标方法
+    * `entry_count_ptr`: 
+        * 类型为`jint*`，出参，表示局部变量表的大小
+        * JVMTI代理需要传入指向`jint`的指针，函数返回时会设置该值
+    * `table_ptr`:
+        * 类型为`jvmtiLocalVariableEntry**`，出参，表示局部变量表的额内容
+        * JVMTI需要传入指向`jvmtiLocalVariableEntry*`的指针，函数返回时，会创建一个长度为`*entry_count_ptr`的数组，需要调用函数`Deallocate`显式释放
+        * `jvmtiLocalVariableEntry->name`所指的内容也是新创建的数组，需要调用函数`Deallocate`显式释放
+        * `jvmtiLocalVariableEntry->signature`所指的内容也是新创建的数组，需要调用函数`Deallocate`显式释放
+        * `jvmtiLocalVariableEntry->generic_signature`所指的内容也是新创建的数组，需要调用函数`Deallocate`显式释放
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_access_local_variables`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_ABSENT_INFORMATION`: 类信息中不包含局部变量信息
+    * `JVMTI_ERROR_INVALID_METHODID`: 参数`method`不是方法ID
+    * `JVMTI_ERROR_NATIVE_METHOD`: 参数`method`是本地方法
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`entry_count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`table_ptr`为`NULL`
+
+<a name="2.6.14.9"></a>
+#### 2.6.14.9 GetBytecodes
+
+    ```c
+    jvmtiError GetBytecodes(jvmtiEnv* env, jmethodID method, jint* bytecode_count_ptr, unsigned char** bytecodes_ptr)
+    ```
+
+该函数用于获取目标方法的字节码，字节码的数量以出参`bytecode_count_ptr`返回，字节码的内容以出参`bytecodes_ptr`返回。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 75
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_get_bytecodes`: 是否能获取字节码
+* 参数：
+    * `method`: 类型为`jmethodID`，目标方法
+    * `bytecode_count_ptr`: 
+        * 类型为`jint*`，出参，表示字节码数组的长度
+        * JVMTI代理需要传入指向`jint`的指针，函数返回时会设置该值
+    * `bytecodes_ptr`:
+        * 类型为`unsigned char**`，出参，表示字节码内容本身
+        * JVMTI需要传入指向`unsigned char*`的指针，函数返回时，会创建一个长度为`*bytecode_count_ptr`的数组，需要调用函数`Deallocate`显式释放
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_get_bytecodes`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_METHODID`: 参数`method`不是方法ID
+    * `JVMTI_ERROR_NATIVE_METHOD`: 参数`method`是本地方法
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`bytecode_count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`bytecodes_ptr`为`NULL`
+
+<a name="2.6.14.10"></a>
+#### 2.6.14.10 IsMethodNative
+
+    ```c
+    jvmtiError IsMethodNative(jvmtiEnv* env, jmethodID method, jboolean* is_native_ptr)
+    ```
+
+该函数用于判断目标方法是否是本地方法。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 76
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `method`: 类型为`jmethodID`，目标方法
+    * `is_native_ptr`: 
+        * 类型为`jboolean*`，出参，表示目标方法是否是本地方法
+        * JVMTI代理需要传入指向`jboolean`的指针，函数返回时会设置该值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_METHODID`: 参数`method`不是方法ID
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`is_native_ptr`为`NULL`
+
+<a name="2.6.14.11"></a>
+#### 2.6.14.11 IsMethodSynthetic
+
+    ```c
+    jvmtiError IsMethodSynthetic(jvmtiEnv* env, jmethodID method, jboolean* is_synthetic_ptr)
+    ```
+
+该函数用于判断目标方法是否是合成构造的，以出参`is_synthetic_ptr`返回。合成构造的方法是指由编译器生成的，而非存在于源代码中的。
+
+* 调用阶段： 只可能在`live`或`start`阶段调用
+* 回调安全： 无
+* 索引位置： 77
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_get_synthetic_attribute`: 是否能测试方法/属性是否是合成构造的，参见函数`IsFieldSynthetic`和`IsMethodSynthetic`
+* 参数：
+    * `method`: 类型为`jmethodID`，目标方法
+    * `is_synthetic_ptr`: 
+        * 类型为`jboolean*`，出参，表示目标方法是否是合成构造的
+        * JVMTI代理需要传入指向`jint`的指针，函数返回时会设置该值
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`is_synthetic_ptr`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_METHODID`: 参数`method`不是方法ID
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`is_synthetic_ptr`为`NULL`
+
+<a name="2.6.14.13"></a>
+#### 2.6.14.13 SetNativeMethodPrefix
+
+    ```c
+    jvmtiError SetNativeMethodPrefix(jvmtiEnv* env, const char* prefix)
+    ```
+
+该函数可用于修改解析本地方法的错误处理方式，该函数可以设置方法名的前缀，然后进行重试。当使用事件`ClassFileLoadHook`时，可以对本地方法进行增强。
+
+由于本地方法不能直接被增强(因为本地方法没有字节码)，因此必须将本地方法包装为一个非本地方法来执行增强操作。假设现在有如下本地方法：
+
+    native boolean foo(int x);
+
+，可以将类文件(事件`ClassFileLoadHook`)转换为以下形式：
+
+    ```c
+    boolean foo(int x) {
+        ... record entry to foo ...
+        return wrapped_foo(x);
+    }
+
+    native boolean wrapped_foo(int x);
+    ```
+
+这样，原先的本地函数`foo`变为了包装函数`foo`，真正的函数以前缀`wrapped_`开头。注意，使用`wrapped_`作为前缀是个糟糕的选择，因为应用程序开发者有可能会定义以`wrapped_`开头的方法，进而造成方法冲突。比较好的命名时类似`$$$MyAgentWrapped$$$_`这样的，虽然可读性不好，但不会有命名冲突。
+
+包装方法可以在调用本地方法前收集相关数据，目前的问题就是，如何将被包装的方法和本地实现链接起来，即方法`wrapped_foo`需要被解析为本地实现`foo`，例如：
+
+    ```c
+    Java_somePackage_someClass_foo(JNIEnv* env, jint x)
+    ```
+
+该函数可以指定前缀和解析方式。特别的，当标准解析失败时，可以通过添加前缀的方式重试解析。有两种解析方式，通过JNI函数`RegisterNatives`的显式解析和普通的自动解析。
+
+使用函数`RegisterNatives`显式解析时，JVM会尝试如下关联：
+
+    ```c
+    method(foo) -> nativeImplementation(foo)
+    ```
+
+当这种方式失败时，则添加前缀，进行重试：
+
+    ```c
+    method(wrapped_foo) -> nativeImplementation(foo)
+    ```
+
+使用自动解析时，JVM会尝试如下关联：
+
+    ```c
+    method(wrapped_foo) -> nativeImplementation(wrapped_foo)
+    ```
+
+当这种方式失败时，则删除前缀，进行重试：
+
+    ```c
+    method(wrapped_foo) -> nativeImplementation(foo)
+    ```
+
+注意，由于前缀只在标准解析失败时使用，因此可以有选择的对本地方法进行包装。
+
+每个JVMTI的执行环境都是独立的，可以独立进行字节码转换，因此可以进行多层包装，每个执行环境都有其自己的前缀。由于字节码转换是按顺序执行的，因此如果要应用前缀的话，则需要按相同的顺序应用。转换应用程序的顺序参见事件`ClassFileLoadHook`的描述。如果3个JVMTI执行环境要应用包装，则函数`foo`可能会变成`$env3_$env2_$env1_foo`。但如果说，第2个执行环境没有对函数`foo`进行包装，则函数`foo`可能会变成`$env3_$env1_foo`。如果存在非本地方法包装时，为了能够高效的确定前缀的序列，会使用中间前缀。因此，在上面的例子中，即时`$env1_foo`不是本地方法，也会应用前缀`$env1_`。
+
+由于前缀是在解析时使用的，而且解析可能会被延期执行，因此只要还存在相关联的、带有前缀的本地方法，就必须设置本地方法前缀。
+
+* 调用阶段： 可能在任意阶段调用
+* 回调安全： 无
+* 索引位置： 73
+* Since： 1.1
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_set_native_method_prefix`: 当解析本地方法失败时，是否能应用前缀，参见方法`SetNativeMethodPrefix`和`SetNativeMethodPrefixes`
+* 参数：
+    * `prefix`: 
+        * 类型为`const char *`，要应用的前缀，使用自定义UTF-8编码
+        * JVMTI代理需要传入`char`类型的数组，若参数`prefix`为`NULL`，则会撤销JVMTI执行环境中已存在的所有前缀
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_set_native_method_prefix`，需要调用`AddCapabilities`
+
+<a name="2.6.14.12"></a>
+#### 2.6.14.12 IsMethodObsolete
+
+    ```c
+    jvmtiError SetNativeMethodPrefixes(jvmtiEnv* env, jint prefix_count, char** prefixes)
+    ```
+
+对于普通的JVMTI代理来说，函数`SetNativeMethodPrefixes`会提供所有需要的本地方法的前缀。对于元代理，即执行多个独立类文件转换的代理(例如，作为另一层JVMTI代理的代理)，该函数可以使每次转换都有其独立的前缀。前缀的应用顺序由参数`prefixes`指定。
+
+使用该函数后，之前所设置的前缀都会被替换掉，因此，若参数`prefix_count`为`0`，则会在目标JVMTI执行环境中禁用前缀。
+
+函数`SetNativeMethodPrefix`和该函数均可用于设置前缀，调用函数`SetNativeMethodPrefix`时，相当于以参数`prefix_count`为`1`调用函数`SetNativeMethodPrefixes`。以参数值`NULL`调用函数`SetNativeMethodPrefix`时，相当于以参数`prefix_count`为`0`调用函数`SetNativeMethodPrefixes`。
+
+* 调用阶段： 可能在任意阶段调用
+* 回调安全： 无
+* 索引位置： 73
+* Since： 1.1
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_set_native_method_prefix`: 当解析本地方法失败时，是否能应用前缀，参见方法`SetNativeMethodPrefix`和`SetNativeMethodPrefixes`
+* 参数：
+    * `prefix_count`: 类型为`jint`，要应用的前缀的数量
+    * `prefixes`: 
+        * 类型为`char **`，要应用的前缀，使用自定义UTF-8编码
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_set_native_method_prefix`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`prefix_count`为`0`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`prefixes`为`NULL`
+
+
+
 
 <a name="2.6.15"></a>
 ### 2.6.15 原始监视器
@@ -4566,3 +5130,17 @@ JVM在响应该函数时，会发送事件`ClassFileLoadHook`(如果启用了的
 [163]:    http://blog.caoxudong.info/blog/2017/10/11/jni_functions_note
 [164]:    #2.6.13.1
 [165]:    #2.6.13.2
+[166]:    #2.6.13.3
+[167]:    #2.6.13.4
+[168]:    #2.6.14.1
+[169]:    #2.6.14.2
+[170]:    #2.6.14.3
+[171]:    #2.6.14.4
+[172]:    #2.6.14.5
+[173]:    #2.6.14.6
+[174]:    #2.6.14.7
+[175]:    #2.6.14.8
+[176]:    #2.6.14.9
+[177]:    #2.6.14.10
+[178]:    #2.6.14.11
+[179]:    #2.6.14.12
