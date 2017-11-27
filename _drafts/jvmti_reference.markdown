@@ -152,7 +152,16 @@ tags:       [java, jvm, jvmti]
             * [2.6.14.10 IsMethodNative][177]
             * [2.6.14.11 IsMethodSynthetic][178]
             * [2.6.14.12 IsMethodObsolete][179]
+            * [2.6.14.13 SetNativeMethodPrefix][180]
+            * [2.6.14.14 SetNativeMethodPrefixes][181]
         * [2.6.15 原始监视器][42]
+            * [2.6.15.1 CreateRawMonitor][182]
+            * [2.6.15.2 DestroyRawMonitor][183]
+            * [2.6.15.3 RawMonitorEnter][184]
+            * [2.6.15.4 RawMonitorExit][185]
+            * [2.6.15.5 RawMonitorWait][186]
+            * [2.6.15.6 RawMonitorNotify][187]
+            * [2.6.15.7 RawMonitorNotifyAll][188]
         * [2.6.16 JNI方法拦截][43]
         * [2.6.17 事件管理][44]
         * [2.6.18 扩展机制][45]
@@ -4395,6 +4404,21 @@ JVM在响应该函数时，会发送事件`ClassFileLoadHook`(如果启用了的
 
 方法相关的函数包括：
 
+* [2.6.14.1 GetMethodName][168]
+* [2.6.14.2 GetMethodDeclaringClass][169]
+* [2.6.14.3 GetMethodModifiers][170]
+* [2.6.14.4 GetMaxLocals][171]
+* [2.6.14.5 GetArgumentsSize][172]
+* [2.6.14.6 GetLineNumberTable][173]
+* [2.6.14.7 GetMethodLocation][174]
+* [2.6.14.8 GetLocalVariableTable][175]
+* [2.6.14.9 GetBytecodes][176]
+* [2.6.14.10 IsMethodNative][177]
+* [2.6.14.11 IsMethodSynthetic][178]
+* [2.6.14.12 IsMethodObsolete][179]
+* [2.6.14.13 SetNativeMethodPrefix][180]
+* [2.6.14.14 SetNativeMethodPrefixes][181]
+
 这些函数用于提供方法的相关信息，以及设置方法该如何执行。
 
 函数`RetransformClasses`和`RedefineClasses`会安装方法实现的新版本，新版本和老版本如果满足以下全部条件，则认为是等同的：
@@ -4846,8 +4870,8 @@ JVM在响应该函数时，会发送事件`ClassFileLoadHook`(如果启用了的
     * 通用错误码 
     * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_set_native_method_prefix`，需要调用`AddCapabilities`
 
-<a name="2.6.14.12"></a>
-#### 2.6.14.12 IsMethodObsolete
+<a name="2.6.14.14"></a>
+#### 2.6.14.14 SetNativeMethodPrefixes
 
     ```c
     jvmtiError SetNativeMethodPrefixes(jvmtiEnv* env, jint prefix_count, char** prefixes)
@@ -4876,11 +4900,187 @@ JVM在响应该函数时，会发送事件`ClassFileLoadHook`(如果启用了的
     * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`prefix_count`为`0`
     * `JVMTI_ERROR_NULL_POINTER`: 参数`prefixes`为`NULL`
 
-
-
-
 <a name="2.6.15"></a>
 ### 2.6.15 原始监视器
+
+原始监视器相关的函数包括：
+
+* [2.6.15.1 CreateRawMonitor][182]
+* [2.6.15.2 DestroyRawMonitor][183]
+* [2.6.15.3 RawMonitorEnter][184]
+* [2.6.15.4 RawMonitorExit][185]
+* [2.6.15.5 RawMonitorWait][186]
+* [2.6.15.6 RawMonitorNotify][187]
+* [2.6.15.7 RawMonitorNotifyAll][188]
+
+<a name="2.6.15.1"></a>
+#### 2.6.15.1 CreateRawMonitor
+
+    ```c
+    jvmtiError CreateRawMonitor(jvmtiEnv* env, const char* name, jrawMonitorID* monitor_ptr)
+    ```
+
+该函数用于创建一个原始监视器。
+
+* 调用阶段： 只能在`OnLoad`阶段或`live`阶段调用
+* 回调安全： 可以在堆迭代的回调函数中调用该函数，或是在事件`GarbageCollectionStart` `GarbageCollectionFinish`或`ObjectFree`的处理函数中调用
+* 索引位置： 31
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `name`: 
+        * 类型为`const char*`，用于标识监视器的名字，使用自定义UTF-8编码
+        * JVMTI代理需要传入一个字符数组
+    * `monitor_ptr`: 
+        * 类型为`jrawMonitorID*`，出参，返回新创建的监视器
+        * JVMTI代理需要传入一个指向`jrawMonitorID`的指针
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`name`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`monitor_ptr`为`NULL`
+
+<a name="2.6.15.2"></a>
+#### 2.6.15.2 DestroyRawMonitor
+
+    ```c
+    jvmtiError DestroyRawMonitor(jvmtiEnv* env, jrawMonitorID monitor)
+    ```
+
+该函数用于销毁一个原始监视器。若当前线程已经进入了目标监视器，则在销毁监视器之前，会先使当前线程退出目标监视器。若已经有其他线程进入了目标监视器，则会抛出错误，且不会销毁目标监视器。
+
+* 调用阶段： 只能在`OnLoad`阶段或`live`阶段调用
+* 回调安全： 可以在堆迭代的回调函数中调用该函数，或是在事件`GarbageCollectionStart` `GarbageCollectionFinish`或`ObjectFree`的处理函数中调用
+* 索引位置： 32
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `monitor`: 
+        * 类型为`jrawMonitorID`，目标监视器
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NOT_MONITOR_OWNER`: 当前线程并不持有目标监视器
+    * `JVMTI_ERROR_INVALID_MONITOR`: 参数`monitor`为不是监视器对象
+
+<a name="2.6.15.3"></a>
+#### 2.6.15.3 RawMonitorEnter
+
+    ```c
+    jvmtiError RawMonitorEnter(jvmtiEnv* env, jrawMonitorID monitor)
+    ```
+
+该函数用于获取一个原始监视器，具有排他性。同一个线程可以多次获取同一个监视器，此时线程退出监视器的次数必须与获取监视器的次数相同。若监视器是在`OnLoad`阶段获取的(即在JVMTI连接线程退出之前)，而且在JVMTI连接线程退出时还没有退出监视器，则认为该监视器是在主线程获取的。
+
+* 调用阶段： 只能在`OnLoad`阶段或`live`阶段调用
+* 回调安全： 可以在堆迭代的回调函数中调用该函数，或是在事件`GarbageCollectionStart` `GarbageCollectionFinish`或`ObjectFree`的处理函数中调用
+* 索引位置： 33
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `monitor`: 
+        * 类型为`jrawMonitorID`，目标监视器
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_MONITOR`: 参数`monitor`为不是监视器对象
+
+<a name="2.6.15.4"></a>
+#### 2.6.15.4 RawMonitorExit
+
+    ```c
+    jvmtiError RawMonitorExit(jvmtiEnv* env, jrawMonitorID monitor)
+    ```
+
+该函数用于退出一个已经获取到的、排他性的原始监视器。
+
+* 调用阶段： 只能在`OnLoad`阶段或`live`阶段调用
+* 回调安全： 可以在堆迭代的回调函数中调用该函数，或是在事件`GarbageCollectionStart` `GarbageCollectionFinish`或`ObjectFree`的处理函数中调用
+* 索引位置： 34
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `monitor`: 
+        * 类型为`jrawMonitorID`，目标监视器
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NOT_MONITOR_OWNER`: 当前线程并不持有目标监视器
+    * `JVMTI_ERROR_INVALID_MONITOR`: 参数`monitor`为不是监视器对象
+
+<a name="2.6.15.5"></a>
+#### 2.6.15.5 RawMonitorWait
+
+    ```c
+    jvmtiError RawMonitorWait(jvmtiEnv* env, jrawMonitorID monitor, jlong millis)
+    ```
+
+该函数用于等待目标监视器的唤醒通知。
+
+该函数会使当前线程进入等待状态，直到其他线程在目标监视器上调用函数`RawMonitorNotify`或`RawMonitorNotifyAll`，或是等待时间超时。
+
+* 调用阶段： 只能在`OnLoad`阶段或`live`阶段调用
+* 回调安全： 可以在堆迭代的回调函数中调用该函数，或是在事件`GarbageCollectionStart` `GarbageCollectionFinish`或`ObjectFree`的处理函数中调用
+* 索引位置： 35
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `monitor`: 
+        * 类型为`jrawMonitorID`，目标监视器
+    * `millis`:
+        * 类型为`jlong`，等待超时时间，单位为毫秒，若参数值为`0`，表示永远等待，直到其他线程调用了通知方法
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NOT_MONITOR_OWNER`: 当前线程并不持有目标监视器
+    * `JVMTI_ERROR_INTERRUPT`: 等待状态被中断，重试
+    * `JVMTI_ERROR_INVALID_MONITOR`: 参数`monitor`为不是监视器对象
+
+<a name="2.6.15.6"></a>
+#### 2.6.15.6 RawMonitorNotify
+
+    ```c
+    jvmtiError RawMonitorNotify(jvmtiEnv* env, jrawMonitorID monitor)
+    ```
+
+该函数用于唤醒等待在目标监视器上的某个线程。
+
+* 调用阶段： 只能在`OnLoad`阶段或`live`阶段调用
+* 回调安全： 可以在堆迭代的回调函数中调用该函数，或是在事件`GarbageCollectionStart` `GarbageCollectionFinish`或`ObjectFree`的处理函数中调用
+* 索引位置： 36
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `monitor`: 
+        * 类型为`jrawMonitorID`，目标监视器
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NOT_MONITOR_OWNER`: 当前线程并不持有目标监视器
+    * `JVMTI_ERROR_INVALID_MONITOR`: 参数`monitor`为不是监视器对象
+
+<a name="2.6.15.7"></a>
+#### 2.6.15.7 RawMonitorNotifyAll
+
+    ```c
+    jvmtiError RawMonitorNotifyAll(jvmtiEnv* env, jrawMonitorID monitor)
+    ```
+
+该函数用于唤醒等待在目标监视器上的所有线程。
+
+* 调用阶段： 只能在`OnLoad`阶段或`live`阶段调用
+* 回调安全： 可以在堆迭代的回调函数中调用该函数，或是在事件`GarbageCollectionStart` `GarbageCollectionFinish`或`ObjectFree`的处理函数中调用
+* 索引位置： 37
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `monitor`: 
+        * 类型为`jrawMonitorID`，目标监视器
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NOT_MONITOR_OWNER`: 当前线程并不持有目标监视器
+    * `JVMTI_ERROR_INVALID_MONITOR`: 参数`monitor`为不是监视器对象
 
 <a name="2.6.16"></a>
 ### 2.6.16 JNI方法拦截
@@ -5144,3 +5344,12 @@ JVM在响应该函数时，会发送事件`ClassFileLoadHook`(如果启用了的
 [177]:    #2.6.14.10
 [178]:    #2.6.14.11
 [179]:    #2.6.14.12
+[180]:    #2.6.14.13
+[181]:    #2.6.14.14
+[182]:    #2.6.15.1
+[183]:    #2.6.15.2
+[184]:    #2.6.15.3
+[185]:    #2.6.15.4
+[186]:    #2.6.15.5
+[187]:    #2.6.15.6
+[188]:    #2.6.15.7
