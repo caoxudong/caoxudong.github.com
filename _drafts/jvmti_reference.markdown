@@ -163,6 +163,8 @@ tags:       [java, jvm, jvmti]
             * [2.6.15.6 RawMonitorNotify][187]
             * [2.6.15.7 RawMonitorNotifyAll][188]
         * [2.6.16 JNI方法拦截][43]
+            * [2.6.16.1 SetJNIFunctionTable][189]
+            * [2.6.16.2 GetJNIFunctionTable][190]
         * [2.6.17 事件管理][44]
         * [2.6.18 扩展机制][45]
         * [2.6.19 功能][46]
@@ -5085,6 +5087,91 @@ JVM在响应该函数时，会发送事件`ClassFileLoadHook`(如果启用了的
 <a name="2.6.16"></a>
 ### 2.6.16 JNI方法拦截
 
+JNI方法拦截包括一下函数：
+
+* [2.6.16.1 SetJNIFunctionTable][189]
+* [2.6.16.2 GetJNIFunctionTable][190]
+
+这个系列的函数用于获取/重置JNI函数表。下面的代码展示了如何通过重置JNI函数表来统计引用创建的数量。
+
+    ```c
+    JNIEnv original_jni_Functions;
+    JNIEnv redirected_jni_Functions;
+    int my_global_ref_count = 0;
+
+    jobject
+    MyNewGlobalRef(JNIEnv *jni_env, jobject lobj) {
+        ++my_global_ref_count;
+        return originalJNIFunctions->NewGlobalRef(env, lobj);
+    }
+
+    void
+    myInit() {
+        jvmtiError err;
+
+        err = (*jvmti_env)->GetJNIFunctionTable(jvmti_env, &original_jni_Functions);
+        if (err != JVMTI_ERROR_NONE) {
+            die();
+        }
+        err = (*jvmti_env)->GetJNIFunctionTable(jvmti_env, &redirected_jni_Functions);
+        if (err != JVMTI_ERROR_NONE) {
+            die();
+        }
+        redirectedJNIFunctions->NewGlobalRef = MyNewGlobalRef;
+            err = (*jvmti_env)->SetJNIFunctionTable(jvmti_env, redirected_jni_Functions);
+        if (err != JVMTI_ERROR_NONE) {
+            die();
+        }
+    }
+    ```
+
+在调用函数`myInit`之后，会执行用户代码`MyNewGlobalRef`完成全局引用的创建。注意，一般情况下会保留原始的JNI函数表，以便将来可以恢复。
+
+<a name="2.6.16.1"></a>
+#### 2.6.16.1 SetJNIFunctionTable
+
+    ```c
+    jvmtiError SetJNIFunctionTable(jvmtiEnv* env, const jniNativeInterface* function_table)
+    ```
+
+该函数用于设置新的JNI函数表。在设置目标函数之前，需要通过函数`GetJNIFunctionTable`获取已有的JNI函数表。由于参数`function_table`的定义是常量，某些编译器可能会优化对函数的访问，进而使新设置的函数无法生效。函数表是被拷贝的，因此，修改函数表的局部拷贝，是不会生效的。该函数只会影响JNI函数表，不会影响执行环境的其他部分。
+
+* 调用阶段： 只能在`start`阶段或`live`阶段调用
+* 回调安全： 无
+* 索引位置： 120
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `function_table`: 
+        * 类型为`const jniNativeInterface *`，指向新的JNI函数表，JVMTI代理需要传入指向`jniNativeInterface`的指针
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`function_table`为不是监视器对象
+
+<a name="2.6.16.2"></a>
+#### 2.6.16.2 GetJNIFunctionTable
+
+    ```c
+    jvmtiError GetJNIFunctionTable(jvmtiEnv* env, jniNativeInterface** function_table)
+    ```
+
+该函数用于获取JNI函数表。JNI函数表会被拷贝到分配的内存中。如果已经调用了函数`SetJNIFunctionTable`，则会返回修改后的JNI函数表。该函数只会拷贝函数表，对执行环境的其他部分没有影响。
+
+* 调用阶段： 只能在`start`阶段或`live`阶段调用
+* 回调安全： 无
+* 索引位置： 121
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `function_table`: 
+        * 类型为`jniNativeInterface **`，出参，`*function_table points`指向新创建的、拷贝了JNI函数表的内存
+        * JVMTI代理需要传入指向`jniNativeInterface*`的指针，函数返回时会被赋值一个新创建的数组，该数组需要使用函数`Deallocate`来释放
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`function_table`为不是监视器对象
+
 <a name="2.6.17"></a>
 ### 2.6.17 事件管理
 
@@ -5353,3 +5440,5 @@ JVM在响应该函数时，会发送事件`ClassFileLoadHook`(如果启用了的
 [186]:    #2.6.15.5
 [187]:    #2.6.15.6
 [188]:    #2.6.15.7
+[189]:    #2.6.16.1
+[190]:    #2.6.16.2
