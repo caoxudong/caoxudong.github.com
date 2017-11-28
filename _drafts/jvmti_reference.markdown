@@ -5,6 +5,8 @@ category:   blog
 tags:       [java, jvm, jvmti]
 ---
 
+>原文地址，https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html
+
 # 目录
 
 * [1 introduction][1]
@@ -166,6 +168,9 @@ tags:       [java, jvm, jvmti]
             * [2.6.16.1 SetJNIFunctionTable][189]
             * [2.6.16.2 GetJNIFunctionTable][190]
         * [2.6.17 事件管理][44]
+            * [2.6.17.1 SetEventCallbacks][191]
+            * [2.6.17.2 SetEventNotificationMode][192]
+            * [2.6.17.3 GenerateEvents][193]
         * [2.6.18 扩展机制][45]
         * [2.6.19 功能][46]
         * [2.6.20 计时器][47]
@@ -5175,6 +5180,145 @@ JNI方法拦截包括一下函数：
 <a name="2.6.17"></a>
 ### 2.6.17 事件管理
 
+事件管理相关的函数包括：
+
+* [2.6.17.1 SetEventCallbacks][191]
+* [2.6.17.2 SetEventNotificationMode][192]
+* [2.6.17.3 GenerateEvents][193]
+
+<a name="2.6.17.1"></a>
+#### 2.6.17.1 SetEventCallbacks
+
+    ```c
+    jvmtiError SetEventCallbacks(jvmtiEnv* env, const jvmtiEventCallbacks* callbacks, jint size_of_callbacks)
+    ```
+
+该函数用于设置目标事件的回调函数。新设置的回调函数数组会被拷贝到执行代码中，因此修改局部拷贝不会影响最终执行。该函数是原子操作，所有的回调函数都会被设置一次。在调用该函数之前，不会发送相应的事件。当回调函数数组为`NULL`，或者事件超过了`size_of_callbacks`的大熊啊，也不会发送相应的事件。对于事件的详细描述参见后文。若要发送目标事件，必须将之置为**启用**状态，并且为之设置回调函数，该函数和函数`SetEventNotificationMode`的调用顺序不影响最终结果。
+
+* 调用阶段： 只能在`OnLoad`阶段或`live`阶段调用
+* 回调安全： 无
+* 索引位置： 122
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `callbacks`: 
+        * 类型为`const jvmtiEventCallbacks*`，回调函数
+        * JVMTI代理需要传入指向`jvmtiEventCallbacks`的指针，若该参数值为`NULL`，则会清除之前设置的回调函数
+    * `size_of_callbacks`:
+        * 类型为`jint`，`sizeof(jvmtiEventCallbacks)`，该参数为兼容其他版本而存在
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`size_of_callbacks`小于0
+
+<a name="2.6.17.2"></a>
+#### 2.6.17.2 SetEventNotificationMode
+
+    ```c
+    jvmtiError SetEventNotificationMode(jvmtiEnv* env, jvmtiEventMode mode, jvmtiEvent event_type, jthread event_thread,  ...)
+    ```
+
+其中，`jvmtiEventMode`的定义如下：
+
+    ```c
+    typedef enum {
+        JVMTI_ENABLE = 1,
+        JVMTI_DISABLE = 0
+    } jvmtiEventMode;
+    ```
+
+若参数`thread`为`NULL`，则会对目标事件做全局处理，即全局启用或全局禁用，否则只会在目标线程内生效。若某类事件是在线程层面或全局层面启用的，则会对相应的线程产生事件。
+
+该函数无法在线程层面设置以下事件的模式：
+
+* VMInit
+* VMStart
+* VMDeath
+* ThreadStart
+* CompiledMethodLoad
+* CompiledMethodUnload
+* DynamicCodeGenerated
+* DataDumpRequest
+
+在初始的时候，无论是线程层面还是全局层面，事件都是未被启用的。
+
+在调用该函数之前，需要先设置好所需的功能，对应关系如下所示：
+
+    Capability	                                        Events
+    can_generate_field_modification_events	            FieldModification 
+    can_generate_field_access_events	                FieldAccess 
+    can_generate_single_step_events	                    SingleStep 
+    can_generate_exception_events	                    Exception ExceptionCatch 
+    can_generate_frame_pop_events	                    FramePop 
+    can_generate_breakpoint_events	                    Breakpoint 
+    can_generate_method_entry_events	                MethodEntry 
+    can_generate_method_exit_events	                    MethodExit 
+    can_generate_compiled_method_load_events	        CompiledMethodLoad CompiledMethodUnload 
+    can_generate_monitor_events	                        MonitorContendedEnter MonitorContendedEntered MonitorWait MonitorWaited 
+    can_generate_vm_object_alloc_events	                VMObjectAlloc 
+    can_generate_native_method_bind_events	            NativeMethodBind 
+    can_generate_garbage_collection_events	            GarbageCollectionStart GarbageCollectionFinish 
+    can_generate_object_free_events	                    ObjectFree 
+
+
+* 调用阶段： 只能在`OnLoad`阶段或`live`阶段调用
+* 回调安全： 无
+* 索引位置： 2
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `mode`: 
+        * 类型为`jvmtiEventMode`，值为`JVMTI_ENABLE`或`JVMTI_DISABLE`
+    * `event_type`:
+        * 类型为`jvmtiEvent`，目标事件类型
+    * `event_thread`:
+        * 类型为`jthread`，目标线程，若为空，则表示在全局层面进行设置
+    * `...`: 为将来扩展使用
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`event_thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 参数参数`event_thread`所表示的线程对象不是存活状态，即已死或未启动
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 目标事件类型不能在线程层面进行控制
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 目标事件类型所需要的功能还未设置好
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`mode`不是`jvmtiEventMode`枚举值
+    * `JVMTI_ERROR_INVALID_EVENT_TYPE`: 参数`event_type`不是`jvmtiEvent`对象
+
+<a name="2.6.17.3"></a>
+#### 2.6.17.3 GenerateEvents
+
+    ```c
+    jvmtiError GenerateEvents(jvmtiEnv* env, jvmtiEvent event_type)
+    ```
+
+该函数用于产生表示当前JVM状态的事件。例如，若参数`event_type`的值为`JVMTI_EVENT_COMPILED_METHOD_LOAD`，则会为每个当前已经编译过的方法发送`CompiledMethodLoad`事件。已经载入的方法和还未载入的方法，不会发送该事件。事件发送历史不会影响由该函数发送的事件，例如，每次调用该方法时，所有当前编译的方法都会发送事件。
+
+当JVMTI代理是在应用程序开始运行之后才连接时，可能会错过某些事件，此时可以通过该函数来重新发送目标事件。
+
+执行Java代码或JNI函数时，可能会被暂停住，因此不应该在发送事件的线程中调用Java代码或JNI函数。只有在错误的事件都发送、处理和完成后，该函数才会退出。事件可能会被发送的其他线程来处理。事件的回调函数必须通过函数`SetEventCallbacks`来设置，并且通过函数`SetEventNotificationMode`将事件启用，所则不会发送事件。若JVM没有目标事件相关的信息，就不会发送事件了，也不会返回错误。
+
+该函数仅支持以下事件：
+
+* CompiledMethodLoad
+* DynamicCodeGenerated
+
+相关参数信息如下：
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 123
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_compiled_method_load_events	`: 是否能生成方法被编译或卸载的事件
+* 参数：
+    * `event_type`: 类型为`jvmtiEvent`，目标事件类型，仅支持`CompiledMethodLoad`或`DynamicCodeGenerated`
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 参数`event_type`为`CompiledMethodLoad`，且`can_generate_compiled_method_load_events`为`false`
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`event_type`的值不是`CompiledMethodLoad`或`DynamicCodeGenerated`
+    * `JVMTI_ERROR_INVALID_EVENT_TYPE`: 参数`event_type`不是`jvmtiEvent`对象
+
 <a name="2.6.18"></a>
 ### 2.6.18 扩展机制
 
@@ -5442,3 +5586,6 @@ JNI方法拦截包括一下函数：
 [188]:    #2.6.15.7
 [189]:    #2.6.16.1
 [190]:    #2.6.16.2
+[191]:    #2.6.17.1
+[192]:    #2.6.17.2
+[193]:    #2.6.17.3
