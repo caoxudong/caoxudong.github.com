@@ -172,6 +172,11 @@ tags:       [java, jvm, jvmti]
             * [2.6.17.2 SetEventNotificationMode][192]
             * [2.6.17.3 GenerateEvents][193]
         * [2.6.18 扩展机制][45]
+            * [2.6.18.1 jvmtiExtensionFunction][194]
+            * [2.6.18.2 jvmtiExtensionEvent][195]
+            * [2.6.18.3 GetExtensionFunctions][196]
+            * [2.6.18.4 GetExtensionEvents][197]
+            * [2.6.18.5 SetExtensionEventCallback][198]
         * [2.6.19 功能][46]
         * [2.6.20 计时器][47]
         * [2.6.21 搜索类加载器][48]
@@ -5322,6 +5327,233 @@ JNI方法拦截包括一下函数：
 <a name="2.6.18"></a>
 ### 2.6.18 扩展机制
 
+扩展函数的类型包括：
+
+* [2.6.18.1 jvmtiExtensionFunction][194]
+* [2.6.18.2 jvmtiExtensionEvent][195]
+
+扩展机制包括的函数有：
+
+* [2.6.18.3 GetExtensionFunctions][196]
+* [2.6.18.4 GetExtensionEvents][197]
+* [2.6.18.5 SetExtensionEventCallback][198]
+
+这些函数使JVMTI代理能够提供本文未定义的事件和函数。
+
+扩展函数和扩展事件都包含有参数`type`和`kind`，其取值如下所示：
+
+
+            Extension Function/Event Parameter Types (jvmtiParamTypes)
+    Constant	                Value	    Description
+    JVMTI_TYPE_JBYTE	        101	        Java语言中的原生类型byte，JNI类型为jbyte
+    JVMTI_TYPE_JCHAR	        102	        Java语言中的原生类型char，JNI类型为jchar
+    JVMTI_TYPE_JSHORT	        103	        Java语言中的原生类型short，JNI类型为jshort
+    JVMTI_TYPE_JINT	            104	        Java语言中的原生类型int，JNI类型为jint
+    JVMTI_TYPE_JLONG	        105	        Java语言中的原生类型long，JNI类型为jlong
+    JVMTI_TYPE_JFLOAT	        106	        Java语言中的原生类型float，JNI类型为jfloat
+    JVMTI_TYPE_JDOUBLE	        107	        Java语言中的原生类型double，JNI类型为jdouble
+    JVMTI_TYPE_JBOOLEAN	        108	        Java语言中的原生类型boolean，JNI类型为jboolean
+    JVMTI_TYPE_JOBJECT	        109	        Java语言中的对象类型java.lang.Object，JNI类型为jobject，返回值为JNI局部引用，必须管理起来
+    JVMTI_TYPE_JTHREAD	        110	        Java语言中的对象类型java.lang.Thread，JNI类型为jthread，返回值为JNI局部引用，必须管理起来
+    JVMTI_TYPE_JCLASS	        111	        Java语言中的对象类型java.lang.Class，JNI类型为jclass，返回值为JNI局部引用，必须管理起来
+    JVMTI_TYPE_JVALUE	        112	        Java语言中原生类型和对象类型的联合，JNI类型为jvalue，返回值为对象类型的是JNI局部引用，必须管理起来
+    JVMTI_TYPE_JFIELDID	        113	        Java语言中的属性标识符，JNI类型为jfieldID
+    JVMTI_TYPE_JMETHODID	    114	        Java语言中的方法标识符，JNI类型为jmethodID
+    JVMTI_TYPE_CCHAR	        115	        C语言中的类型，char
+    JVMTI_TYPE_CVOID	        116	        C语言中的类型，void
+    JVMTI_TYPE_JNIENV	        117	        JNI执行环境，JNIEnv，与正确的jvmtiParamKind值使用才能成为指针类型
+
+
+            Extension Function/Event Parameter Kinds (jvmtiParamKind)
+    Constant	                Value	    Description
+    JVMTI_KIND_IN	            91	        忽略参数，foo
+    JVMTI_KIND_IN_PTR	        92	        忽略指针参数，const foo*
+    JVMTI_KIND_IN_BUF	        93	        忽略数组参数，const foo*
+    JVMTI_KIND_ALLOC_BUF	    94	        出参分配数组，foo*，使用函数Deallocate使用
+    JVMTI_KIND_ALLOC_ALLOC_BUF	95	        出参分配数组的数组，foo***，使用函数Deallocate释放
+    JVMTI_KIND_OUT	            96	        出参，foo*
+    JVMTI_KIND_OUT_BUF	        97	        出参为JVMTI代理分配的数组，foo*，无需使用函数Deallocate释放
+
+`jvmtiParamInfo`的定义如下：
+
+    ```c
+    typedef struct {
+        char* name;
+        jvmtiParamKind kind;
+        jvmtiParamTypes base_type;
+        jboolean null_ok;
+    } jvmtiParamInfo;
+    ```
+
+其字段含义如下：
+
+* `name`: 类型为`char*`，参数名，以自定义UTF-8编码
+* `kind`: 类型为`jvmtiParamKind`，表示参数类型
+* `base_type`: 类型为`jvmtiParamTypes`，表示参数的基本类型
+* `null_ok`: 类型为`jboolean`，表示参数值是否可以为`NULL`，只对指针类型和对象类型有效
+
+<a name="2.6.18.1"></a>
+#### 2.6.18.1 jvmtiExtensionFunction
+
+    ```c
+    typedef jvmtiError (JNICALL *jvmtiExtensionFunction) (jvmtiEnv* jvmti_env, ...);
+    ```
+
+该类型为扩展函数的具体实现。
+
+* `jvmti_env`: 类型为`jvmtiEnv*`，JVMTI执行环境
+* `...`: 类型为`...`，扩展函数的具体
+
+<a name="2.6.18.2"></a>
+#### 2.6.18.2 jvmtiExtensionEvent
+
+    ```c
+    typedef void (JNICALL *jvmtiExtensionEvent)(jvmtiEnv* jvmti_env, ...);
+    ```
+
+扩展事件的具体实现。事件处理函数通过函数`SetExtensionEventCallback`来设置。
+
+扩展事件的事件处理函数必须声明匹配该该定义的可变参数。若不遵守的话，在某些平台上可能会导致调用约定不匹配和未定义错误。
+
+例如，若函数`GetExtensionEvents`返回的`jvmtiParamInfo`指定了要有一个`jint`参数，则事件处理函数必须声明为：
+
+    ```c
+    void JNICALL myHandler(jvmtiEnv* jvmti_env, jint myInt, ...)
+    ```
+
+* `jvmti_env`: 类型为`jvmtiEnv*`，JVMTI执行环境
+* `...`: 类型为`...`，扩展事件的具体
+
+<a name="2.6.18.3"></a>
+#### 2.6.18.3 GetExtensionFunctions
+
+    ```c
+    jvmtiError GetExtensionFunctions(jvmtiEnv* env, jint* extension_count_ptr, jvmtiExtensionFunctionInfo** extensions)
+    ```
+
+该函数用于获取扩展函数集合。
+
+其中`jvmtiExtensionFunctionInfo`的定义如下：
+
+    ```c
+    typedef struct {
+        jvmtiExtensionFunction func;
+        char* id;
+        char* short_description;
+        jint param_count;
+        jvmtiParamInfo* params;
+        jint error_count;
+        jvmtiError* errors;
+    } jvmtiExtensionFunctionInfo;
+    ```
+
+其字段含义如下：
+
+* `func`: 实际调用的函数
+* `id`: 扩展函数的标识符，使用自定义UTF-8编码，通常会使用包名，例如`com.sun.hotspot.bar`
+* `short_description`: 函数描述，使用自定义UTF-8编码
+* `param_count`: 除了`jvmtiEnv *jvmti_env`以外的参数个数
+* `params`: 除了`jvmtiEnv *jvmti_env`以外的参数数组
+* `error_count`: 除了通用错误码之外函数可能返回的错误码个数
+* `errors`: 除了通用错误码之外函数可能返回的错误码数组
+
+函数相关参数信息如下：
+
+* 调用阶段： 只可能在`live`或`OnLoad`阶段调用
+* 回调安全： 无
+* 索引位置： 124
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `extension_count_ptr`: 类型为`jint*`，出参，返回扩展函数的数量，JVMTI代理需要提供指向`jint`的指针
+    * `extensions`:
+        * 类型为`jvmtiExtensionFunctionInfo**`，出参，返回扩展函数数组
+        * JVMTI代理需要提供指向`jvmtiExtensionFunctionInfo*`的指针，该函数会创建一个长度为`extension_count_ptr`的数组并返回，需要调用函数`Deallocate`显式释放，对于每个数组元素：
+            * `jvmtiExtensionFunctionInfo.id`指向的也是新创建的数组，需要调用函数`Deallocate`显式释放
+            * `jvmtiExtensionFunctionInfo.short_description`指向的也是新创建的数组，需要调用函数`Deallocate`显式释放
+            * `jvmtiExtensionFunctionInfo.params`指向的也是新创建的数组，需要调用函数`Deallocate`显式释放，对于其中的每个参数：
+                * `jvmtiExtensionFunctionInfo.params.name`指向的也是新创建的数组，需要调用函数`Deallocate`显式释放
+            * `jvmtiExtensionFunctionInfo.errors`指向的也是新创建的数组，需要调用函数`Deallocate`显式释放，
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`extension_count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`extensions`为`NULL`
+
+<a name="2.6.18.4"></a>
+#### 2.6.18.4 GetExtensionEvents
+
+    ```c
+    jvmtiError GetExtensionEvents(jvmtiEnv* env, jint* extension_count_ptr, jvmtiExtensionEventInfo** extensions)
+    ```
+
+该函数用于获取扩展事件集合。
+
+其中`jvmtiExtensionEventInfo`的定义如下：
+
+    ```c
+    typedef struct {
+        jint extension_event_index;
+        char* id;
+        char* short_description;
+        jint param_count;
+        jvmtiParamInfo* params;
+    } jvmtiExtensionEventInfo;
+    ```
+
+其字段含义如下：
+
+* `extension_event_index`: 事件的索引标识
+* `id`: 扩展事件的标识符，使用自定义UTF-8编码，通常会使用包名，例如`com.sun.hotspot.bar`
+* `short_description`: 函数描述，使用自定义UTF-8编码
+* `param_count`: 除了`jvmtiEnv *jvmti_env`以外的参数个数
+* `params`: 除了`jvmtiEnv *jvmti_env`以外的参数数组
+
+函数相关参数信息如下：
+
+* 调用阶段： 只可能在`live`或`OnLoad`阶段调用
+* 回调安全： 无
+* 索引位置： 125
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `extension_count_ptr`: 类型为`jint*`，出参，返回扩展事件的数量，JVMTI代理需要提供指向`jint`的指针
+    * `extensions`:
+        * 类型为`jvmtiExtensionEventInfo**`，出参，返回扩展函数数组
+        * JVMTI代理需要提供指向`jvmtiExtensionEventInfo*`的指针，该函数会创建一个长度为`extension_count_ptr`的数组并返回，需要调用函数`Deallocate`显式释放，对于每个数组元素：
+            * `jvmtiExtensionEventInfo.id`指向的也是新创建的数组，需要调用函数`Deallocate`显式释放
+            * `jvmtiExtensionEventInfo.short_description`指向的也是新创建的数组，需要调用函数`Deallocate`显式释放
+            * `jvmtiExtensionEventInfo.params`指向的也是新创建的数组，需要调用函数`Deallocate`显式释放，对于其中的每个参数：
+                * `jvmtiExtensionFunctionInfo.params.name`指向的也是新创建的数组，需要调用函数`Deallocate`显式释放
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`extension_count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`extensions`为`NULL`
+
+<a name="2.6.18.5"></a>
+#### 2.6.18.5 SetExtensionEventCallback
+
+    ```c
+    jvmtiError SetExtensionEventCallback(jvmtiEnv* env, jint extension_event_index, jvmtiExtensionEvent callback)
+    ```
+
+该函数用设置扩展事件的回调函数，并启用该扩展事件。若参数`callback`为`NULL`，则会禁用目标事件。注意，与标准事件不同，设置并启用扩展事件是一个操作。
+
+* 调用阶段： 只可能在`live`或`OnLoad`阶段调用
+* 回调安全： 无
+* 索引位置： 126
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `extension_event_index`: 类型为`jint`，指定要对哪个事件设置回调函数，该值与`jvmtiExtensionEventInfo.extension_event_index`相对应
+    * `callback`:
+        * 类型为`jvmtiExtensionEvent`，若该值不为`NULL`，则对目标事件设置回调函数，并启用事件，否则会禁用目标事件
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT	`: 参数`extension_event_index`的值与由函数`GetExtensionEvents`返回的`extension_event_index`字段值不匹配
+
 <a name="2.6.19"></a>
 ### 2.6.19 功能
 
@@ -5589,3 +5821,8 @@ JNI方法拦截包括一下函数：
 [191]:    #2.6.17.1
 [192]:    #2.6.17.2
 [193]:    #2.6.17.3
+[194]:    #2.6.18.1
+[195]:    #2.6.18.2
+[196]:    #2.6.18.3
+[197]:    #2.6.18.4
+[198]:    #2.6.18.5
