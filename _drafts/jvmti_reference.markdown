@@ -178,6 +178,10 @@ tags:       [java, jvm, jvmti]
             * [2.6.18.4 GetExtensionEvents][197]
             * [2.6.18.5 SetExtensionEventCallback][198]
         * [2.6.19 功能][46]
+            * [2.6.19.1 GetPotentialCapabilities][199]
+            * [2.6.19.2 AddCapabilities][200]
+            * [2.6.19.3 RelinquishCapabilities][201]
+            * [2.6.19.4 GetCapabilities][202]
         * [2.6.20 计时器][47]
         * [2.6.21 搜索类加载器][48]
         * [2.6.22 系统属性][49]
@@ -3731,9 +3735,9 @@ JVMTI代理是否提供回调函数的实现，只决定了回调函数是否被
 * 回调安全： 无
 * 索引位置： 52
 * Since： 1.0
-* 功能： 
-    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
-        * `can_maintain_original_method_order`: 是否能获取目标类文件中的方法
+* 功能： 必选
+* 可选特性：
+    * `can_maintain_original_method_order`: 是否能获取目标类文件中的方法
 * 参数：
     * `klass`:
         * 类型为`jclass`，目标类型
@@ -3942,11 +3946,11 @@ JVMTI代理是否提供回调函数的实现，只决定了回调函数是否被
 * 回调安全： 无
 * 索引位置： 45
 * Since： 1.1
-* 功能： 
-    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
-        * `can_redefine_any_class`: 是否能获重定义所有类，不包括原生类型和数组类型
-        * `can_redefine_classes`: 对于该函数没有作用。但使用`RedefineClasses`重定义类时，必须加上
-        * `can_retransform_classes`: 对于该函数没有作用。但使用`RetransformClasses`重转换类时，必须加上
+* 功能： 必选
+* 可选特性：
+    * `can_redefine_any_class`: 是否能获重定义所有类，不包括原生类型和数组类型
+    * `can_redefine_classes`: 对于该函数没有作用。但使用`RedefineClasses`重定义类时，必须加上
+    * `can_retransform_classes`: 对于该函数没有作用。但使用`RetransformClasses`重转换类时，必须加上
 * 参数：
     * `klass`:
         * 类型为`jclass`，目标类型
@@ -4056,7 +4060,8 @@ JVMTI代理是否提供回调函数的实现，只决定了回调函数是否被
 * 功能： 
     * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
         * `can_retransform_classes`: 是否能通过函数`RetransformClasses`转换类定义。除了各个JVM实现对该函数的限制之外，该项功能**必须**在`ClassFileLoadHook`首次启用之前设置。
-        * `can_retransform_any_class`: 是否能对任意类调用函数`RetransformClasses`(必须先设置功能`can_retransform_classes `)
+* 可选特性： 
+    * `can_retransform_any_class`: 是否能对任意类调用函数`RetransformClasses`(必须先设置功能`can_retransform_classes `)
 * 参数：
     * `class_count`:
         * 类型为`jint`，要转换的类的个数
@@ -4133,7 +4138,8 @@ JVM在响应该函数时，会发送事件`ClassFileLoadHook`(如果启用了的
 * 功能： 
     * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
         * `can_redefine_classes`: 是否能通过函数`RedefineClasses`重定义类
-        * `can_redefine_any_class`: 是否能修改任意非原生类型、非数组类型调用函数，参见`IsModifiableClass`
+* 可选特性：
+    * `can_redefine_any_class`: 是否能修改任意非原生类型、非数组类型调用函数，参见`IsModifiableClass`
 * 参数：
     * `class_count`:
         * 类型为`jint`，要定义的类的个数
@@ -5313,9 +5319,9 @@ JNI方法拦截包括一下函数：
 * 回调安全： 无
 * 索引位置： 123
 * Since： 1.0
-* 功能： 
-    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
-        * `can_generate_compiled_method_load_events	`: 是否能生成方法被编译或卸载的事件
+* 功能：必选 
+* 可选特性：
+    * `can_generate_compiled_method_load_events	`: 是否能生成方法被编译或卸载的事件
 * 参数：
     * `event_type`: 类型为`jvmtiEvent`，目标事件类型，仅支持`CompiledMethodLoad`或`DynamicCodeGenerated`
 * 返回：
@@ -5556,6 +5562,253 @@ JNI方法拦截包括一下函数：
 
 <a name="2.6.19"></a>
 ### 2.6.19 功能
+
+功能相关的函数包括：
+
+* [2.6.19.1 GetPotentialCapabilities][199]
+* [2.6.19.2 AddCapabilities][200]
+* [2.6.19.3 RelinquishCapabilities][201]
+* [2.6.19.4 GetCapabilities][202]
+
+功能相关的函数使JVMTI代理可以修改当前JVM可支持的功能，即哪些JVMTI函数可以调用，哪些事件可以产生，事件和函数能提供哪些功能。
+
+每个事件和函数的"功能"一栏中都描述其所需要的JVM功能。"必选"表示是可以直接使用的，无需额外添加功能；"可选功能"表示JVMTI代理在使用函数或事件之前，必须先通过函数`AddCapabilities`配置好功能；"可选特性"表示要扩展特性的功能。
+
+每个JVMTI实现中，可用的功能都不尽相同。具体来说，功能可能会：
+
+* 可能永不添加
+* 可能在`OnLoad`阶段或`live`阶段添加
+* 可能只在`OnLoad`阶段添加
+* 可能一次只能由一个执行环境处理
+* 可能一次只能由一个执行环境处理，而且只能在`live`阶段处理
+* 其他
+
+频繁执行增加功能的操作，可能会导致执行速度、启动时间或内存使用量的增大。需要注意的是，增加功能的执行消耗，完全不同于处理功能的执行消耗。以步进调试为例，在执行步进的时候，即启用事件并主动发送事件，对于任何JVMTI实现来说，在每个指令上发送并处理事件的消耗都是巨大的。但是，处理功能的消耗则取决于具体实现，消耗量可大可小。此外，功能何时可用，也取决于具体实现。例如：
+
+* 某些JVM可能会将所有的字节码都编译为本地代码再执行，因此无法产生步进指令。此时，无法添加功能。
+* 某些JVM可以在任意时间切换到步进解释器，此时，可以在任意时间添加功能，不会有消耗。
+* 某些JVM可以在启动的时候选择是以编译字节码的模式运行，还是以步进解释器的模式运行，但不能互相切换。此时，需要在`OnLoad`阶段(执行字节码之前)添加功能，对执行速度有较大影响，及时步进解释器模式从未用过，也是如此。
+* 某些JVM可能会编译字节码或启用解释器时，检查是否开启步进功能。此时，需要在`OnLoad`阶段添加功能，但执行开销会小很多。
+
+每个JVMTI执行环境都有其字节的功能集合。开始的时候，集合是空的，用户可以添加需要的功能到集合中。如果可能的话，应该在`OnLoad`阶段完成功能添加的工作。对于大部分JVM来说，特定的功能需要在`OnLoad`阶段设置好，要在JVM开始执行前完成。一旦添加了功能后，就只能通过执行环境显式移除。
+
+JVMTI代理通过相应的方法，能够获知JVM提供了哪些功能，添加了哪些功能，移除了哪些功能，以及当前哪些功能可用。
+
+下面的示例展示了新启动的JVMTI代理(在`OnLoad`函数中)，如何启动所有的功能。注意，一般情况下，不要这么干，因为不必要的功能可能会损害执行性能。
+
+    ```c
+    jvmtiCapabilities capa;
+	jvmtiError err;
+
+	err = (*jvmti)->GetPotentialCapabilities(jvmti, &capa);
+	if (err == JVMTI_ERROR_NONE) {
+       err = (*jvmti)->AddCapabilities(jvmti, &capa);
+    ```
+
+下面的示例展示了JVMTI代理如何检查是否可以获取方法的字节码：
+
+    ```c
+    jvmtiCapabilities capa;
+	jvmtiError err;
+
+	err = (*jvmti)->GetCapabilities(jvmti, &capa);
+	if (err == JVMTI_ERROR_NONE) {
+   	   if (capa.can_get_bytecodes) { ... } } 
+    ```
+
+功能`jvmtiCapabilities`的定义如下：
+
+    ```c
+    typedef struct {
+        unsigned int can_tag_objects : 1;
+        unsigned int can_generate_field_modification_events : 1;
+        unsigned int can_generate_field_access_events : 1;
+        unsigned int can_get_bytecodes : 1;
+        unsigned int can_get_synthetic_attribute : 1;
+        unsigned int can_get_owned_monitor_info : 1;
+        unsigned int can_get_current_contended_monitor : 1;
+        unsigned int can_get_monitor_info : 1;
+        unsigned int can_pop_frame : 1;
+        unsigned int can_redefine_classes : 1;
+        unsigned int can_signal_thread : 1;
+        unsigned int can_get_source_file_name : 1;
+        unsigned int can_get_line_numbers : 1;
+        unsigned int can_get_source_debug_extension : 1;
+        unsigned int can_access_local_variables : 1;
+        unsigned int can_maintain_original_method_order : 1;
+        unsigned int can_generate_single_step_events : 1;
+        unsigned int can_generate_exception_events : 1;
+        unsigned int can_generate_frame_pop_events : 1;
+        unsigned int can_generate_breakpoint_events : 1;
+        unsigned int can_suspend : 1;
+        unsigned int can_redefine_any_class : 1;
+        unsigned int can_get_current_thread_cpu_time : 1;
+        unsigned int can_get_thread_cpu_time : 1;
+        unsigned int can_generate_method_entry_events : 1;
+        unsigned int can_generate_method_exit_events : 1;
+        unsigned int can_generate_all_class_hook_events : 1;
+        unsigned int can_generate_compiled_method_load_events : 1;
+        unsigned int can_generate_monitor_events : 1;
+        unsigned int can_generate_vm_object_alloc_events : 1;
+        unsigned int can_generate_native_method_bind_events : 1;
+        unsigned int can_generate_garbage_collection_events : 1;
+        unsigned int can_generate_object_free_events : 1;
+        unsigned int can_force_early_return : 1;
+        unsigned int can_get_owned_monitor_stack_depth_info : 1;
+        unsigned int can_get_constant_pool : 1;
+        unsigned int can_set_native_method_prefix : 1;
+        unsigned int can_retransform_classes : 1;
+        unsigned int can_retransform_any_class : 1;
+        unsigned int can_generate_resource_exhaustion_heap_events : 1;
+        unsigned int can_generate_resource_exhaustion_threads_events : 1;
+        unsigned int : 7;
+        unsigned int : 16;
+        unsigned int : 16;
+        unsigned int : 16;
+        unsigned int : 16;
+        unsigned int : 16;
+    } jvmtiCapabilities;
+    ```
+
+其各个位域的含义如下：
+
+* `can_tag_objects`: 是否能获取/设置对象标签，since 1.0
+* `can_generate_field_modification_events`: 是否能对属性修改设置观察点，since 1.0
+* `can_generate_field_access_events`: 是否能对属性访问设置观察点，since 1.0
+* `can_get_bytecodes`: 是否能获取方法的字节码，since 1.0
+* `can_get_synthetic_attribute`: 是否能测试方法/属性为合成的，since 1.0
+* `can_get_owned_monitor_info`: 是否能获取监视器的持有者信息，since 1.0
+* `can_get_current_contended_monitor`: 是否能调用函数`GetCurrentContendedMonitor`，since 1.0
+* `can_get_monitor_info`: 是否能调用函数`GetObjectMonitorUsage`，since 1.0
+* `can_pop_frame`: 是否能使用函数`PopFrame`从栈上弹出栈帧，since 1.0
+* `can_redefine_classes`: 是否能使用函数`RedefineClasses`重定义类，since 1.0
+* `can_signal_thread`: 是否能终止或中断线程，since 1.0
+* `can_get_source_file_name`: 是否能获取类的原文件名字，since 1.0
+* `can_get_line_numbers`: 是否能获取方法的行号表，since 1.0
+* `can_get_source_debug_extension`: 是否能获取类的调试信息，since 1.0
+* `can_access_local_variables`: 是否能获取/设置局部变量，since 1.0
+* `can_maintain_original_method_order`: 是否能按照类文件中的出现顺序返回方法列表，since 1.0
+* `can_generate_single_step_events`: 是否能获取步进事件，since 1.0
+* `can_generate_exception_events`: 是否能获取异常抛出和异常捕获事件，since 1.0
+* `can_generate_frame_pop_events`: 是否能获取/设置`FramePop`事件，since 1.0
+* `can_generate_breakpoint_events`: 是否能获取/设置`Breakpoint`事件，since 1.0
+* `can_suspend`: 是否能挂起/恢复线程，since 1.0
+* `can_redefine_any_class`: 是否能修改(转换或重定义)任意非原生、非数组类型的类，since 1.0
+* `can_get_current_thread_cpu_time`: 是否能获取当前线程的CPU时间，since 1.0
+* `can_get_thread_cpu_time`: 是否能获取线程的CPU时间，since 1.0
+* `can_generate_method_entry_events`: 是否能在进入方法时产生方法进入事件，since 1.0
+* `can_generate_method_exit_events`: 是否能在退出方法时产生方法退出事件，since 1.0
+* `can_generate_all_class_hook_events`: 对于每个载入的类，是否能产生`ClassFileLoadHook`事件，since 1.0
+* `can_generate_compiled_method_load_events`: 当方法被编译或卸载时，是否能产生事件，since 1.0
+* `can_generate_monitor_events`: 当有监视器活动时，是否能产生相应的事件，since 1.0
+* `can_generate_vm_object_alloc_events`: 当JVM为对象分配内存时，是否能产生相应的事件，since 1.0
+* `can_generate_native_method_bind_events`: 当本地方法被绑定到其具体实现时，是否能产生相应的事件，since 1.0
+* `can_generate_garbage_collection_events`: 当垃圾回收开始/结束的时候，是否能产生相应的事件，since 1.0
+* `can_generate_object_free_events`: 当垃圾回收器回收一个对象的时候，是否能产生相应的事件，since 1.0
+* `can_force_early_return`: 是否能从方法提前返回，since 1.1
+* `can_get_owned_monitor_stack_depth_info`: 是否能获取与拥有的监视器相关的信息和栈深度信息，since 1.1
+* `can_get_constant_pool`: 是否能获取类的常量池信息，since 1.1
+* `can_set_native_method_prefix`: 当本地方法解析失败时，是否能设置方法前缀，since 1.1
+* `can_retransform_classes`: 是否能调用函数`RetransformClasses`转换类，除了JVMTI具体实现对该功能的限制之外，该功能必须在事件`ClassFileLoadHook`第一次启用之前设置好。首次启用`ClassFileLoadHook`事件时，具有该功能的执行环境被称为**可转换的**，否则成为**不可转换的**，since 1.1
+* `can_retransform_any_class`: 是否能对任意类调用函数`RetransformClasses`，since 1.1
+* `can_generate_resource_exhaustion_heap_events`: 当JVM无法从Java堆分配内存时，是否能产生相应的事件，since 1.1
+* `can_generate_resource_exhaustion_threads_events`: 当JVM无法创建线程时，是否能产生相应的事件，since 1.1
+
+<a name="2.6.19.1"></a>
+#### 2.6.19.1 GetPotentialCapabilities
+
+    ```c
+    jvmtiError GetPotentialCapabilities(jvmtiEnv* env, jvmtiCapabilities* capabilities_ptr)
+    ```
+
+该函数用于获取JVMTI执行环境当前可获取到的功能集合，以出参`capabilities_ptr`返回。在以下两种情况下，该函数返回的功能集合与当前JVM所实现的功能集合不同：
+
+* 某些只能被一个JVMTI执行环境获取的功能，已经被其他JVMTI执行环境获取到了
+* 当前为`live`阶段，而某些功能只能在`OnLoad`阶段获取
+
+函数`AddCapabilities`可用于添加功能。
+
+典型场景下，该函数应该在`OnLoad`阶段调用。某些JVM实现可能会允许在`live`阶段添加某些功能。此时，可使用功能列表就会与`OnLoad`阶段获取到可用功能列表不同。
+
+* 调用阶段： 只可能在`live`或`OnLoad`阶段调用
+* 回调安全： 无
+* 索引位置： 140
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `capabilities_ptr`: 
+        * 类型为`jvmtiCapabilities*`，出参，返回JVMTI可以添加的功能列表，JVMTI代理需要提供指向`jvmtiCapabilities`的指针
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER	`: 参数`capabilities_ptr`为`NULL`
+
+<a name="2.6.19.2"></a>
+#### 2.6.19.2 AddCapabilities
+
+    ```c
+    jvmtiError AddCapabilities(jvmtiEnv* env, const jvmtiCapabilities* capabilities_ptr)
+    ```
+
+该函数用于为JVMTI执行环境添加指定的功能。调用该函数时，已有的功能会继续保留，只处理新功能。典型场景下，该函数应该在`OnLoad`阶段调用。某些JVM实现可能会允许在`live`阶段添加某些功能。
+
+* 调用阶段： 只可能在`live`或`OnLoad`阶段调用
+* 回调安全： 无
+* 索引位置： 142
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `capabilities_ptr`: 
+        * 类型为`jvmtiCapabilities*`，要添加的功能列表，JVMTI代理需要提供指向`jvmtiCapabilities`的指针
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NOT_AVAILABLE`: 要添加的功能不可用
+    * `JVMTI_ERROR_NULL_POINTER	`: 参数`capabilities_ptr`为`NULL`
+
+<a name="2.6.19.3"></a>
+#### 2.6.19.3 RelinquishCapabilities
+
+    ```c
+    jvmtiError RelinquishCapabilities(jvmtiEnv* env, const jvmtiCapabilities* capabilities_ptr)
+    ```
+
+该函数用于去除目标功能。在某些JVMTI实现中，某些可能会只能被一个JVMTI执行环境获取，在调用该函数后，这些功能才能被其他JVMTI执行环境获取。处理要去除的目标功能外，其他已有的功能保持不变。若去除一个本不具有的功能，并不会报错。
+
+* 调用阶段： 只可能在`live`或`OnLoad`阶段调用
+* 回调安全： 无
+* 索引位置： 143
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `capabilities_ptr`: 
+        * 类型为`jvmtiCapabilities*`，要去除的功能列表，JVMTI代理需要提供指向`jvmtiCapabilities`的指针
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER	`: 参数`capabilities_ptr`为`NULL`
+
+<a name="2.6.19.4"></a>
+#### 2.6.19.4 GetCapabilities
+
+    ```c
+    jvmtiError GetCapabilities(jvmtiEnv* env, jvmtiCapabilities* capabilities_ptr)
+    ```
+
+该函数用于获取当前JVMTI执行环境已经获取到的功能列表。在调用函数`AddCapabilities`前，JVMTI代理并不会具有目标功能。在显式调用函数`RelinquishCapabilities`后，JVMTI执行环境会失去目标功能。
+
+* 调用阶段： 只可能在`live`或`OnLoad`阶段调用
+* 回调安全： 无
+* 索引位置： 89
+* Since： 1.0
+* 功能： 
+    * 必选
+* 参数：
+    * `capabilities_ptr`: 
+        * 类型为`jvmtiCapabilities*`，出参，返回当前拥有的功能列表，JVMTI代理需要提供指向`jvmtiCapabilities`的指针
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER	`: 参数`capabilities_ptr`为`NULL`
 
 <a name="2.6.20"></a>
 ### 2.6.20 计时器
@@ -5826,3 +6079,7 @@ JNI方法拦截包括一下函数：
 [196]:    #2.6.18.3
 [197]:    #2.6.18.4
 [198]:    #2.6.18.5
+[199]:    #2.6.19.1
+[200]:    #2.6.19.2
+[201]:    #2.6.19.3
+[202]:    #2.6.19.4
