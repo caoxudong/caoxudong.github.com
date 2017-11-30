@@ -183,6 +183,13 @@ tags:       [java, jvm, jvmti]
             * [2.6.19.3 RelinquishCapabilities][201]
             * [2.6.19.4 GetCapabilities][202]
         * [2.6.20 计时器][47]
+            * [2.6.20.1 GetCurrentThreadCpuTimerInfo][203]
+            * [2.6.20.2 GetCurrentThreadCpuTime][204]
+            * [2.6.20.3 GetThreadCpuTimerInfo][205]
+            * [2.6.20.4 GetThreadCpuTime][206]
+            * [2.6.20.5 GetTimerInfo][207]
+            * [2.6.20.6 GetTime][208]
+            * [2.6.20.7 GetAvailableProcessors][209]
         * [2.6.21 搜索类加载器][48]
         * [2.6.22 系统属性][49]
         * [2.6.23 通用][50]
@@ -5813,6 +5820,213 @@ JVMTI代理通过相应的方法，能够获知JVM提供了哪些功能，添加
 <a name="2.6.20"></a>
 ### 2.6.20 计时器
 
+计时器相关的函数包括：
+
+* [2.6.20.1 GetCurrentThreadCpuTimerInfo][203]
+* [2.6.20.2 GetCurrentThreadCpuTime][204]
+* [2.6.20.3 GetThreadCpuTimerInfo][205]
+* [2.6.20.4 GetThreadCpuTime][206]
+* [2.6.20.5 GetTimerInfo][207]
+* [2.6.20.6 GetTime][208]
+* [2.6.20.7 GetAvailableProcessors][209]
+
+这些函数用于获取系统时间相关信息。时间的更新精度并未指定，提供了纳秒的精度，但准度未必是纳秒的。
+
+计时器返回的信息`jvmtiTimerInfo`定义如下：
+
+    ```c
+    typedef struct {
+        jlong max_value;
+        jboolean may_skip_forward;
+        jboolean may_skip_backward;
+        jvmtiTimerKind kind;
+        jlong reserved1;
+        jlong reserved2;
+    } jvmtiTimerInfo;
+    ```
+
+其字段含义如下：
+
+* `max_value`: 表示计时器所能达到的最大值。在达到最大值后，会变回0，继续计时。该值是无符号的，如果以`jlong`来检查数值的话，可能会得到一个负数，因为`jlong`是有符号的。
+* `may_skip_forward`: 若为`true`，表示可以在外部调整计时器，向前跳过一定长度，若为`false`，则计时器的值永远不能比真实时间值快。
+* `may_skip_backward`: 若为`true`，表示可以在外部调整计时器，向后跳过一定长度，若为`false`，则计时器的值是单调递增的。
+* `kind`: 表示计时器的类型，对于不区分系统时间和用户时间的平台来说，会返回`JVMTI_TIMER_TOTAL_CPU`
+* `reserved1`: 保留字段
+* `reserved2`: 保留字段
+
+其中，`jvmtiTimerKind`的定义如下：
+
+                            Timer Kinds (jvmtiTimerKind)
+    Constant	                Value	    Description
+    JVMTI_TIMER_USER_CPU	    30	        用户模式下，线程所消耗的CPU时间
+    JVMTI_TIMER_TOTAL_CPU	    31	        用户或内核模式下，线程所消耗的CPU时间
+    JVMTI_TIMER_ELAPSED	        32	        流逝的时间，即墙上时间
+
+<a name="2.6.20.1"></a>
+#### 2.6.20.1 GetCurrentThreadCpuTimerInfo
+
+    ```c
+    jvmtiError GetCurrentThreadCpuTimerInfo(jvmtiEnv* env, jvmtiTimerInfo* info_ptr)
+    ```
+
+获取`GetCurrentThreadCpuTime`计时器的相关信息，以出参`info_ptr`返回相关内容，其具体指取决于具体平台和`GetCurrentThreadCpuTime`的实现，因此与线程或某次调用无关。
+
+注意，`GetCurrentThreadCpuTime`和`GetThreadCpuTime`的具体实现可能有所区别，因此`GetCurrentThreadCpuTimerInfo`和`GetThreadCpuTimerInfo`的返回值也可能不尽相同。
+
+* 调用阶段： 只可能在`start`或`live`阶段调用
+* 回调安全： 无
+* 索引位置： 134
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_get_current_thread_cpu_time	`: 是否能获取当前线程的CPU时间
+* 参数：
+    * `info_ptr`: 类型为`jvmtiTimerInfo*`，出参，用于获取目标计时器信息，JVMTI代理需要传入一个指向`jvmtiTimerInfo`的指针
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_get_current_thread_cpu_time`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`info_ptr`为`NULL`
+
+<a name="2.6.20.2"></a>
+#### 2.6.20.2 GetCurrentThreadCpuTime
+
+    ```c
+    jvmtiError GetCurrentThreadCpuTime(jvmtiEnv* env, jlong* nanos_ptr)
+    ```
+
+该函数用用于获取当前线程所使用的CPU时间。
+
+注意，函数`GetThreadCpuTime`可用于获取任意线程的CPU时间，包括当前线程。对于那些无法获取其他线程CPU时间的平台，或者需要获取当前线程更准确信息时，可使用函数`GetCurrentThreadCpuTime`来获取相关内容。对于大部分平台来说，调用该函数等同于调用`GetThreadCpuTime(env, NULL, nanos_ptr)`。
+
+* 调用阶段： 只可能在`start`或`live`阶段调用
+* 回调安全： 无
+* 索引位置： 135
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_get_current_thread_cpu_time`: 是否能获取当前线程的CPU时间。若在线程启动后才添加该功能，则JVMTI实现可能会选择任意时间点，并以启用该功能的时间点为时间收集的起点。对于任意平台，若`can_get_thread_cpu_time`可用，则该功能也必须可用。
+* 参数：
+    * `nanos_ptr`: 类型为`jlong*`，出参，返回当前线程所使用的CPU时间，单位为纳秒，该值为无符号数。JVMTI代理需要传入指向`jlong`的指针。
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_get_current_thread_cpu_time`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`nanos_ptr`为`NULL`
+
+<a name="2.6.20.3"></a>
+#### 2.6.20.3 GetThreadCpuTimerInfo
+
+    ```c
+    jvmtiError GetThreadCpuTimerInfo(jvmtiEnv* env, jvmtiTimerInfo* info_ptr)
+    ```
+
+该函数用于获取`GetThreadCpuTime`的计时器，出参`info_ptr`中保存了计时器的详细信息。其具体指取决于具体平台和`GetThreadCpuTime`的实现，因此与线程或某次调用无关。
+
+注意，`GetCurrentThreadCpuTime`和`GetThreadCpuTime`的具体实现可能有所区别，因此`GetCurrentThreadCpuTimerInfo`和`GetThreadCpuTimerInfo`的返回值也可能不尽相同。
+
+* 调用阶段： 只可能在`start`或`live`阶段调用
+* 回调安全： 无
+* 索引位置： 136
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_get_thread_cpu_time`: 是否能获取目标线程的CPU时间
+* 参数：
+    * `info_ptr`: 类型为`jvmtiTimerInfo*`，出参，用于获取目标计时器信息，JVMTI代理需要传入一个指向`jvmtiTimerInfo`的指针
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_get_thread_cpu_time`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`info_ptr`为`NULL`
+
+<a name="2.6.20.4"></a>
+#### 2.6.20.4 GetThreadCpuTime
+
+    ```c
+    jvmtiError GetThreadCpuTime(jvmtiEnv* env, jthread thread, jlong* nanos_ptr)
+    ```
+
+该函数用于获取目标线程的CPU时间。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 137
+* Since： 1.0
+* 功能： 
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_get_thread_cpu_time`: 是否能获取目标线程的CPU时间。若在线程启动后才添加该功能，则JVMTI实现可能会选择任意时间点，并以启用该功能的时间点为时间收集的起点。
+* 参数：
+    * `thread`: 类型为`jthread`，目标线程，若为`NULL`，则表示当前线程
+    * `nanos_ptr`: 类型为`jlong*`，出参，返回目标线程所使用的CPU时间，单位为纳秒，该值为无符号数。JVMTI代理需要传入指向`jlong`的指针。
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_MUST_POSSESS_CAPABILITY`: 执行环境无法处理功能`can_get_thread_cpu_time.`，需要调用`AddCapabilities`
+    * `JVMTI_ERROR_INVALID_THREAD`: 参数`thread`不是线程对象
+    * `JVMTI_ERROR_THREAD_NOT_ALIVE`: 线程已死或还未启动
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`nanos_ptr`为`NULL`
+
+<a name="2.6.20.5"></a>
+#### 2.6.20.5 GetTimerInfo
+
+    ```c
+    jvmtiError GetTimerInfo(jvmtiEnv* env, jvmtiTimerInfo* info_ptr)
+    ```
+
+获取函数`GetTime`所用的计时器信息，以出参`info_ptr`返回。在某次函数调用中，获取到的计时器信息不会发生变化。
+
+* 调用阶段： 可能任意阶段调用
+* 回调安全： 无
+* 索引位置： 138
+* Since： 1.0
+* 功能： 必选
+* 参数：
+    * `info_ptr`: 类型为`jvmtiTimerInfo*`，出参，用于获取目标计时器信息，JVMTI代理需要传入一个指向`jvmtiTimerInfo`的指针
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`info_ptr`为`NULL`
+
+<a name="2.6.20.6"></a>
+#### 2.6.20.6 GetTime
+
+    ```c
+    jvmtiError GetTime(jvmtiEnv* env, jlong* nanos_ptr)
+    ```
+
+该函数返回系统计时器的当前值，单位为纳秒。
+
+函数的返回值表示从某个时间点以来流逝的时间，选取的时间点可能会在未来，因此函数返回值可能是负数。该函数提供了纳秒的精度，但没有保证有纳秒的准度。系统计时器的更新频率并未强制要求。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 139
+* Since： 1.0
+* 功能： 必选
+* 参数：
+    * `nanos_ptr`: 类型为`jlong*`，出参，以纳秒为单位返回系统计时器的当前值，该值为无符号数。JVMTI代理需要传入指向`jlong`的指针。
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`nanos_ptr`为`NULL`
+
+<a name="2.6.20.7"></a>
+#### 2.6.20.7 GetAvailableProcessors
+
+    ```c
+    jvmtiError GetAvailableProcessors(jvmtiEnv* env, jint* processor_count_ptr)
+    ```
+
+该函数返回当前JVM可用的处理器数量。
+
+在某次调用期间，该函数的返回值可能发生变化。若应用程序需要准确获取可用处理器的数量，则需要定期轮询该方法。
+
+* 调用阶段： 只可能在`live`阶段调用
+* 回调安全： 无
+* 索引位置： 144
+* Since： 1.0
+* 功能： 必选
+* 参数：
+    * `processor_count_ptr`: 类型为`jint*`，出参，返回可用处理器的数量，至少为`1`
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`processor_count_ptr`为`NULL`
+
 <a name="2.6.21"></a>
 ### 2.6.21 搜索类加载器
 
@@ -6083,3 +6297,10 @@ JVMTI代理通过相应的方法，能够获知JVM提供了哪些功能，添加
 [200]:    #2.6.19.2
 [201]:    #2.6.19.3
 [202]:    #2.6.19.4
+[203]:    #2.6.20.1
+[204]:    #2.6.20.2
+[205]:    #2.6.20.3
+[206]:    #2.6.20.4
+[207]:    #2.6.20.5
+[208]:    #2.6.20.6
+[209]:    #2.6.20.7
