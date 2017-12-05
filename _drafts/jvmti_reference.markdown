@@ -190,7 +190,9 @@ tags:       [java, jvm, jvmti]
             * [2.6.20.5 GetTimerInfo][207]
             * [2.6.20.6 GetTime][208]
             * [2.6.20.7 GetAvailableProcessors][209]
-        * [2.6.21 搜索类加载器][48]
+        * [2.6.21 类加载器搜索][48]
+            * [2.6.21.1 AddToBootstrapClassLoaderSearch][210]
+            * [2.6.21.2 AddToSystemClassLoaderSearch][211]
         * [2.6.22 系统属性][49]
         * [2.6.23 通用][50]
     * [2.7 错误码][51]
@@ -6028,7 +6030,66 @@ JVMTI代理通过相应的方法，能够获知JVM提供了哪些功能，添加
     * `JVMTI_ERROR_NULL_POINTER`: 参数`processor_count_ptr`为`NULL`
 
 <a name="2.6.21"></a>
-### 2.6.21 搜索类加载器
+### 2.6.21 类加载器搜索
+
+类加载器搜索相关的函数包括：
+
+* [2.6.21.1 AddToBootstrapClassLoaderSearch][210]
+* [2.6.21.2 AddToSystemClassLoaderSearch][211]
+
+该系列函数是JVMTI代理可以为某个类添加搜索路径，对于安装字节码增强类很有用。
+
+<a name="2.6.21.1"></a>
+#### 2.6.21.1 AddToBootstrapClassLoaderSearch
+
+    ```c
+    jvmtiError AddToBootstrapClassLoaderSearch(jvmtiEnv* env, const char* segment)
+    ```
+
+通过该函数使启动类加载日可以定义字节码增强类。启动类加载器无法找到目标类时，会搜索参数`segment`指向的路径。参数`segment`中只能指定一个路径。可以多次调用该函数来添加多个搜索路径，启动类加载器的搜索顺序与调用函数的顺序相同。
+
+在`OnLoad`阶段，可以通过该函数添加额外的搜索搜索路径，以便启动类加载器可以在找不到目标类时，在新添加的路径中查找目标类。典型情况下，添加的搜索路径是一个目录或jar包。
+
+在`live`阶段，可以通过该函数添加额外的jar包，作为额外搜索路径。需要注意的是，jar包中应该只包含用于字节码增强的类文件。
+
+* 调用阶段： 只可能在`live`或`OnLoad`阶段调用
+* 回调安全： 无
+* 索引位置： 149
+* Since： 1.0
+* 功能： 必选
+* 参数：
+    * `segment`: 类型为`const char*`，额外的搜索路径，以自定义UTF-8编码，JVMTI代理需要传入`char`数组
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: `segment`不是有效的路径。在`live`阶段，只能是jar包。
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`segment`为`NULL`
+
+<a name="2.6.21.2"></a>
+#### 2.6.21.2 AddToSystemClassLoaderSearch
+
+    ```c
+    jvmtiError AddToSystemClassLoaderSearch(jvmtiEnv* env, const char* segment)
+    ```
+
+通过该函数使系统类加载日可以定义字节码增强类。系统类加载器无法找到目标类时，会搜索参数`segment`指向的路径。参数`segment`中只能指定一个路径。可以多次调用该函数来添加多个搜索路径，系统类加载器的搜索顺序与调用函数的顺序相同。
+
+在`OnLoad`阶段，可以通过该函数添加额外的搜索搜索路径，以便系统类加载器可以在找不到目标类时，在新添加的路径中查找目标类。典型情况下，添加的搜索路径是一个目录或jar包。
+
+
+在`live`阶段，可以通过该函数添加额外的jar包，作为额外搜索路径，前提条件是系统类加载器实现了一个名为`appendToClassPathForInstrumentation`，带有一个`java.lang.String`参数的方法，这个方法不必为`public`。
+
+* 调用阶段： 只可能在`live`或`OnLoad`阶段调用
+* 回调安全： 无
+* 索引位置： 151
+* Since： 1.1
+* 功能： 必选
+* 参数：
+    * `segment`: 类型为`const char*`，额外的搜索路径，以自定义UTF-8编码，JVMTI代理需要传入`char`数组
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: `segment`不是有效的路径。在`live`阶段，只能是jar包。
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`segment`为`NULL`
+    * `JVMTI_ERROR_CLASS_LOADER_UNSUPPORTED`: 系统类加载器不支持操作
 
 <a name="2.6.22"></a>
 ### 2.6.22 系统属性
@@ -6304,3 +6365,5 @@ JVMTI代理通过相应的方法，能够获知JVM提供了哪些功能，添加
 [207]:    #2.6.20.5
 [208]:    #2.6.20.6
 [209]:    #2.6.20.7
+[210]:    #2.6.21.1
+[211]:    #2.6.21.2
