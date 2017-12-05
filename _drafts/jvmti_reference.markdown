@@ -194,6 +194,9 @@ tags:       [java, jvm, jvmti]
             * [2.6.21.1 AddToBootstrapClassLoaderSearch][210]
             * [2.6.21.2 AddToSystemClassLoaderSearch][211]
         * [2.6.22 系统属性][49]
+            * [2.6.22.1 GetSystemProperties][212]
+            * [2.6.22.2 GetSystemProperty][213]
+            * [2.6.22.3 SetSystemProperty][214]
         * [2.6.23 通用][50]
     * [2.7 错误码][51]
 * [3 事件][52]
@@ -6094,6 +6097,109 @@ JVMTI代理通过相应的方法，能够获知JVM提供了哪些功能，添加
 <a name="2.6.22"></a>
 ### 2.6.22 系统属性
 
+系统属性相关的函数包括：
+
+* [2.6.22.1 GetSystemProperties][212]
+* [2.6.22.2 GetSystemProperty][213]
+* [2.6.22.3 SetSystemProperty][214]
+
+这个系列的函数用于获取/设置系统属性。
+
+<a name="2.6.22.1"></a>
+#### 2.6.22.1 GetSystemProperties
+
+    ```c
+    jvmtiError GetSystemProperties(jvmtiEnv* env, jint* count_ptr, char*** property_ptr)
+    ```
+
+该函数用于返回系统属性列表，以便后续通过函数`GetSystemProperty`获取属性值。强烈建议JVM实现者提供一下属性：
+
+* java.vm.vendor
+* java.vm.version
+* java.vm.name
+* java.vm.info
+* java.library.path
+* java.class.path
+
+该函数返回的系统属性列表中，会包含有在启动程序时通过命令行选项设置的系统属性。
+
+这里的系统属性是指与JVM视角触发的，因此可访问的系统属性与方法`java.lang.System.getProperties`所得到的属性不尽相同。可以使用JNI方法来访问`java.lang.System.getProperties`方法。
+
+系统属性列表的内容可能会在将来的JVM版本中扩展。
+
+* 调用阶段： 只可能在`live`或`OnLoad`阶段调用
+* 回调安全： 无
+* 索引位置： 130
+* Since： 1.0
+* 功能： 必选
+* 参数：
+    * `count_ptr`: 
+        * 类型为`jint*`，出参，用于返回系统属性的个数
+        * JVMTI代理需要提供一个指向`jint`的指针
+    * `property_ptr`:
+        * 类型为`char***`，出参，用于返回系统属性列表，以自定义UTF-8编码
+        * JVMTI代理需要提供一个指向`char**`的指针，函数返回时会创建长度为`*count_ptr`的数组，需要调用函数`Deallocate`显式释放，其中的每个元素也是新创建的数组，也需要调用函数`Deallocate`显式释放。
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`count_ptr`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`property_ptr`为`NULL`
+
+<a name="2.6.22.2"></a>
+#### 2.6.22.2 GetSystemProperty
+
+    ```c
+    jvmtiError GetSystemProperty(jvmtiEnv* env, const char* property, char** value_ptr)
+    ```
+
+该函数用于返回某个系统属性的值。
+
+由于是从JVM角度出发看到的系统属性，因此可能与方法`java.lang.System.getProperty(String)`的返回不尽相同。典型情况下，JVM可能会在初始化时，将系统属性拷贝到`java.lang.System`所持有的`Properties`对象的中。此后对系统属性的修改(通过`SetSystemProperty`方法或`java.lang.System.setProperty(String,String)`方法)，将导致属性值不再一直。
+
+* 调用阶段： 只可能在`live`或`OnLoad`阶段调用
+* 回调安全： 无
+* 索引位置： 131
+* Since： 1.0
+* 功能： 必选
+* 参数：
+    * `property`: 
+        * 类型为`const char*`，目标属性的key，使用自定义UTF-8编码
+        * JVMTI代理需要提供一个`char`数组
+    * `value_ptr`:
+        * 类型为`char**`，出参，用于返回系统属性的值，以自定义UTF-8编码
+        * JVMTI代理需要提供一个指向`char*`的指针，函数返回时会创建新的数组，需要调用函数`Deallocate`显式释放
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NOT_AVAILABLE`: 目标属性值不可用，需要通过函数`GetSystemProperties`获取可用属性列表
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`property`为`NULL`
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`value_ptr`为`NULL`
+
+<a name="2.6.22.3"></a>
+#### 2.6.22.3 SetSystemProperty
+
+    ```c
+    jvmtiError SetSystemProperty(jvmtiEnv* env, const char* property, const char* value_ptr)
+    ```
+
+该函数用于设置目标系统属性的值。
+
+* 调用阶段： 只可能在`live`或`OnLoad`阶段调用
+* 回调安全： 无
+* 索引位置： 132
+* Since： 1.0
+* 功能： 必选
+* 参数：
+    * `property`: 
+        * 类型为`const char*`，目标属性的key，使用自定义UTF-8编码
+        * JVMTI代理需要提供一个`char`数组
+    * `value_ptr`:
+        * 类型为`const char*`，目标属性的值，以自定义UTF-8编码，JVMTI代理需要提供一个`char`数组
+        * 若参数值为`NULL`，则不会设置属性值
+        * 若属性值不可写，则返回错误`JVMTI_ERROR_NOT_AVAILABLE`
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NOT_AVAILABLE`: 目标属性值不可用或不可写
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`property`为`NULL`
+
 <a name="2.6.23"></a>
 ### 2.6.23 通用
 
@@ -6367,3 +6473,6 @@ JVMTI代理通过相应的方法，能够获知JVM提供了哪些功能，添加
 [209]:    #2.6.20.7
 [210]:    #2.6.21.1
 [211]:    #2.6.21.2
+[212]:    #2.6.22.1
+[213]:    #2.6.22.2
+[214]:    #2.6.22.3
