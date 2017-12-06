@@ -6565,6 +6565,18 @@ JNI函数只能在`live`阶段或`start`阶段使用(Invocation API除外)。
     JVMTI_JLOCATION_MACHINEPC	2	    jlocation的值表示本地程序的程序计数器的值
     JVMTI_JLOCATION_OTHER	    0	    jlocation的值表示其他内容
 
+* 调用阶段： 可能在任意阶段调用
+* 回调安全： 无
+* 索引位置： 129
+* Since： 1.0
+* 功能： 必选
+* 参数：
+    * `format_ptr`: 
+        * 类型为`jvmtiJlocationFormat*`，出参，用于返回`jlocation`的格式，JVMTI需要传入指向`jvmtiJlocationFormat`的指针
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`format_ptr`不是错误码
+
 <a name="2.7"></a>
 ## 2.7 错误码
 
