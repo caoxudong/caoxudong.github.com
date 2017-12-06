@@ -207,6 +207,10 @@ tags:       [java, jvm, jvmti]
             * [2.6.23.7 SetVerboseFlag][221]
             * [2.6.23.8 GetJLocationFormat][222]
     * [2.7 错误码][51]
+        * [2.7.1 通用错误码][223]
+        * [2.7.2 必要的函数相关错误码][224]
+        * [2.7.3 JVMTI代理相关的错误码][225]
+        * [2.7.4 数据类型][226]
 * [3 事件][52]
     * [3.1 事件索引][53]
 * [4 数据类型][54]
@@ -6580,6 +6584,156 @@ JNI函数只能在`live`阶段或`start`阶段使用(Invocation API除外)。
 <a name="2.7"></a>
 ## 2.7 错误码
 
+每个JVMTI函数都会返回`jvmtiError`。JVMTI代理在调用函数后，必须检查错误码的内容。
+
+<a name="2.7.1"></a>
+### 2.7.1 通用错误码
+
+* `JVMTI_ERROR_NONE (0)`: 没有错误发生，函数执行成功。
+* `JVMTI_ERROR_NULL_POINTER (100)`: 指针为`NULL`。
+* `JVMTI_ERROR_OUT_OF_MEMORY (110)`: 函数试图分配内存，但分配失败。
+* `JVMTI_ERROR_ACCESS_DENIED (111)`: JVM还没有启用函数所需的功能。
+* `JVMTI_ERROR_UNATTACHED_THREAD (115)`: 调用该函数的线程没有连接到JVM。
+* `JVMTI_ERROR_INVALID_ENVIRONMENT (116)`: JVMTI执行环境无效。
+* `JVMTI_ERROR_WRONG_PHASE (112)`: 在当前阶段，期望的功能不可用。如果JVM已经执行完毕，则永远返回该值。
+* `JVMTI_ERROR_INTERNAL (113)`: JVM内部出现错误。
+
+<a name="2.7.2"></a>
+### 2.7.2 必要的函数相关错误码
+
+下面的错误码由相关的JVMTI函数返回，JVMTI实现者必须在相关条件下返回这些错误码，JVMTI代理的开发者必须检查这些错误码。
+
+* `JVMTI_ERROR_INVALID_PRIORITY (12)`: 无效的优先级
+* `JVMTI_ERROR_THREAD_NOT_SUSPENDED (13)`: 线程没有被挂起
+* `JVMTI_ERROR_THREAD_SUSPENDED (14)`: 线程已经被挂起
+* `JVMTI_ERROR_THREAD_NOT_ALIVE (15)`: 该操作要求线程处于存活状态，即必须已经启动且还未死亡
+* `JVMTI_ERROR_CLASS_NOT_PREPARED (22)`: 类已经载入，但还未准备好
+* `JVMTI_ERROR_NO_MORE_FRAMES (31)`: 在指定的深度没有Java程序或JNI程序的栈帧
+* `JVMTI_ERROR_OPAQUE_FRAME (32)`: 无法获取到栈帧信息，例如本地栈帧
+* `JVMTI_ERROR_DUPLICATE (40)`: 条目已经设置
+* `JVMTI_ERROR_NOT_FOUND (41)`: 目标元素找不到
+* `JVMTI_ERROR_NOT_MONITOR_OWNER (51)`: 目标线程并不持有原始监视器
+* `JVMTI_ERROR_INTERRUPT (52)`: 调用在完成之前被中断了
+* `JVMTI_ERROR_UNMODIFIABLE_CLASS (79)`: 类不能被修改
+* `JVMTI_ERROR_NOT_AVAILABLE (98)`: 当前JVM不支持目标功能
+* `JVMTI_ERROR_ABSENT_INFORMATION (101)`: 目标信息不可用
+* `JVMTI_ERROR_INVALID_EVENT_TYPE (102)`: 无法识别目标事件类型
+* `JVMTI_ERROR_NATIVE_METHOD (104)`: 本地方法无法获取目标信息
+* `JVMTI_ERROR_CLASS_LOADER_UNSUPPORTED (106)`: 类载入器不支持该操作
+
+<a name="2.7.3"></a>
+### 2.7.3 JVMTI代理相关的错误码
+
+下面的错误码由某些JVMTI函数返回，错误原因是JVMTI代理传入了无效的参数或在错误的上下文环境中调用了函数。不强制要求JVMTI代理的开发者检查这些错误码。
+
+* `JVMTI_ERROR_INVALID_THREAD (10)`: 无效线程
+* `JVMTI_ERROR_INVALID_FIELDID (25)`: 无效属性
+* `JVMTI_ERROR_INVALID_METHODID (23)`: 无效方法
+* `JVMTI_ERROR_INVALID_LOCATION (24)`: 无效位置
+* `JVMTI_ERROR_INVALID_OBJECT (20)`: 无效对象
+* `JVMTI_ERROR_INVALID_CLASS (21)`: 无效类
+* `JVMTI_ERROR_TYPE_MISMATCH (34)`: 变量类型与函数要求不匹配
+* `JVMTI_ERROR_INVALID_SLOT (35)`: 无效槽
+* `JVMTI_ERROR_MUST_POSSESS_CAPABILITY (99)`: 当前JVMTI执行环境没有添加所需功能
+* `JVMTI_ERROR_INVALID_THREAD_GROUP (11)`: 无效的线程组
+* `JVMTI_ERROR_INVALID_MONITOR (50)`: 无效的原始监视器
+* `JVMTI_ERROR_ILLEGAL_ARGUMENT (103)`: 无效参数
+* `JVMTI_ERROR_INVALID_TYPESTATE (65)`: 线程状态已被修改，不一致
+* `JVMTI_ERROR_UNSUPPORTED_VERSION (68)`: 当前JVM不支持目标类文件的版本号
+* `JVMTI_ERROR_INVALID_CLASS_FORMAT (60)`: 类文件格式不正确
+* `JVMTI_ERROR_CIRCULAR_CLASS_DEFINITION (61)`: 类文件定义导致了循环定义
+* `JVMTI_ERROR_UNSUPPORTED_REDEFINITION_METHOD_ADDED (63)`: 类文件中添加了方法
+* `JVMTI_ERROR_UNSUPPORTED_REDEFINITION_SCHEMA_CHANGED (64)`: 新类版本修改了属性
+* `JVMTI_ERROR_FAILS_VERIFICATION (62)`: 类字节码校验失败
+* `JVMTI_ERROR_UNSUPPORTED_REDEFINITION_HIERARCHY_CHANGED (66)`: 新类版本的直接父类与原先不同，或者直接实现的接口与原先不同
+* `JVMTI_ERROR_UNSUPPORTED_REDEFINITION_METHOD_DELETED (67)`: 新类版本丢失原版本中声明的方法
+* `JVMTI_ERROR_NAMES_DONT_MATCH (69)`: 新类版本的类名与原版本不同
+* `JVMTI_ERROR_UNSUPPORTED_REDEFINITION_CLASS_MODIFIERS_CHANGED (70)`: 新类版本使用了不同的修饰符
+* `JVMTI_ERROR_UNSUPPORTED_REDEFINITION_METHOD_MODIFIERS_CHANGED (71)`: 新类版本方法的修饰符与原版本不同
+
+<a name="2.7.4"></a>
+### 2.7.4 数据类型
+
+JVMTI中使用到的JNI类型：
+
+    Type	    Description
+    jboolean	Java中的boolean，无符号8位
+    jchar	    Java中的char，无符号16位
+    jint	    Java中的int，有符号32位
+    jlong	    Java中的long，有符号64位
+    jfloat	    Java中的float，有符号32位
+    jdouble	    Java中的double，有符号64位
+    jobject	    Java中的对象
+    jclass	    Java中的类
+    jvalue	    联合体，可存储所有类型的数据.
+    jfieldID	Java中成员变量
+    jmethodID	Java中的方法
+    JNIEnv	    指向JNI函数表
+
+JVMTI数据类型：
+
+* `jvmtiEnv`: JVMTI执行环境
+* `jthread`: `jobject`的子类，用于表示线程对象
+
+            ```c
+            typedef jobject jthread;
+            ```
+
+* `jthreadGroup`: `jobject`的子类，用于表示线程组对象
+
+            ```c
+            typedef jobject jthreadGroup;
+            ```
+
+* `jlocation`: 64位整数值，表示方法中的位置，单调递增，`-1`表示本地方法
+
+            ```c
+            typedef jlong jlocation;
+            ```
+
+* `jrawMonitorID`: 原始监视器
+
+            ```c
+            struct _jrawMonitorID;
+            typedef struct _jrawMonitorID *jrawMonitorID;
+            ```
+
+* `jvmtiError`: 错误码
+
+            ```c
+            typedef enum { 
+                JVMTI_ERROR_NONE = 0,  
+                JVMTI_ERROR_INVALID_THREAD = 10,
+                ... 
+            } jvmtiError;
+            ```
+
+* `jvmtiEvent`: 事件类型
+
+            ```c
+            typedef enum { 
+                JVMTI_EVENT_SINGLE_STEP = 1, 
+                JVMTI_EVENT_BREAKPOINT = 2, 
+                ... 
+            } jvmtiEvent;
+            ```
+
+* `jvmtiEventCallbacks`: 事件回调
+
+            ```c
+            typedef struct {
+                jvmtiEventVMInit VMInit;
+                jvmtiEventVMDeath VMDeath;
+                ... 
+            } jvmtiEventCallbacks;
+            ```
+
+* `jniNativeInterface`: JNI接口
+
+            ```c
+            typedef struct JNINativeInterface_ jniNativeInterface;
+            ```
+
 <a name="3"></a>
 # 3 事件
 
@@ -6858,3 +7012,7 @@ JNI函数只能在`live`阶段或`start`阶段使用(Invocation API除外)。
 [220]:    #2.6.23.6
 [221]:    #2.6.23.7
 [222]:    #2.6.23.8
+[223]:    #2.7.1
+[224]:    #2.7.2
+[225]:    #2.7.3
+[226]:    #2.7.4
