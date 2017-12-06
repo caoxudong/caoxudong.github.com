@@ -198,6 +198,14 @@ tags:       [java, jvm, jvmti]
             * [2.6.22.2 GetSystemProperty][213]
             * [2.6.22.3 SetSystemProperty][214]
         * [2.6.23 通用][50]
+            * [2.6.23.1 GetPhase][215]
+            * [2.6.23.2 DisposeEnvironment][216]
+            * [2.6.23.3 SetEnvironmentLocalStorage][217]
+            * [2.6.23.4 GetEnvironmentLocalStorage][218]
+            * [2.6.23.5 GetVersionNumber][219]
+            * [2.6.23.6 GetErrorName][220]
+            * [2.6.23.7 SetVerboseFlag][221]
+            * [2.6.23.8 GetJLocationFormat][222]
     * [2.7 错误码][51]
 * [3 事件][52]
     * [3.1 事件索引][53]
@@ -6203,6 +6211,360 @@ JVMTI代理通过相应的方法，能够获知JVM提供了哪些功能，添加
 <a name="2.6.23"></a>
 ### 2.6.23 通用
 
+相关函数包括:
+
+* [2.6.23.1 GetPhase][215]
+* [2.6.23.2 DisposeEnvironment][216]
+* [2.6.23.3 SetEnvironmentLocalStorage][217]
+* [2.6.23.4 GetEnvironmentLocalStorage][218]
+* [2.6.23.5 GetVersionNumber][219]
+* [2.6.23.6 GetErrorName][220]
+* [2.6.23.7 SetVerboseFlag][221]
+* [2.6.23.8 GetJLocationFormat][222
+
+<a name="2.6.23.1"></a>
+#### 2.6.23.1 GetPhase
+
+    ```c
+    jvmtiError GetPhase(jvmtiEnv* env, jvmtiPhase* phase_ptr)
+    ```
+
+该函数用于会翻当前JVM所处的阶段。其中`jvmtiPhase`的定义如下：
+
+    ```c
+    typedef enum {
+        JVMTI_PHASE_ONLOAD = 1,
+        JVMTI_PHASE_PRIMORDIAL = 2,
+        JVMTI_PHASE_START = 6,
+        JVMTI_PHASE_LIVE = 4,
+        JVMTI_PHASE_DEAD = 8
+    } jvmtiPhase;
+    ```
+
+各阶段的说明如下：
+
+                            Phases of execution (jvmtiPhase)
+    Constant	            Value	Description
+    JVMTI_PHASE_ONLOAD	    1	    载入阶段：正在执行"Agent_load"函数，或者执行"Agent_OnLoad_<agent-lib-name>"函数
+    JVMTI_PHASE_PRIMORDIAL	2	    初始阶段：已经完成执行"Agent_load"函数"Agent_OnLoad_<agent-lib-name>"函数，但还没开始"VMStart事件
+    JVMTI_PHASE_START	    6	    开始阶段：已经发送"VMStartS"事件，还未开始"VMInit"事件
+    JVMTI_PHASE_LIVE	    4	    存活阶段：已经发送"VMStartS"事件，"VMDeath"事件还未结束
+    JVMTI_PHASE_DEAD	    8	    死亡阶段："VMDeath"事件已完成，或者启动失败之后
+
+启动失败时，JVM会直接转入死亡阶段。
+
+大部分JVMTI函数只能在`live`阶段使用。下面的函数可以在`OnLoad`阶段或`live`阶段使用：
+
+* CreateRawMonitor
+* DestroyRawMonitor
+* SetEventCallbacks
+* SetEventNotificationMode
+* GetExtensionFunctions
+* GetExtensionEvents
+* SetExtensionEventCallback
+* GetPotentialCapabilities
+* AddCapabilities
+* RelinquishCapabilities
+* AddToBootstrapClassLoaderSearch
+* AddToSystemClassLoaderSearch
+* GetSystemProperties
+* GetSystemProperty
+
+下面的函数只能在`OnLoad`阶段使用：
+
+* SetSystemProperty
+
+下面的函数可以在`start`阶段或`live`阶段使用：
+
+* GetCurrentThread
+* SetThreadLocalStorage
+* GetThreadLocalStorage
+* GetTag
+* SetTag
+* GetClassSignature
+* GetClassStatus
+* GetSourceFileName
+* GetClassModifiers
+* GetClassMethods
+* GetClassFields
+* GetImplementedInterfaces
+* GetClassVersionNumbers
+* GetConstantPool
+* IsInterface
+* IsArrayClass
+* IsModifiableClass
+* GetClassLoader
+* GetSourceDebugExtension
+* GetObjectSize
+* GetObjectHashCode
+* GetFieldName
+* GetFieldDeclaringClass
+* GetFieldModifiers
+* IsFieldSynthetic
+* GetMethodName
+* GetMethodDeclaringClass
+* GetMethodModifiers
+* GetMaxLocals
+* GetArgumentsSize
+* GetLineNumberTable
+* GetMethodLocation
+* GetBytecodes
+* IsMethodNative
+* IsMethodSynthetic
+* IsMethodObsolete
+* SetJNIFunctionTable
+* GetJNIFunctionTable
+* GetCurrentThreadCpuTimerInfo
+* GetCurrentThreadCpuTime
+
+下面的函数可以在任意阶段使用：
+
+* Allocate
+* Deallocate
+* SetNativeMethodPrefix
+* SetNativeMethodPrefixes
+* RawMonitorEnter
+* RawMonitorExit
+* RawMonitorWait
+* RawMonitorNotify
+* RawMonitorNotifyAll
+* GetCapabilities
+* GetTimerInfo
+* GetTime
+* GetAvailableProcessors
+* GetPhase
+* DisposeEnvironment
+* SetEnvironmentLocalStorage
+* GetEnvironmentLocalStorage
+* GetVersionNumber
+* GetErrorName
+* SetVerboseFlag
+* GetJLocationFormat
+
+JNI函数只能在`live`阶段或`start`阶段使用(Invocation API除外)。
+
+大部分JVMTI事件只能在`live`阶段发送，下面的事件可以在其他阶段发送：
+
+* ThreadStart
+* ThreadEnd
+* ClassLoad
+* ClassPrepare
+* VMStart
+* NativeMethodBind
+* ClassFileLoadHook
+* DynamicCodeGenerated
+
+函数说明如下：
+
+* 调用阶段： 可能在任意阶段调用
+* 回调安全： 无
+* 索引位置： 133
+* Since： 1.0
+* 功能： 必选
+* 参数：
+    * `phase_ptr`: 
+        * 类型为`jvmtiPhase*`，出参，返回当前JVM的阶段
+        * JVMTI代理需要提供一个指向`jvmtiPhase`的指针
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`phase_ptr`为`NULL`
+
+<a name="2.6.23.2"></a>
+#### 2.6.23.2 DisposeEnvironment
+
+    ```c
+    jvmtiError DisposeEnvironment(jvmtiEnv* env)
+    ```
+
+该函数用于关闭由JNI函数`GetEnv`函数创建JVMTI连接，并销毁目标执行环境所持有的资源。需要注意的是，目标执行环境所产生的副作用不会自动恢复，需要手动处理，包括：
+
+* 目标执行环境所挂起的线程不会自动恢复，必须由JVMTI显式恢复线程运行
+* 目标执行环境所分配的内存不会自动释放，必须显式调用函数`Deallocate`来释放
+* 目标执行环境所创建的原始监视器不会自动销毁，必须显式调用函数`DestroyRawMonitor`来销毁
+
+调用该函数后，目标执行环境所设置的本地方法前缀会被撤销，JVMTI代理在调用该函数前必须移除所有加了前缀的本地方法。
+
+调用该函数后，目标执行环境所具有功能都会撤销。
+
+调用该函数后，目标执行环境所启用的事件都不会再发送，但已有的事件处理器会继续运行。设计事件处理器时需要注意，在事件处理过程中，执行环境可能会失效。
+
+* 调用阶段： 可能在任意阶段调用
+* 回调安全： 无
+* 索引位置： 127
+* Since： 1.0
+* 功能： 必选
+* 参数：无
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`phase_ptr`为`NULL`
+
+<a name="2.6.23.3"></a>
+#### 2.6.23.3 SetEnvironmentLocalStorage
+
+    ```c
+    jvmtiError SetEnvironmentLocalStorage(jvmtiEnv* env, const void* data)
+    ```
+
+每个执行环境都有一个指针值，指向存储的数据，这个指针成为执行环境局部存储。在未调用该函数之前，局部存储中的值为`NULL`。JVMTI代理可以专门分配内存来存储相关信息，存储的数据可以通过函数`GetEnvironmentLocalStorage`来获取。
+
+* 调用阶段： 可能在任意阶段调用
+* 回调安全： 该函数可能会在堆处理函数的回调函数中被调用，或者在事件`GarbageCollectionStart` `GarbageCollectionFinish`和`ObjectFree`的事件处理函数中被调用
+* 索引位置： 148
+* Since： 1.0
+* 功能： 必选
+* 参数：
+    * `data`: 类型为`const void *`，待设置的数据，若参数值为`NULL`，则会将数据置为`NULL`
+* 返回：
+    * 通用错误码 
+
+<a name="2.6.23.4"></a>
+#### 2.6.23.4 GetEnvironmentLocalStorage
+
+    ```c
+    jvmtiError GetEnvironmentLocalStorage(jvmtiEnv* env, void** data_ptr)
+    ```
+
+该函数用于获取存储的相关数据。
+
+* 调用阶段： 可能在任意阶段调用
+* 回调安全： 该函数可能会在堆处理函数的回调函数中被调用，或者在事件`GarbageCollectionStart` `GarbageCollectionFinish`和`ObjectFree`的事件处理函数中被调用
+* 索引位置： 147
+* Since： 1.0
+* 功能： 必选
+* 参数：
+    * `data_ptr`: 类型为`void **`，待设置的数据，出参，指向存储的数据，若没有设置，则值为`NULL`
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`data_ptr`为`NULL`
+
+<a name="2.6.23.5"></a>
+#### 2.6.23.5 GetVersionNumber
+
+    ```c
+    jvmtiError GetVersionNumber(jvmtiEnv* env, jint* version_ptr)
+    ```
+
+该函数用于JVMTI返回版本号，包括主版本号、次版本号和微版本号。
+
+                                Version Interface Types
+    Constant	                        Value	    Description
+    JVMTI_VERSION_INTERFACE_JNI	        0x00000000	用于JNIV
+    JVMTI_VERSION_INTERFACE_JVMTI	    0x30000000	用于JVMTI
+
+                                Version Masks
+    Constant	                        Value	    Description
+    JVMTI_VERSION_MASK_INTERFACE_TYPE	0x70000000	用于获取接口类型的掩码
+    JVMTI_VERSION_MASK_MAJOR	        0x0FFF0000	用于获取主版本号的掩码
+    JVMTI_VERSION_MASK_MINOR	        0x0000FF00	用于获取次版本号的掩码
+    JVMTI_VERSION_MASK_MICRO	        0x000000FF	用于获取微版本号的掩码
+
+                                Version Shifts
+    Constant	                        Value	    Description
+    JVMTI_VERSION_SHIFT_MAJOR	        16	        用于获取主版本号的移位
+    JVMTI_VERSION_SHIFT_MINOR	        8	        用于获取次版本号的移位
+    JVMTI_VERSION_SHIFT_MICRO	        0	        用于获取微版本号的移位
+
+
+函数参数说明信息如下：
+
+* 调用阶段： 可能在任意阶段调用
+* 回调安全： 无
+* 索引位置： 58
+* Since： 1.0
+* 功能： 必选
+* 参数：
+    * `version_ptr`: 类型为`void **`，用于返回JVMTI的版本号，JVMTI代理需要提供指向`jint`的指针
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`version_ptr`为`NULL`
+
+<a name="2.6.23.6"></a>
+#### 2.6.23.6 GetErrorName
+
+    ```c
+    vmtiError GetErrorName(jvmtiEnv* env, jvmtiError error, char** name_ptr)
+    ```
+
+该函数用于返回错误码对应的符号名。
+
+例如，执行下面的代码时，会在出参`name_ptr`中返回`JVMTI_ERROR_NONE`:
+
+    ```c
+    GetErrorName(env, JVMTI_ERROR_NONE, &err_name)
+    ```
+
+* 调用阶段： 可能在任意阶段调用
+* 回调安全： 无
+* 索引位置： 128
+* Since： 1.0
+* 功能： 必选
+* 参数：
+    * `error`: 类型为`jvmtiError`，目标错误码
+    * `name_ptr`: 
+        * 类型为`char **`，出参，用于返回错误名称，以自定义UTF-8编码，但这里实际上只有ASCII字符
+        * JVMTI代理需要提供指向`char*`的指针，函数返回时会创建信息的数组，需要使用函数`Deallocate`来释放
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`error`不是错误码
+    * `JVMTI_ERROR_NULL_POINTER`: 参数`version_ptr`为`NULL`
+
+<a name="2.6.23.7"></a>
+#### 2.6.23.7 SetVerboseFlag
+
+    ```c
+    jvmtiError SetVerboseFlag(jvmtiEnv* env, jvmtiVerboseFlag flag, jboolean value)
+    ```
+
+其中`jvmtiVerboseFlag`的定义如下：
+
+    ```c
+                        Verbose Flag Enumeration (jvmtiVerboseFlag)
+    Constant	        Value	Description
+    JVMTI_VERBOSE_OTHER	0	    除了下面之外的其他内容
+    JVMTI_VERBOSE_GC	1	    输出GC信息，-verbose:gc
+    JVMTI_VERBOSE_CLASS	2	    输出类加载信息，-verbose:class
+    JVMTI_VERBOSE_JNI	4	    输出JNI信息，-verbose:jni
+    ```
+
+该函数用于设置详细输出的内容。
+
+* 调用阶段： 可能在任意阶段调用
+* 回调安全： 无
+* 索引位置： 128
+* Since： 1.0
+* 功能： 必选
+* 参数：
+    * `flag`: 类型为`jvmtiVerboseFlag`，要设置的输出内容
+    * `value`: 类型为`jboolean`，是否要输出目标内容
+* 返回：
+    * 通用错误码 
+    * `JVMTI_ERROR_ILLEGAL_ARGUMENT`: 参数`flag`不是错误码
+
+<a name="2.6.23.8"></a>
+#### 2.6.23.8 GetJLocationFormat
+
+    ```c
+    jvmtiError GetJLocationFormat(jvmtiEnv* env, jvmtiJlocationFormat* format_ptr)
+    ```
+
+其中`jvmtiJLocationFormat`的定义如下：
+
+    ```c
+    typedef enum {
+        JVMTI_JLOCATION_JVMBCI = 1,
+        JVMTI_JLOCATION_MACHINEPC = 2,
+        JVMTI_JLOCATION_OTHER = 0
+    } jvmtiJlocationFormat;
+    ```
+
+尽管该函数的主要功能是获取JVM字节码的位置信息，但JVM的实现者可以选择不实现相关功能，从而该函数无法获取位置信息。
+
+                    JLocation Format Enumeration (jvmtiJlocationFormat)
+    Constant	                Value	Description
+    JVMTI_JLOCATION_JVMBCI	    1	    jlocation的值表示JVM字节码的索引，即方法的偏移量
+    JVMTI_JLOCATION_MACHINEPC	2	    jlocation的值表示本地程序的程序计数器的值
+    JVMTI_JLOCATION_OTHER	    0	    jlocation的值表示其他内容
+
 <a name="2.7"></a>
 ## 2.7 错误码
 
@@ -6476,3 +6838,11 @@ JVMTI代理通过相应的方法，能够获知JVM提供了哪些功能，添加
 [212]:    #2.6.22.1
 [213]:    #2.6.22.2
 [214]:    #2.6.22.3
+[215]:    #2.6.23.1
+[216]:    #2.6.23.2
+[217]:    #2.6.23.3
+[218]:    #2.6.23.4
+[219]:    #2.6.23.5
+[220]:    #2.6.23.6
+[221]:    #2.6.23.7
+[222]:    #2.6.23.8
