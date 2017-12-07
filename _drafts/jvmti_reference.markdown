@@ -212,16 +212,39 @@ tags:       [java, jvm, jvmti]
         * [2.7.3 JVMTI代理相关的错误码][225]
         * [2.7.4 数据类型][226]
 * [3 事件][52]
-    * [3.1 事件索引][53]
-* [4 数据类型][54]
-    * [4.1 JVMTI中所使用的JNI数据类型][55]
-    * [4.2 JVMTI中的基本类型][56]
-    * [4.3 数据结构类型定义][57]
-    * [4.4 函数类型定义][58]
-    * [4.5 枚举定义][59]
-    * [4.6 函数表][60]
-* [5 常量索引][61]
-* [6 变更历史][62]
+    * [3.1 SingleStep][227]
+    * [3.2 Breakpoint][228]
+    * [3.3 FieldAccess][229]
+    * [3.4 FieldModification][230]
+    * [3.5 FramePop][231]
+    * [3.6 MethodEntry][232]
+    * [3.7 MethodExit][233]
+    * [3.8 NativeMethodBind][234]
+    * [3.9 Exception][235]
+    * [3.10 ExceptionCatch][236]
+    * [3.11 ThreadStart][237]
+    * [3.12 ThreadEnd][238]
+    * [3.13 ClassLoad][239]
+    * [3.14 ClassPrepare][240]
+    * [3.15 ClassFileLoadHook][241]
+    * [3.16 VMStart][242]
+    * [3.17 VMInit][243]
+    * [3.18 VMDeath][244]
+    * [3.19 CompiledMethodLoad][245]
+    * [3.20 CompiledMethodUnload][246]
+    * [3.21 DynamicCodeGenerated][247]
+    * [3.22 DataDumpRequest][248]
+    * [3.23 MonitorContendedEnter][249]
+    * [3.24 MonitorContendedEntered][250]
+    * [3.25 MonitorWait][251]
+    * [3.26 MonitorWaited][252]
+    * [3.27 ResourceExhausted][253]
+    * [3.28 VMObjectAlloc][254]
+    * [3.29 ObjectFree][255]
+    * [3.30 GarbageCollectionStart][256]
+    * [3.31 GarbageCollectionFinish][257]
+* [4 常量索引][61]
+* [5 变更历史][62]
 * [Resource][100]
 
 <a name="1"></a>
@@ -6737,35 +6760,816 @@ JVMTI数据类型：
 <a name="3"></a>
 # 3 事件
 
+应用程序运行过程中，JVMTI代理可以收到各种事件通知。
+
+为了处理目标事件，可以通过函数`SetEventCallbacks`设置事件回调函数，当发生事件时，会调用相应的时间回调函数。
+
+事件回调函数通常由应用程序线程发起调用，JVMTI实现并不会对事件做排队处理，因此，编写事件回调函数时，需要特别小心。下面是一些注意事项：
+
+* 在事件回调函数中抛出的异常，会覆盖掉当前还未处理的异常，需要特别注意
+* 事件回调函数必须是可重入的，JVMTI实现并不会对事件做排队处理，若JVMTI代理需要一次一个事件的处理，则需要在事件回调函数中使用监视器，自己实现同步操作
+* 若在事件回调函数中调用JNI函数`FindClass`载入类，需要注意`FindClass`会使用当前本地线程的相关联的类载入器。
+
+JVMTI事件中的引用都是JNI局部引用，在事件回调函数返回后就会失效。除非特别声明，否则在事件回调函数中发送的指针所指向的内存区域，在事件回调函数结束后，指针的值可能不再有效。
+
+除非特别声明，否则事件会被发送到产生该事件的线程，产生事件就会发送。
+
+产生事件的线程并不会修改事件的状态，若JVMTI代理想要挂起事件，则需要显式调用`SuspendThread`方法来挂起处理事件的线程。
+
+若事件在多个JVMTI执行环境中启用了，则会按照执行环境的创建顺序逐个发送。
+
+很多时候，在同一个线程的同一个位置，可能会触发多个事件，此时，所有的事件都会执行事件回调函数。
+
+若当前位置是方法的入口点，则会在其他事件触发前，先触发`MethodEntry`事件。
+
+若在当前位置探查到有异常，或者当前位置在`catch`语句块的起始位置，或者清除了挂起异常的本地方法返回了，则会先触发`exceptionCatch`事件，然后再触发其他事件。
+
+若在当前位置触发了事件`singleStep`或`breakpoint`，则会在执行当前位置的代码前，先触发事件，而且事件`singleStep`或`breakpoint`会先于同位置的其他事件触发。如果同事触发了事件`singleStep`和`breakpoint`，则先处理`singleStep`事件。
+
+若当前位置在方法的出口点，则事件`MethodExit`和`FramePop`会在同位置的其他事件处理完成后再处理。
+
+协同定位事件是指，在同一线程的同一位置处理事件A的时候触发了事件B，且按照事件处理顺序，A优先于B。若按照事件处理顺序，B优先于A，则事件B不会被报告为当前线程和位置。下面的事件永远都不会与其他事件成为协同定位事件：
+
+* VMStart
+* VMInit
+* VMDeath
+* ThreadStart
+* ThreadEnd
+* ClassLoad
+* ClassPrepare
+
 <a name="3.1"></a>
-## 3.1 事件索引
+## 3.1 SingleStep
+
+    ```c
+    void JNICALL SingleStep(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread, jmethodID method, jlocation location)
+    ```
+
+步进事件使JVMTI代理可以最细粒度的跟踪JVM的执行。当线程达到一个新的代码位置时，会产生一个新的步进事件。典型情况下，一个步进事件代表了一条JVM中的字节码。但在某些JVM实现中，对于"位置"的定义可能有所不同。在任何情况下，`method`和`location`都只能定位一个唯一的位置，以便可以映射到源代码的具体位置。
+
+本地方法不会产生步进事件。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_SINGLE_STEP`
+* 事件编号： 60
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_SINGLE_STEP, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_single_step_events`: 是否能获取步进事件
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，将要执行下一个指令的线程
+    * `method`: 类型为`jmethodID`，将要执行下一个指令的方法
+    * `location`: 类型为`jlocation`，将要执行下一个指令的位置
+
+<a name="3.2"></a>
+## 3.2 Breakpoint
+
+    ```c
+    void JNICALL Breakpoint(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread, jmethodID method, jlocation location)
+    ```
+
+当线程执行到一个带有断点的位置时，会生成一个断点事件，通过`method`和`location`映射到原文件的具体问题。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_BREAKPOINT`
+* 事件编号： 62
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_BREAKPOINT, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_breakpoint_events`: 是否能设置/获取断点  
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，目标线程
+    * `method`: 类型为`jmethodID`，目标方法
+    * `location`: 类型为`jlocation`，将要执行下一个指令的位置
+
+<a name="3.3"></a>
+## 3.3 FieldAccess
+
+    ```c
+    void JNICALL FieldAccess(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread, jmethodID method, jlocation location, jclass field_klass, jobject object, jfieldID field)
+    ```
+
+当线程访问了具有观察点的属性时，会产生一个属性访问事件。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_FIELD_ACCESS`
+* 事件编号： 63
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_FIELD_ACCESS, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_field_access_events`: 是否能观察点 
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，目标线程
+    * `method`: 类型为`jmethodID`，目标方法
+    * `location`: 类型为`jlocation`，目标位置
+    * `field_klass`: 类型为`jclass`，要访问的属性的类型
+    * `object`: 类型为`jobject`，若目标属性为对象，则为对象的值，否则为`NULL`
+    * `field`: 类型为`jfieldID`，目标属性ID
+
+<a name="3.4"></a>
+## 3.4 FieldModification
+
+    ```c
+    void JNICALL FieldModification(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread, jmethodID method, jlocation location, jclass field_klass, jobject object, jfieldID field, char signature_type, jvalue new_value)
+    ```
+
+当线程修改具有观察点的属性时，会产生一个属性访问事件。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_FIELD_MODIFICATION`
+* 事件编号： 64
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_FIELD_MODIFICATION, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_field_modification_events`: 是否能观察点 
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，目标线程
+    * `method`: 类型为`jmethodID`，目标方法
+    * `location`: 类型为`jlocation`，目标位置
+    * `field_klass`: 类型为`jclass`，要访问的属性的类型
+    * `object`: 类型为`jobject`，若目标属性为对象，则为对象的值，否则为`NULL`
+    * `field`: 类型为`jfieldID`，目标属性ID
+    * `signature_type`: 类型为`char`，新的属性值的类型签名
+    * `new_value`: 类型为`jvalue`，新的属性值
+
+<a name="3.5"></a>
+## 3.5 FramePop
+
+    ```c
+    void JNICALL FramePop(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread, jmethodID method, jboolean was_popped_by_exception)
+    ```
+
+当调用`NotifyFramePop`从单个方法返回时，会抛出一个栈帧，会产生栈帧弹出事件。当执行退出指令或抛出异常而导致方法返回时，也会产生栈帧弹出事件。但是，由函数`PopFrame`弹出的栈帧不会报告栈帧弹出事件。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_FRAME_POP`
+* 事件编号： 61
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_FRAME_POP, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_frame_pop_events`: 是否能设置/获取栈帧弹出事件
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，目标线程
+    * `method`: 类型为`jmethodID`，目标方法
+    * `was_popped_by_exception`: 类型为`jboolean`，若为`true`表示是由于异常导致栈帧弹出，若为`false`表示是由退出指令导致的
+
+<a name="3.6"></a>
+## 3.6 MethodEntry
+
+    ```c
+    void JNICALL MethodEntry(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread, jmethodID method)
+    ```
+
+当进入Java方法(包括本地方法)时，会产生方法进入事件。
+
+`GetFrameLocation`报告的`location`可用于定位方法的初始执行位置。
+
+在大部分平台上，启用方法进入或方法退出会导致很大的性能损耗，因此对于性能敏感的应用来说，慎用。字节码注入可用于这种场景。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_METHOD_ENTRY`
+* 事件编号： 64
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_METHOD_ENTRY, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_method_entry_events`: 进入方法时，是否能产生事件
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，目标线程
+    * `method`: 类型为`jmethodID`，目标方法
+
+<a name="3.7"></a>
+## 3.7 MethodExit
+
+    ```c
+    void JNICALL MethodExit(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread, jmethodID method, jboolean was_popped_by_exception, jvalue return_value)
+    ```
+
+从Java方法(包括本地方法)返回时，会产生方法退出事件，正常退出或因异常导致退出都会产生方法退出事件。
+
+在大部分平台上，启用方法进入或方法退出会导致很大的性能损耗，因此对于性能敏感的应用来说，慎用。字节码注入可用于这种场景。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_METHOD_EXIT`
+* 事件编号： 66
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_METHOD_EXIT, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_method_exit_events`: 退出方法时，是否能产生事件
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，目标线程
+    * `method`: 类型为`jmethodID`，目标方法
+    * `was_popped_by_exception`: 类型为`jboolean`，若为`true`表示是由于异常导致栈帧弹出，若为`false`表示是由退出指令导致的
+    * `return_value`: 类型为`jvalue`，方法退出时的返回值，若`was_popped_by_exception`为`true`，则不应该使用该值
+
+<a name="3.8"></a>
+## 3.8 NativeMethodBind
+
+    ```c
+    void JNICALL NativeMethodBind(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread, jmethodID method, void* address, void** new_address_ptr)
+    ```
+
+当JVM绑定了一个本地方法到具体实现后，会产生一个绑定事件。当首次调用本地方法时，或调用JNI函数`RegisterNatives`时，会产生该事件。这个事件允许绑定被重定向到JVMTI代理指定的代理函数上。在本地函数被解绑时，不会产生该事件。典型场景下，这个代理函数需要指定到具体的方法，或者为了处理通用情况而指定到自动产生的汇编代码，因为在执行了字节码增强的代码后，通常就会调用原先绑定地址的函数了。原来绑定的函数实现会被转存起来。在`primordial`阶段可能会发送一起其他事件，JNI和大部分JVMTI在此时都无法使用，但方法实现和地址可以存储起来以备后续使用。
+
+* 调用阶段： 只能在`primordial` `live`或`start`阶段调用
+* 事件类型： `JVMTI_EVENT_NATIVE_METHOD_BIND`
+* 事件编号： 67
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_NATIVE_METHOD_BIND, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_native_method_bind_events`: 绑定本地方法时，是否能产生事件
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，目标线程
+    * `method`: 类型为`jmethodID`，目标方法
+    * `address`: 类型为`void*`，目标地址
+    * `new_address_ptr`: 类型为`void**`，若引用地址已经改变，则会绑定到提供的新地址上
+
+<a name="3.9"></a>
+## 3.9 Exception
+
+    ```c
+    void JNICALL Exception(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread, jmethodID method, jlocation location, jobject exception, jmethodID catch_method, jlocation catch_location)
+    ```
+
+在Java方法中，无论何时探查到有异常抛出，都会产生一个异常事件。这里的异常指的是`java.lang.Throwable`。异常可能由Java方法或本地方法抛出，若是由本地方法抛出，则在Java方法见到这个异常之前，不会产生异常事件。若在本地方法中设置了异常，又清理了异常，则不会产生异常事件。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_EXCEPTION`
+* 事件编号： 58
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_EXCEPTION, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_exception_events`: 是否能获取异常抛出和异常捕获事件
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，目标线程
+    * `method`: 类型为`jmethodID`，目标方法
+    * `location`: 类型为`jlocation`，发生异常的位置
+    * `exception`: 类型为`jobject`，抛出的异常
+    * `catch_method`: 类型为`jmethodID`，捕获异常的方法
+    * `catch_location`: 类型为`jlocation`，捕获异常的位置
+
+<a name="3.10"></a>
+## 3.10 ExceptionCatch
+
+    ```c
+    void JNICALL ExceptionCatch(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread, jmethodID method, jlocation location, jobject exception)
+    ```
+
+当捕获到异常时，会产生异常捕获事件。这里的异常指的是`java.lang.Throwable`。若是在Java方法中捕获的异常，则在达到`catch`语句块时产生异常捕获事件；若是在本地方法中捕获异常，则会在控制权转回到Java方法时产生异常捕获事件。需要注意的是`finally`语句块的实现是先捕获再重新抛出，因此`finally`语句块也会产生异常捕获事件。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_EXCEPTION_CATCH`
+* 事件编号： 59
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_EXCEPTION_CATCH, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_exception_events`: 是否能获取异常抛出和异常捕获事件
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，目标线程
+    * `method`: 类型为`jmethodID`，目标方法
+    * `location`: 类型为`jlocation`，发生异常的位置
+    * `exception`: 类型为`jobject`，抛出的异常
+    * `catch_method`: 类型为`jmethodID`，捕获异常的方法
+    * `catch_location`: 类型为`jlocation`，捕获异常的位置
+
+<a name="3.11"></a>
+## 3.11 ThreadStart
+
+    ```c
+    void JNICALL ThreadStart(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread)
+    ```
+
+当新线程在执行其初始方法前，会产生线程启动事件。
+
+对于线程来说，在其启动事件产生之前，就有可能通过函数`GetAllThreads`来获取到，此外，在其产生启动事件之前，可能会产生其他事件。
+
+* 调用阶段： 只能在`live`或`start`阶段调用
+* 事件类型： `JVMTI_EVENT_THREAD_START`
+* 事件编号： 52
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_THREAD_START, NULL)`
+* Since： 1.0
+* 功能：必选
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，目标线程
+
+<a name="3.12"></a>
+## 3.12 ThreadEnd
+
+    ```c
+    void JNICALL ThreadEnd(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread)
+    ```
+
+当线程在执行完其初始方法后，会产生线程结束事件。
+
+对于线程来说，在其结束事件产生之后，还有可能通过函数`GetAllThreads`来获取到，在线程结束后，该线程不会再产生其他事件。
+
+* 调用阶段： 只能在`live`或`start`阶段调用
+* 事件类型： `JVMTI_EVENT_THREAD_END`
+* 事件编号： 53
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_THREAD_END, NULL)`
+* Since： 1.0
+* 功能：必选
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，目标线程
+
+<a name="3.13"></a>
+## 3.13 ClassLoad
+
+    ```c
+    void JNICALL ClassLoad(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread, jclass klass)
+    ```
+
+当某个类首次被载入时，会产生类载入事件。某个线程内产生的类载入事件的顺序保证与该线程内类载入的顺序一致。创建数组类型和原生类型，并不会产生类载入事件。
+
+类载入事件是在载入类这个操作的早期产生的。因此使用的时候需要小心，这个时候，类的属性、方法k额能还没有载入，类信息不完整。大部分场景下，事件`ClassPrepare`更加有用些。
+
+* 调用阶段： 只能在`live`或`start`阶段调用
+* 事件类型： `JVMTI_EVENT_CLASS_LOAD`
+* 事件编号： 55
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_CLASS_LOAD, NULL)`
+* Since： 1.0
+* 功能：必选
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，目标线程
+    * `klass`: 类型为`jclass`，目标类
+
+<a name="3.14"></a>
+## 3.14 ClassPrepare
+
+    ```c
+    void JNICALL ClassPrepare(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread, jclass klass)
+    ```
+
+当某个类准备完成时，会产生该事件。此时，类的属性、方法和实现的接口都处于可用状态，而且还没有执行该类的任何方法。由于数组类型没有属性或方法，因此不会产生该事件，同理原生类型也是如此。
+
+* 调用阶段： 只能在`live`或`start`阶段调用
+* 事件类型： `JVMTI_EVENT_CLASS_PREPARE`
+* 事件编号： 55
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_CLASS_PREPARE, NULL)`
+* Since： 1.0
+* 功能：必选
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，目标线程
+    * `klass`: 类型为`jclass`，目标类
+
+<a name="3.15"></a>
+## 3.15 ClassFileLoadHook
+
+    ```c
+    void JNICALL ClassFileLoadHook(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jclass class_being_redefined, jobject loader, const char* name, jobject protection_domain, jint class_data_len, const unsigned char* class_data, jint* new_class_data_len, unsigned char** new_class_data)
+    ```
+
+当JVM接收到类文件数据，且还没有在内存中为其构造数据结构时，会产生该事件。通过JVMTI调用函数`RetransformClasses`或`RedefineClasses`时，也会产生该事件。
+
+该事件可能产生于JVM初始化完成之前(即`primordial`阶段)，在此期间，不应该创建JVM资源，某些类可能与函数不兼容，此时也不会产生该事件。
+
+JVMTI代理必须通过函数`Allocate`为要修改的类数据分配内存，JVM会通过函数`Deallocate`释放新的类数据。在`primordial`阶段，可以使用函数`Allcocate`。
+
+若JVMTI代理想要修改类文件，则必须将`new_class_data`指向修改后的类数据缓冲区，将`new_class_data_len`置为修改后的类数据缓冲区的长度。若是不修改类文件，JVMTI不设置`new_class_data`即可。若是多个JVMTI代理都启用了该事件，则会产生事件链，即设置的`new_class_data`会成为下一个JVMTI代理的`class_data`。
+
+该事件发送到JVMTI执行环境的顺序与其他事件不同，顺序如下：
+
+* 对于不能执行类转换的执行环境，按执行环境的创建顺序发送
+* 对于能执行类转换的执行环境，按执行环境的创建顺序发送
+
+当由函数`RetransformClasses`产生该事件时，该事件仅会发送给能执行类转换的执行环境。
+
+* 调用阶段： 只能在`primordial` `live`或`start`阶段调用
+* 事件类型： `JVMTI_EVENT_CLASS_FILE_LOAD_HOOK`
+* 事件编号： 54
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_CLASS_FILE_LOAD_HOOK, NULL)`
+* Since： 1.0
+* 功能：必选
+* 可选特性：
+    * `can_generate_all_class_hook_events`: 是否能为每个载入的类产生`ClassFileLoadHook`事件
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `class_being_redefined`: 类型为`jclass`，重定义或重转换的类，若是新载入的类，则为`NULL`
+    * `loader`: 类型为`jobject`，类载入器，若为`NULL`，则为启动类载入器
+    * `name`: 类型为`const char*`，目标类在JVM内部的限定名，例如`java/util/List`，使用自定义UTF-8编码
+    * `protection_domain`: 类型为`jobject`，载入类的保护域
+    * `class_data_len`: 类型为`jint`，当前类数据缓冲区的长度
+    * `class_data`: 类型为`const unsigned char*`，当前类数据缓冲区
+    * `new_class_data_len`: 类型为`jint*`，新的类数据缓冲区的长度
+    * `new_class_data`: 类型为`unsigned char**`，新的类数据缓冲区
+
+<a name="3.16"></a>
+## 3.16 VMStart
+
+    ```c
+    void JNICALL VMStart(jvmtiEnv *jvmti_env, JNIEnv* jni_env)
+    ```
+
+当JVM启动时会产生该事件。此时，JNI已经启动，但JVM还没有完成初始化。产生该事件时，JVMTI代理可以调用JNI函数了。该事件在`start`阶段的开始时产生，在`start`阶段可能会调用JVMTI函数。
+
+若JVM启动失败，不会触发该事件。
+
+* 调用阶段： 只能在`live`或`start`阶段调用
+* 事件类型： `JVMTI_EVENT_VM_START`
+* 事件编号： 57
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_VM_START, NULL)`
+* Since： 1.0
+* 功能：必选
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+
+<a name="3.17"></a>
+## 3.17 VMInit
+
+    ```c
+    void JNICALL VMInit(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread)
+    ```
+
+当JVM完成初始化操作时，会产生该事件，此时JVMTI代理可以自由调用JNI或JVMTI函数。JVM初始化事件可能与其他函数并发，也可能在其他事件之后引发。在处理那些前置事件时要特别小心么，因此这时候JVM可能还没有完成初始化。应用程序主线程的启动事件会在JVM初始化事件处理完成后才会产生，这点由JVM保证。
+
+若JVM启动失败，不会产生该事件。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_VM_INIT`
+* 事件编号： 50
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_VM_INIT, NULL)`
+* Since： 1.0
+* 功能：必选
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，初始化线程
+
+<a name="3.18"></a>
+## 3.18 VMDeath
+
+    ```c
+    void JNICALL VMDeath(jvmtiEnv *jvmti_env, JNIEnv* jni_env)
+    ```
+
+当JVM终止时会产生该事件。在该事件之后，不会再发送其他事件。
+
+若JVM启动失败，则不会发送该事件。注意，此时仍会调用`Agent_OnUnload`函数。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_VM_DEATH`
+* 事件编号： 50
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_VM_DEATH, NULL)`
+* Since： 1.0
+* 功能：必选
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+
+<a name="3.19"></a>
+## 3.19 CompiledMethodLoad
+
+    ```c
+    void JNICALL CompiledMethodLoad(jvmtiEnv *jvmti_env, jmethodID method, jint code_size, const void* code_addr, jint map_length, const jvmtiAddrLocationMap* map, const void* compile_info)
+    ```
+
+其中`jvmtiAddrLocationMap`的定义如下：
+
+    ```c
+    typedef struct {
+        const void* start_address;
+        jlocation location;
+    } jvmtiAddrLocationMap;
+    ```
+
+这里字段定义如下：
+
+* `start_address`: 代码的起始本地地址
+* `location`: 关联位置
+
+当JVM编译某个方法，并将编译内容载入到内存时，会产生该事件。卸载该方法时，会产生事件`CompiledMethodUnload`。移动方法时，会顺序产生事件`CompiledMethodUnload`和`CompiledMethodLoad`。注意，若某个方法有多种编译形式时，每种编译形式都会产生`CompiledMethodLoad`事件。另外，多个方法方法可能会被内联到一个地址范围，此时每个方法都会产生事件`CompiledMethodLoad`。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_COMPILED_METHOD_LOAD`
+* 事件编号： 68
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_COMPILED_METHOD_LOAD, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_compiled_method_load_events`: 当方法被编译或卸载时，是否能产生事件
+* 参数：
+    * `method`: 类型为`jmethodID`，被编译或载入的方法
+    * `code_size`: 类型为`jint`，被编译代码的大小
+    * `code_addr`: 类型为`const void*`，代码编译后被载入到的地址
+    * `map_length`: 类型为`jint`，`jvmtiAddrLocationMap`的个数
+    * `map`: 类型为`const jvmtiAddrLocationMap*`，从本地地址到位置的映射关系
+    * `compile_info`: 类型为`const void*`，编译信息，具体内容与JVM实现相关
+
+<a name="3.20"></a>
+## 3.20 CompiledMethodUnload
+
+    ```c
+    void JNICALL CompiledMethodUnload(jvmtiEnv *jvmti_env, jmethodID method, const void* code_addr)
+    ```
+
+当编译后的方法从内存中卸载时，会产生该事件。事件的发送可能不会在执行卸载的线程，也可能在卸载之后才发送，甚至有可能在类被卸载之后发送，但会被内存位置用于新编译代码之前发送。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_COMPILED_METHOD_UNLOAD`
+* 事件编号： 69
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_COMPILED_METHOD_UNLOAD, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_compiled_method_load_events`: 当方法被编译或卸载时，是否能产生事件
+* 参数：
+    * `method`: 类型为`jmethodID`，被卸载的方法
+    * `code_addr`: 类型为`const void*`，被载入的方法的地址
+
+<a name="3.21"></a>
+## 3.21 DynamicCodeGenerated
+
+    ```c
+    void JNICALL DynamicCodeGenerated(jvmtiEnv *jvmti_env, const char* name, const void* address, jint length)
+    ```
+
+当JVM动态生成组件时，会产生该事件。注意，这与Java代码编译没有关联，这是指本地方法，例如依赖于不同的命令行选项而生成不同的解释器。
+
+注意，该事件没有控制功能，若JVM不能产生该事件，则也不会发送其他事件。
+
+* 调用阶段： 只能在`primordial` `start`或`live`阶段调用
+* 事件类型： `JVMTI_EVENT_DYNAMIC_CODE_GENERATED`
+* 事件编号： 70
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_DYNAMIC_CODE_GENERATED, NULL)`
+* Since： 1.0
+* 功能：必选
+* 参数：
+    * `name`: 类型为`const char*`，代码的名字，使用自定义UTF-8编码，用于在终端显示使用，名字可以重复
+    * `address`: 类型为`const void*`，代码的本地地址
+    * `length`: 类型为`jint`，代码的长度，单位为字节
+
+<a name="3.22"></a>
+## 3.22 DataDumpRequest
+
+    ```c
+    void JNICALL DataDumpRequest(jvmtiEnv *jvmti_env)
+    ```
+
+当JVM接收到转储数据的请求时，会产生该事件。这里的请求只是个提示，JVMTI代理可以不必理会。该事件可用于处理命令行信息。例如在Java 2 SDK中，Windows平台的`CTRL-Break`命令，Solaris平台的`CTRL-\`可以使JVM产生该事件。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_DATA_DUMP_REQUEST`
+* 事件编号： 71
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_DATA_DUMP_REQUEST, NULL)`
+* Since： 1.0
+* 功能：必选
+* 参数：无
+
+<a name="3.23"></a>
+## 3.23 MonitorContendedEnter
+
+    ```c
+    void JNICALL MonitorContendedEnter(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread, jobject object)
+    ```
+
+当线程试图获取一个已经被其他线程持有的Java监视器时，会产生该事件。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_MONITOR_CONTENDED_ENTER`
+* 事件编号： 75
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_MONITOR_CONTENDED_ENTER, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_monitor_events`: 是否能对监视器活动产生事件
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，试图获取监视器的线程的JNI局部引用
+    * `object`: 类型为`jobject`，监视器的JNI局部引用
+
+<a name="3.24"></a>
+## 3.24 MonitorContendedEntered
+
+    ```c
+    void JNICALL MonitorContendedEntered(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread, jobject object)
+    ```
+
+当线程经过等待，终于进入到Java监视器后，会产生该事件。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_MONITOR_CONTENDED_ENTERED`
+* 事件编号： 76
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_MONITOR_CONTENDED_ENTERED, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_monitor_events`: 是否能对监视器活动产生事件
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，获取监视器的线程的JNI局部引用
+    * `object`: 类型为`jobject`，监视器的JNI局部引用
+
+<a name="3.25"></a>
+## 3.25 MonitorWait
+
+    ```c
+    void JNICALL MonitorWait(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread, jobject object, jlong timeout)
+    ```
+
+当线程要等待某个对象时，会产生该事件。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_MONITOR_WAIT`
+* 事件编号： 73
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_MONITOR_WAIT, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_monitor_events`: 是否能对监视器活动产生事件
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，等待对象的线程的JNI局部引用
+    * `object`: 类型为`jobject`，监视器的JNI局部引用
+    * `timeout`: 类型为`jlong`，等待超时时间，单位为毫秒
+
+<a name="3.26"></a>
+## 3.26 MonitorWaited
+
+    ```c
+    void JNICALL MonitorWaited(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread, jobject object, jboolean timed_out)
+    ```
+
+当线程结束等待某个监视器时，会产生该事件。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_MONITOR_WAITED`
+* 事件编号： 74
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_MONITOR_WAITED, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_monitor_events`: 是否能对监视器活动产生事件
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，结束等待对象的线程的JNI局部引用
+    * `object`: 类型为`jobject`，监视器的JNI局部引用
+    * `timeout`: 类型为`jboolean`，是否因超时结束等待
+
+<a name="3.27"></a>
+## 3.27 ResourceExhausted
+
+    ```c
+    void JNICALL ResourceExhausted(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jint flags, const void* reserved, const char* description)
+    ```
+
+当JVM的资源被耗尽时，会产生该事件。除了可选功能中要求的，其他可能被耗尽的资源取决于具体实现。
+
+下面表格定义了可能被耗尽的资源：
+
+                                        Resource Exhaustion Flags
+    Constant	                        Value	    Description
+    JVMTI_RESOURCE_EXHAUSTED_OOM_ERROR	0x0001	    产生该事件后，JVM会抛出异常java.lang.OutOfMemoryError
+    JVMTI_RESOURCE_EXHAUSTED_JAVA_HEAP	0x0002	    JVM无法从Java堆中分配内存。
+    JVMTI_RESOURCE_EXHAUSTED_THREADS	0x0004	    JVM无法创建线程
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_RESOURCE_EXHAUSTED`
+* 事件编号： 80
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_RESOURCE_EXHAUSTED, NULL)`
+* Since： 1.1
+* 功能：必选
+* 可选特性
+    * `can_generate_resource_exhaustion_heap_events`: 当JVM无法从Java堆中分配内存时，是否能产生事件
+    * `can_generate_resource_exhaustion_threads_events`: 当JVM无法创建线程时，是否能产生事件
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `flags`: 类型为`jint`，标识被耗尽的资源
+    * `reserved`: 类型为`const void*`，预留
+    * `description`: 类型为`const char*`，对被耗尽的描述，使用自定义UTF-8编码
+
+<a name="3.28"></a>
+## 3.28 VMObjectAlloc
+
+    ```c
+    void JNICALL VMObjectAlloc(jvmtiEnv *jvmti_env, JNIEnv* jni_env, jthread thread, jobject object, jclass object_klass, jlong size)
+    ```
+
+当某个方法促使JVM为一个Java代码可见的对象分配内存，而且该次分配没有被其他字节码增强机制探查到时，会产生该事件。一般情况下，内存分配会被字节码增强机制探查到，在JNI函数中引发的内存分配可通过JNI方法拦截探查到。某些方法可能没有关联的字节码，也不是本地方法，他们会被JVM直接执行，他们也可以产生该事件。不能执行字节码增强的JVM可能会对其部分方法或全部方法产生该事件。
+
+典型情况下，会在以下场景产生该事件：
+
+* 反射调用，例如`java.lang.Class.newInstance()`
+* 没有字节码的方法，例如JVM的内置方法和J2ME预加载的类
+
+不会产生该事件的情况：
+
+* 通过字节码分配内存，例如字节码`new`和`newarray`
+* 通过JNI函数调用分配内存，例如`AllocObject`
+* 在JVM初始化期间分配内存
+* JVM内部对象
+
+函数说明如下：
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_VM_OBJECT_ALLOC`
+* 事件编号： 84
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_VM_OBJECT_ALLOC, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_vm_object_alloc_events`: 是否能对JVM分配内存产生事件
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `thread`: 类型为`jthread`，分配对象的线程
+    * `object`: 类型为`jobject`，目标对象的局部引用
+    * `object_klass`: 类型为`jclass`，目标对象的类型
+    * `size`: 类型为`jlong`，目标对象的大小，单位为字节
+
+<a name="3.29"></a>
+## 3.29 ObjectFree
+
+    ```c
+    void JNICALL ObjectFree(jvmtiEnv *jvmti_env, jlong tag)
+    ```
+
+当垃圾回收器释放一个对象时，会产生该事件，这里只会对已经打了标签的对象产生事件。
+
+除非特别说明，事件处理函数禁止使用JNI函数，也禁止使用JVMTI函数，参见原始监视器函数、内存管理函数和执行环境局部存储函数的说明。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_OBJECT_FREE`
+* 事件编号： 83
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_OBJECT_FREE, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_object_free_events`: 执行垃圾回收时，是否能产生事件
+* 参数：
+    * `jni_env`: 类型为`JNIEnv *`，处理事件线程的JNI执行环境
+    * `tag`: 类型为`jlong`，被释放对象的标签
+
+<a name="3.30"></a>
+## 3.30 GarbageCollectionStart
+
+    ```c
+    void JNICALL GarbageCollectionStart(jvmtiEnv *jvmti_env)
+    ```
+
+当垃圾回收暂停开始时，会产生该事件。这里只会报告`stop-the-world`式的垃圾回收，因此对某些垃圾回收器来说，永远不会产生该事件。产生该事件时，JVM还处于停止状态，因此除非特别说明，事件处理函数中禁止使用JNI函数或JVMTI函数，参见原始监视器函数、内存管理函数和执行环境局部存储函数的说明。
+
+该事件与事件`GarbageCollectionStart`是成对发送的(假设两个事件都启用了)，在这两个事件之间，不会发生新的垃圾回收事件。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_GARBAGE_COLLECTION_START`
+* 事件编号： 81
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_GARBAGE_COLLECTION_START, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_garbage_collection_events`: 执行垃圾回收时，是否能产生事件
+* 参数：无
+
+<a name="3.31"></a>
+## 3.31 GarbageCollectionFinish
+
+    ```c
+    void JNICALL GarbageCollectionFinish(jvmtiEnv *jvmti_env)
+    ```
+
+当垃圾回收暂停结束时，会产生该事件。发送该事件时，JVM仍处于停止状态，因此除非特别说明，事件处理函数中禁止使用JNI函数或JVMTI函数，参见原始监视器函数、内存管理函数和执行环境局部存储函数的说明。
+
+某些JVMTI代理可能需要在垃圾回收之后做一些后置处理，需要调用JNI函数或JVMTI函数，此时创建一个JVMTI代理线程，等待一个垃圾回收暂停结束的通知。
+
+* 调用阶段： 只能在`live`阶段调用
+* 事件类型： `JVMTI_EVENT_GARBAGE_COLLECTION_FINISH`
+* 事件编号： 82
+* 启用事件： `SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_GARBAGE_COLLECTION_FINISH, NULL)`
+* Since： 1.0
+* 功能：
+    * 可选，JVM可能不会实现该功能。若要使用该功能，则下面的属性必须为真
+        * `can_generate_garbage_collection_events`: 执行垃圾回收时，是否能产生事件
+* 参数：无
 
 <a name="4"></a>
-# 4 数据类型
-
-<a name="4.1"></a>
-##  4.1 JVMTI中所使用的JNI数据类型
-
-<a name="4.2"></a>
-## 4.2 JVMTI中的基本类型
-
-<a name="4.3"></a>
-## 4.3 数据结构类型定义
-
-<a name="4.4"></a>
-## 4.4 函数类型定义
-
-<a name="4.5"></a>
-## 4.5 枚举定义
-
-<a name="4.6"></a>
-## 4.6 函数表
-
-<a name="5"></a>
 # 5 常量索引
 
-<a name="6"></a>
+略
+
+<a name="4"></a>
 # 6 变更历史
+
+略
 
 
 
@@ -7016,3 +7820,38 @@ JVMTI数据类型：
 [224]:    #2.7.2
 [225]:    #2.7.3
 [226]:    #2.7.4
+[227]:    #3.1
+[228]:    #3.2
+[229]:    #3.3
+[230]:    #3.4
+[231]:    #3.5
+[232]:    #3.6
+[233]:    #3.7
+[234]:    #3.8
+[235]:    #3.9
+[236]:    #3.10
+[237]:    #3.11
+[238]:    #3.12
+[239]:    #3.13
+[240]:    #3.14
+[241]:    #3.15
+[242]:    #3.16
+[243]:    #3.17
+[244]:    #3.18
+[245]:    #3.19
+[246]:    #3.20
+[247]:    #3.21
+[248]:    #3.22
+[249]:    #3.23
+[250]:    #3.24
+[251]:    #3.25
+[252]:    #3.26
+[253]:    #3.27
+[254]:    #3.28
+[255]:    #3.29
+[256]:    #3.30
+[257]:    #3.31
+
+
+
+
