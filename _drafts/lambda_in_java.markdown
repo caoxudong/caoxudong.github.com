@@ -1,35 +1,35 @@
 ---
-title:      Java中的Lambda表达式
+title:      Java中的Lambda表达式的实现
 layout:     post
 category:   blog
 tags:       [lambda, java, jvm]
 ---
 
-# 什么是lambda表达式
+# 1 什么是lambda表达式
 
 wiki, [匿名函数][14]
 
-# 目标类型
+## 1.1 目标类型
 
 相同的lambda表达式可以有不同的目标类型，例如
 
 * Callable<String> c = () -> "done";
 * PrivilegedAction<String> a = () -> "done";
 
-# 函数式接口
+## 1.2 函数式接口
 
 * 接口中除default方法外，只有一个抽象方法的接口，即为函数式接口
 * FunctionalInterface只是个可选标记，帮助编译器发现问题
 * 保证了向下兼容，以往代码中定义的接口，都可以成为函数式接口
 
-# 捕获(capturing)/非捕获(non-capturing)
+## 1.3 捕获(capturing)/非捕获(non-capturing)
 
 * 捕获: lambda表达式中访问外部变量
 * 非捕获: lambda表达式中无需访问外部变量，可以优化为静态方法调用
 
-jdk7引用外部变量时，必须是final的，jdk8时，只要实际上是final的就行，即即使在变量上添加final声明，也不会引发编译错误.
+jdk7引用外部变量时，必须是final的，jdk8时，只要实际上是final的就行，即即使没在变量上添加final声明，也不会引发编译错误.
 
-# 方法引用
+## 1.4 方法引用
 
 * 使用"::"操作符获取方法引用
 * 静态方法
@@ -38,18 +38,18 @@ jdk7引用外部变量时，必须是final的，jdk8时，只要实际上是fina
 * 方法的类型参数可以通过类型推导得出，或者放在"::"之后来指定
     * Function<Integer[], Integer[]> toArray = integers::<Integer>toArray;
 
-## 方法引用与反射的区别
+方法引用与反射的区别
 
 * 方法引用减少了权限检查
 * 方法引用不能突破访问权限控制
 
-# 实现lambda的几种方法
+# 2 实现lambda的几种方法
 
 * 内部类
 * 转化当前类的方法（实例方法/静态方法，取决于是否捕获了当前实例的成员）
-* 引入新的结构化函数类型，例如"根据string和object计算出int"的类型(string, object) -> int
+* 引入新的结构化函数类型，例如"根据string和object计算出int"的类型`(string, object) -> int`
 
-# 内部类与lambda
+## 2.1 使用内部类
 
 使用内部类一样可以实现lambda，编译器针对函数式接口，生成一个内部实现类，再将lambda的内容拷贝到内部实现类的方法中即可。
 
@@ -63,46 +63,16 @@ jdk7引用外部变量时，必须是final的，jdk8时，只要实际上是fina
 
 内部类会持有外部类的引用，以便访问外部类的数据，容易造成内存泄漏，而非捕获的lambda则不会持有外部类的引用
 
-# 引入新的结构化函数类型
+## 2.2 转化为当前类的方法
+
+
+
+## 2.3 引入新的结构化函数类型
 
 * 增加了类型系统的复杂度，将来还需要处理函数类型和普通类型混合的问题
 * 这会导致库函数风格分离：老代码使用回调接口，新代码使用结构化函数类型
 * 结构化函数类型的语法会很笨重，尤其是要处理检查异常（checked exception）的时候
 * 运行时，很难针对不同的结构化函数类型，给出不同的运行时表示，即难以重载带有结构化函数类型的方法，例如m(T->U)和m(X->Y)
-
-# this的作用域
-
-词法范围
-
-# lambda的写法
-
-## 累加
-
-对比下面：
-
-int sum = 0;
-list.forEach(e -> { sum += e.size(); });
-
-int sum = list.map(e -> e.size())
-              .reduce(0, (a, b) -> a+b);
-
-* 直接修改外部变量，有副作用
-* 并发性不好，容易出现竞争
-
-## 副作用
-
-
-## 对比
-
-    pointList.forEach(System.out::print);
-
-
-    (TransPoint pt) -> { pt.transpose(); }
-    pointList.forEach(TransPoint::transpose);
-
-TransPoint::transpose，这里transpose是实例方法，这种方式会被编译器翻译为
-
-    (T  t) -> { t.transpose(); }
 
 
 
