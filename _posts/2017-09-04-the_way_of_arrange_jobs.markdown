@@ -5,7 +5,7 @@ category:   blog
 tags:       [miscellaneous, job, career]
 ---
 
-[交办的艺术][1]
+[交办的技术][1]
 
 # 为什么要交办
 
