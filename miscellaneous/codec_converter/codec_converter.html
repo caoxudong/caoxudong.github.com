@@ -25,6 +25,19 @@
         <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
         <script type="text/javascript" src="/scripts/sweetalert.min.js"></script>
         <script type="text/javascript">
+          jQuery.cachedScript = function( url, options ) {
+            // Allow user to set any option except for dataType, cache, and url
+            options = $.extend( options || {}, {
+              dataType: "script",
+              cache: true,
+              url: url
+            });
+
+            // Use $.ajax() since it is more flexible than $.getScript
+            // Return the jqXHR object so we can chain callbacks
+            return jQuery.ajax( options );
+          };
+
           var codecScriptsMap = {
             "base64": {
               url: "/scripts/codec/base64.min.js",
@@ -68,7 +81,7 @@
               var codec = codecSelect.val();
               if (codec !== "") {
                 if ((!codecScriptsMap[codec].ready) && (codecScriptsMap[codec].url !== null)) {
-                  $.getScript(codecScriptsMap[codec].url);
+                  $.cachedScript(codecScriptsMap[codec].url);
                   codecScriptsMap[codec].ready = true;
                 }
               }
