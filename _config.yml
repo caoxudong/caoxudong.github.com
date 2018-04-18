@@ -78,13 +78,13 @@ JB :
   # Set 'provider' to false to turn commenting off globally.
   #
   comments :
-    provider : disqus
+    provider : intensedebate
     disqus :
       short_name : blogofcaoxudong
     livefyre :
       site_id : 123
     intensedebate :
-      account : 123abc
+      account : caoxudong127
     facebook :
       appid : 123
       num_posts: 5
