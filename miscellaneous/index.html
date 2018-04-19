@@ -6,9 +6,18 @@ group: navigation
 ---
 {% include JB/setup %}
 
+<link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
+<script src="/scripts/sweetalert.min.js"></script>
+<script type="text/javascript">
+    function coming() {
+        swal("敬请期待!");
+        return false;
+    }
+</script>
 <ul>
     <li><a href="/miscellaneous/codec_converter/codec_converter.html">编码转换</a></li>
     <li><a href="/miscellaneous/common_graphic_generator/common_graphic_generator.html">曲线图生成</a></li>
-    <li><a href="javascript:void" title="敬请期待">《Oracle JRockit》权威指南中文版</a></li>
+    <li><a href="javascript:coming();" title="敬请期待">《Oracle JRockit》权威指南中文版</a></li>
     <li><a href="https://book.douban.com/subject/10426640/" target="_blank">《深入剖析Tomcat》</a></li>
 </ul>
+
