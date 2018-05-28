@@ -123,4 +123,20 @@ tags:       [ubuntu, deep learning, caffe]
 
     解决
 
-        安装库 atlas-base-dev库，sudo apt-get install libatlas-base-dev        
+        安装库 atlas-base-dev库，sudo apt-get install libatlas-base-dev
+
+1. 执行`make distribute`时找不到`arrayobject.h`文件
+
+
+    错误
+
+        CXX/LD -o python/caffe/_caffe.so python/caffe/_caffe.cpp
+        python/caffe/_caffe.cpp:10:31: fatal error: numpy/arrayobject.h: No such file or directory
+        compilation terminated.
+        Makefile:507: recipe for target 'python/caffe/_caffe.so' failed
+        make: *** [python/caffe/_caffe.so] Error 1
+    
+    解决
+
+        sudo apt-get install python-numpy
+
