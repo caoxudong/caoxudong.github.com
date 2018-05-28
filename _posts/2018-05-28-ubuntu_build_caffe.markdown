@@ -17,7 +17,7 @@ tags:       [ubuntu, deep learning, caffe]
 1. 安装各种依赖包
 
         sudo apt-get install -y --no-install-recommends libboost-all-dev
-        sudo apt-get install libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libboost-all-dev libhdf5-serial-dev libgflags-dev libgoogle-glog-dev liblmdb-dev protobuf-compiler libopenblas-dev libatlas-base-dev 
+        sudo apt-get install -y --no-install-recommends libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libboost-all-dev libhdf5-serial-dev libgflags-dev libgoogle-glog-dev liblmdb-dev protobuf-compiler libopenblas-dev libatlas-base-dev 
 
 1. 下载caffe
 
@@ -27,7 +27,7 @@ tags:       [ubuntu, deep learning, caffe]
 
 1. 安装python依赖
 
-        sudo apt-get install python-pip
+        sudo apt-get install -y --no-install-recommends python-pip
         export LC_ALL=C
         sudo pip install scikit-image protobuf
         cd ${CAFFE_HOME}/python
@@ -36,7 +36,6 @@ tags:       [ubuntu, deep learning, caffe]
 1. 修改caffe的Makefile文件
 
         cd ${CAFFE_HOME}
-        cd ..
         vim Makefile.config
 
     几个需要调整的内容如下，其他地方按需调整
