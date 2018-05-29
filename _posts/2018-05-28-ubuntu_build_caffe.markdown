@@ -1,8 +1,8 @@
 ---
-title:      Ubuntu-16.04-LTS编译Caffe
+title:      Ubuntu-16.04-LTS编译Caffe和OpenPose
 layout:     post
 category:   blog
-tags:       [ubuntu, deep learning, caffe]
+tags:       [ubuntu, deeplearning, caffe, openpose]
 ---
 
 >ubuntu版本，16.04-LTS
@@ -12,7 +12,7 @@ tags:       [ubuntu, deep learning, caffe]
 >知乎连接，https://zhuanlan.zhihu.com/p/37389382
 
 
-
+安装 Caffe
 
 1. 安装各种依赖包
 
@@ -139,4 +139,39 @@ tags:       [ubuntu, deep learning, caffe]
     解决
 
         sudo apt-get install python-numpy
+
+
+
+安装OpenPose
+
+其实OpenPose中自带了caffe的安装方法，并不需要再单独查询。
+
+1. 下载openpose
+
+        git clone git@github.com:CMU-Perceptual-Computing-Lab/openpose.git
+        cd openpose
+        export OPENPOSE_HOME=${PWD}
+
+1. 安装 cuda，  
+
+        export LC_ALL=C
+        sh ubuntu/install_cuda.sh
+        sh ubuntu/install_cudnn.sh
+        sh ubuntu/install_caffe_and_openpose_if_cuda8.sh
+
+遇到错误
+
+1. 找不到cudnn库
+
+    错误
+
+        LD -o .build_release/lib/libopenpose.so.1.3.0
+        CXX/LD -o .build_release/examples/tutorial_thread/1_openpose_read_and_display.bin
+        CXX/LD -o .build_release/examples/tutorial_thread/3_user_input_processing_and_output.bin
+        /usr/bin/ld: warning: libcudnn.so.5, needed by 3rdparty/caffe/distribute/lib/libcaffe.so, not found (try using -rpath or -rpath-link)
+
+    解决
+
+        export LD_LIBRARY_PATH=/usr/local/cuda/lib64/
+        sh ubuntu/install_caffe_and_openpose_if_cuda8.sh
 
