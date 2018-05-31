@@ -12,7 +12,7 @@ tags:       [ubuntu, deeplearning, caffe, openpose]
 >知乎连接，https://zhuanlan.zhihu.com/p/37389382
 
 
-安装 Caffe
+单独安装 Caffe
 
 1. 安装各种依赖包
 
@@ -142,7 +142,7 @@ tags:       [ubuntu, deeplearning, caffe, openpose]
 
 
 
-安装OpenPose
+安装openpose
 
 其实OpenPose中自带了caffe的安装方法，并不需要再单独查询。
 
@@ -152,26 +152,16 @@ tags:       [ubuntu, deeplearning, caffe, openpose]
         cd openpose
         export OPENPOSE_HOME=${PWD}
 
-1. 安装 cuda，  
+1. 编译CPU版本
 
-        export LC_ALL=C
-        sh ubuntu/install_cuda.sh
-        sh ubuntu/install_cudnn.sh
-        sh ubuntu/install_caffe_and_openpose_if_cuda8.sh
+    修改CMakeLists.txt文件
+    
+    * 注释掉`set(GPU_MODE CUDA CACHE STRING "Select the acceleration GPU library or CPU otherwise.")`
+    * 添加`set(GPU_MODE CPU_ONLY CACHE STRING "No GPU, CPU ONLY")`        
 
-遇到错误
+1. 执行cmake
 
-1. 找不到cudnn库
-
-    错误
-
-        LD -o .build_release/lib/libopenpose.so.1.3.0
-        CXX/LD -o .build_release/examples/tutorial_thread/1_openpose_read_and_display.bin
-        CXX/LD -o .build_release/examples/tutorial_thread/3_user_input_processing_and_output.bin
-        /usr/bin/ld: warning: libcudnn.so.5, needed by 3rdparty/caffe/distribute/lib/libcaffe.so, not found (try using -rpath or -rpath-link)
-
-    解决
-
-        export LD_LIBRARY_PATH=/usr/local/cuda/lib64/
-        sh ubuntu/install_caffe_and_openpose_if_cuda8.sh
-
+        mkdir build
+        cd build
+        cmake ..
+        make -j`nproc`
