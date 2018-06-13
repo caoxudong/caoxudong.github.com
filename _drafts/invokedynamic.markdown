@@ -1,5 +1,5 @@
 ---
-title:      invokedynamic支持
+title:      invokedynamic实现
 layout:     post
 category:   blog
 tags:       [bytecode, java, jvm]
