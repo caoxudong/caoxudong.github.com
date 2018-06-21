@@ -167,3 +167,38 @@ tags:       [ubuntu, deeplearning, caffe, openpose]
         make -j`nproc`
 
 
+遇到的错误
+
+1. 找不到`mlsl.hpp`文件
+
+错误
+
+        In file included from /home/caoxudong/workspace/openpose/3rdparty/caffe/src/caffe/multinode/mlsl.cpp:42:0:
+        /home/caoxudong/workspace/openpose/3rdparty/caffe/include/caffe/multinode/mlsl.hpp:43:20: fatal error: mlsl.hpp: No such file or directory
+        compilation terminated.
+        src/caffe/CMakeFiles/caffe.dir/build.make:86: recipe for target 'src/caffe/CMakeFiles/caffe.dir/multinode/mlsl.cpp.o' failed
+        make[5]: *** [src/caffe/CMakeFiles/caffe.dir/multinode/mlsl.cpp.o] Error 1
+        make[5]: *** Waiting for unfinished jobs....
+        In file included from /home/caoxudong/workspace/openpose/3rdparty/caffe/include/caffe/syncedmem.hpp:51:0,
+                        from /home/caoxudong/workspace/openpose/3rdparty/caffe/include/caffe/blob.hpp:47,
+                        from /home/caoxudong/workspace/openpose/3rdparty/caffe/include/caffe/mkldnn_memory.hpp:45,
+                        from /home/caoxudong/workspace/openpose/3rdparty/caffe/src/caffe/mkldnn_base.cpp:39:
+        /home/caoxudong/workspace/openpose/3rdparty/caffe/include/caffe/multinode/mlsl.hpp:43:20: fatal error: mlsl.hpp: No such file or directory
+        compilation terminated.
+        src/caffe/CMakeFiles/caffe.dir/build.make:62: recipe for target 'src/caffe/CMakeFiles/caffe.dir/mkldnn_base.cpp.o' failed
+        make[5]: *** [src/caffe/CMakeFiles/caffe.dir/mkldnn_base.cpp.o] Error 1
+        CMakeFiles/Makefile2:340: recipe for target 'src/caffe/CMakeFiles/caffe.dir/all' failed
+        make[4]: *** [src/caffe/CMakeFiles/caffe.dir/all] Error 2
+        Makefile:127: recipe for target 'all' failed
+        make[3]: *** [all] Error 2
+        CMakeFiles/openpose_caffe.dir/build.make:110: recipe for target 'caffe/src/openpose_caffe-stamp/openpose_caffe-build' failed
+        make[2]: *** [caffe/src/openpose_caffe-stamp/openpose_caffe-build] Error 2
+        CMakeFiles/Makefile2:67: recipe for target 'CMakeFiles/openpose_caffe.dir/all' failed
+        make[1]: *** [CMakeFiles/openpose_caffe.dir/all] Error 2
+        Makefile:83: recipe for target 'all' failed
+        make: *** [all] Error 2
+
+解决
+
+        查看文件夹"/home/caoxudong/workspace/openpose/3rdparty/caffe/external/mkl"中的压缩包是否正常，是否解压了。
+        若文件不正常，删除重新下载压缩包" mklml_lnx"，再重新编译
