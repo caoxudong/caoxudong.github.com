@@ -2,7 +2,7 @@
 title:      OpenPose命令行参数记录
 layout:     post
 category:   blog
-tags:       [deeplearning, openpose]
+tags:       [machine_learning, openpose]
 ---
 
 >openpose version v1.3.0

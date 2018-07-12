@@ -2,7 +2,7 @@
 title:      Ubuntu-16.04-LTS编译Caffe和OpenPose
 layout:     post
 category:   blog
-tags:       [ubuntu, deeplearning, caffe, openpose]
+tags:       [ubuntu, machine_learning, caffe, openpose]
 ---
 
 >ubuntu版本，16.04-LTS
