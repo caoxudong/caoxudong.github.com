@@ -1,5 +1,5 @@
 ---
-title:      《机器学习》笔记-chap1
+title:      《机器学习》笔记-chap1-绪论
 layout:     post
 category:   blog
 tags:       [machine_learning, note]
