@@ -9,7 +9,11 @@ tags:       [mq, note]
 
 # 1. Producer
 
-## 
+## 1.1 确保发送成功
+
+事务消息的实现
 
 
 # 2. Consumer
+
+## 2.1
