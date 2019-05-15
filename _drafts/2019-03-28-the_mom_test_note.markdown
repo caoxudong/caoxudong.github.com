@@ -244,4 +244,21 @@ tags:       [conversation, note]
 
 # 2.  avoiding bad data
 
+在与客户沟通中，人们往往会得到坏数据。
 
+坏数据的2种后果:
+
+* false nagetiva: 其实不错，但以为没戏了
+* false positive: 其实要完，但以为是块宝
+
+坏数据的3种类型:
+
+* compliments: 恭维
+* fluff: 无意义
+* ideas: 想法
+
+提出了错误的问题，往往就会得到坏数据。
+
+## 2.1.  deflecting compliments
+
+沟通过程中，对方可能会无意识的恭维你，获取这样的信息没什么价值。即便是用户
