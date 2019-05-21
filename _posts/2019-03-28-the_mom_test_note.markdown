@@ -248,7 +248,7 @@ tags:       [conversation, note]
 
 坏数据的2种后果:
 
-* false nagetiva: 其实不错，但以为没戏了
+* false negative: 其实不错，但以为没戏了
 * false positive: 其实要完，但以为是块宝
 
 坏数据的3种类型:
