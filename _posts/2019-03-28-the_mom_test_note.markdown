@@ -412,7 +412,7 @@ tags:       [conversation, note]
 
 **经验法则**: 如果你谈到了你的想法，对方可能不会立刻打脸。
 
-## 2.4.  cut off pitches
+## 2.5.  cut off pitches
 
 死缠烂打是一种很糟糕的"求赞"手段，此时只会激怒对方。
 
@@ -429,7 +429,7 @@ tags:       [conversation, note]
 
 **经验法则**: 死缠烂打往往得到随口奉承。
 
-## 2.5.  talk less
+## 2.6.  talk less
 
 侃侃而谈并不能让你了解对方的真实需求。
 
