@@ -37,6 +37,11 @@ tags:       [java, hikari]
 
 使用`Map`是一个方法，不过空间上略有浪费。另一个方法是使用`List`，但需要遍历，不过对于一般业务来说，数量不太多，遍历倒也还好。不过使用JDK自带的`List`实现来说，在数据源使用这个业务场景下，`remove`方法的性能不太好，因为`remove`方法是从前向后遍历的，而实际的业务场景中，大部分情况是先关闭最后一个即可，即FILO模式。虽然可以使用`LinkedList`来规避问题，但`LinkedList`的空间局部性不好。Hikari的解决方案是自己实现了`List`，即`FastList`，对于`remove`方法的实现就是从后向前遍历，力求尽快退出循环，同时使用 **相同**代替 **相等**作为判断条件，提高效率。
 
+# 与Tomcat-JDBC对比
+
+* tomcat-jdbc使用了`buzy`和`idle`两个列表来保存连接，并发场景下加锁/解锁操作较多
+* tomcat-jdbc支持`interceptor`机制，功能上更强，当然耗时也会更多
+
 # Resources
 
 * [https://github.com/brettwooldridge/HikariCP/wiki/Down-the-Rabbit-Hole][1]
