@@ -180,9 +180,9 @@ ServiceabilityAgentJVMDIModule类是一个Java语言级的交互式调试工具�
 
 当然，在使用Address过程中，会有一些需要注意的地方：
 
-1.  地址是不可变的（immutable），但其指向的内容是可变的，可以理解为const void* point；
+1.  地址是不可变的（immutable），但其指向的内容是可变的，可以理解 `void* const point`；
 2.  如果当前的调试目标是一个核心转储文件（core dump），则不可以修改地址指向的内容；
-3.  C/C++中的地址一般由无符号整数表示，而Java中不存在无符号原生类型，所以以原始地址数据（例如0x32bf4978）为参数的方法中，都是以long型代替li。相应的，对地址进行运行时，也需要注意类型的处理。
+3.  C/C++中的地址一般由无符号整数表示，而Java中不存在无符号原生类型，所以以原始地址数据（例如`0x32bf4978`）为参数的方法中，都是以`long`型代替`i`。相应的，对地址进行运行时，也需要注意类型的处理。
 
 下面以Linux平台为例进行说明。在Linux上，Address类是实现类是[sun.jvm.hotspot.debugger.linux.LinuxAddress][9]。在该类中，对地址指向的数据的读取操作是通过[sun.jvm.hotspot.debugger.linux.LinuxDebugger][10]类完成的，而写操作目前还未实现，调用方法时会抛异常。对[sun.jvm.hotspot.debugger.linux.LinuxDebugger][10]类的说明并不是本文的目的，就此打住，后续的文章中再谈。
 
