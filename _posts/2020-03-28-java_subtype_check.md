@@ -78,5 +78,7 @@ Java代码中经常涉及到的是检查两个类之间的继承关系，因此�
 * [Fast subtype checking in the HotSpot JVM][1]
 * [Klass.hpp#is_subtype_of][2]
 
-[1]    https://www.researchgate.net/publication/221552851_Fast_subtype_checking_in_the_HotSpot_JVM
-[2]    https://hg.openjdk.java.net/jdk8u/jdk8u60/hotspot/file/37240c1019fd/src/share/vm/oops/klass.hpp#l415
+
+
+[1]:    https://www.researchgate.net/publication/221552851_Fast_subtype_checking_in_the_HotSpot_JVM
+[2]:    https://hg.openjdk.java.net/jdk8u/jdk8u60/hotspot/file/37240c1019fd/src/share/vm/oops/klass.hpp#l415
