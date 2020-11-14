@@ -12,6 +12,8 @@ tags:       [golang]
 * float32 -> 转换为16进制表示
 * float64 -> 转换为16进制表示
 * pointer -> 转换为16进制表示
+* array -> 内容元素的罗列
+* slice -> 底层数组的指针 + 长度 + 容量
 * string -> 底层字节数组 + 长度
 * struct -> 按照每个类型field的表示方式逐个罗列
 * interface -> 类型指针 + 内容指针
