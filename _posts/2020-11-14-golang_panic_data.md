@@ -131,9 +131,13 @@ tags:       [golang]
 
 * [Understanding Go panic output][1]
 * [Stack Traces In Go][2]
+* [Go Data Structures][3]
+* [Go Data Structures: Interfaces][4]
 
 
 
 
 [1]:    https://www.joeshaw.org/understanding-go-panic-output/
 [2]:    https://www.ardanlabs.com/blog/2015/01/stack-traces-in-go.html
+[3]:    https://research.swtch.com/godata
+[4]:    https://research.swtch.com/interfaces
