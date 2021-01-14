@@ -233,4 +233,4 @@ A happens-before B，对应的是B happends-after A。
 
 
 
-[1]    https://golang.org/ref/mem
+[1]:    https://golang.org/ref/mem
