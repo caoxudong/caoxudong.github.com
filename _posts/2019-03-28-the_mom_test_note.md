@@ -6,6 +6,8 @@ tags:       [conversation, note]
 ---
 
 >《The Mom Test》，https://book.douban.com/subject/26320572/
+>
+> [intro the mom test][1]
 
 # 0.  introduction
 
@@ -849,3 +851,4 @@ Steve Blank将第二种用户称为"早期福音传播者(early evangeists)"，�
 
 
 
+[1]:    /attachments/intro_the_mom_test.pdf
