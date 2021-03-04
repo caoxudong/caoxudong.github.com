@@ -38,7 +38,7 @@ java.lang.UNIXProcess这个类只存在于*nix系的操作系统中，并且分�
     endef
     
 
-就其区别来说，bsd和linux两个版本的代码实际上完全相同，而与solaris版本区别较大,。具体表现在以下几个方面。
+就其区别来说，bsd和linux两个版本的代码实际上完全相同，而与solaris版本区别较大，具体表现在以下几个方面。
 
 ## "fork"的使用策略
 
