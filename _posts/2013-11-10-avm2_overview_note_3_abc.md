@@ -462,8 +462,8 @@ to be continued...
 *   [IEEE Floating Point][2]
 *   [Unicode][3]
 
-[1]:    http://grouper.ieee.org/groups/754/
-[2]:    http://unicode.org
-[3]:    http://en.wikipedia.org/wiki/IEEE_floating_point
+[1]:    https://grouper.ieee.org/groups/754/
+[2]:    https://unicode.org
+[3]:    https://en.wikipedia.org/wiki/IEEE_floating_point
 [4]:    /blog/2013/11/10/avm2_overview_note_1_basic_structure
 [5]:    /blog/2013/11/10/avm2_overview_note_2_run

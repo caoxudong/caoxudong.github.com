@@ -56,5 +56,5 @@ tags:       [assembly, intel]
 
 
 
-[1]:    http://www.intel.cn/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-manual-325462.pdf
+[1]:    https://www.intel.cn/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-manual-325462.pdf
 [2]:    /blog/2013/11/10/the_intel_microprocessors_note_1 

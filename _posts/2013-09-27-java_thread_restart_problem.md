@@ -136,5 +136,5 @@ tags:       [java]
 
 这里对threadStatus属性做了修改，保证线程不会被重复启动。
 
-[1]:    http://hg.openjdk.java.net/jdk7u/jdk7u/hotspot/file/ae4adc1492d1/src/share/vm/prims/jvm.cpp
-[2]:    http://hg.openjdk.java.net/jdk7u/jdk7u/hotspot/file/ae4adc1492d1/src/share/vm/runtime/thread.cpp
+[1]:    https://hg.openjdk.java.net/jdk7u/jdk7u/hotspot/file/ae4adc1492d1/src/share/vm/prims/jvm.cpp
+[2]:    https://hg.openjdk.java.net/jdk7u/jdk7u/hotspot/file/ae4adc1492d1/src/share/vm/runtime/thread.cpp

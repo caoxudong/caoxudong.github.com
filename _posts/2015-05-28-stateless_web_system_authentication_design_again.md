@@ -79,6 +79,6 @@ JWT中自带了几个默认的属性：
 
 
 [1]:    /blog/2015/03/05/stateless_web_system_authentication_design
-[2]:    http://jwt.io/
-[3]:    http://tools.ietf.org/html/rfc7519#section-4
+[2]:    https://jwt.io/
+[3]:    https://tools.ietf.org/html/rfc7519#section-4
 [4]:    https://stormpath.com/blog/token-auth-spa/

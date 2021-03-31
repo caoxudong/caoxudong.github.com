@@ -32,7 +32,7 @@ tags:       [nginx, ssl, https]
         charset utf-8;
         access_log /data1/log/nginx/access.log;
         error_log  /data1/log/nginx/error.log error;
-        # http -> https
+        # https -> https
         location / {
             return  301  https://$server_name$request_uri;
         }
@@ -56,7 +56,7 @@ tags:       [nginx, ssl, https]
         access_log /data1/log/nginx/access.log;
         error_log  /data1/log/nginx/error.log error;
         location / {
-        proxy_pass http://localhost;
+        proxy_pass https://localhost;
             proxy_set_header X-Real-IP $remote_addr;
             add_header X-Slave $upstream_addr;
         }

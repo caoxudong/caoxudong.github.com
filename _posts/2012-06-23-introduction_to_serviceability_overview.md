@@ -5,7 +5,7 @@ layout:     post
 tags:       [java, jvm, serviceability]
 ---
 
-原文地址： <http://caoxudong818.iteye.com/blog/1565980>
+原文地址： <https://caoxudong818.iteye.com/blog/1565980>
 
 以下内容均已jdk1.7.0_04为准。
 
@@ -29,7 +29,7 @@ tags:       [java, jvm, serviceability]
     java -classpath $JAVA_HOME/lib/sa-jdi.jar sun.jvm.hotspot.CLHSDB
     
 
-这里有一个简单的说明文档：<http://hg.openjdk.java.net/hsx/hotspot-main/hotspot/raw-file/tip/agent/doc/clhsdb.html>
+这里有一个简单的说明文档：<https://hg.openjdk.java.net/hsx/hotspot-main/hotspot/raw-file/tip/agent/doc/clhsdb.html>
 
 另外，还有一个DebugServer类，功能差不多。
 
@@ -251,4 +251,4 @@ HotSpotAgent类的主要功能是根据主机环境设置调试器（debugger）
 
 to be continued...
 
-[1]:    http://openjdk.java.net/groups/hotspot/docs/HotSpotGlossary.html
+[1]:    https://openjdk.java.net/groups/hotspot/docs/HotSpotGlossary.html

@@ -183,5 +183,5 @@ Threaded Code是实现虚拟机解释器的一种技术。解释器的实现方�
         (*ip++)();
     }
 
-[1]:    http://www.complang.tuwien.ac.at/forth/threaded-code.html
-[2]:    http://caoxudong818.iteye.com/blog/1150046
+[1]:    https://www.complang.tuwien.ac.at/forth/threaded-code.html
+[2]:    https://caoxudong818.iteye.com/blog/1150046

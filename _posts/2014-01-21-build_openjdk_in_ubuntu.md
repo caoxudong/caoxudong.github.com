@@ -26,7 +26,7 @@ tags:       [java, jvm, openjdk, ubuntu]
 
 1.  安装mercurial 
 
-2.  下载某个repository（repository与project的区别，参见<http://openjdk.java.net/guide/repositories.html>）
+2.  下载某个repository（repository与project的区别，参见<https://openjdk.java.net/guide/repositories.html>）
 
 3.  执行脚本get_source.sh以获取源代码。 
 
@@ -84,7 +84,7 @@ tags:       [java, jvm, openjdk, ubuntu]
 
             sudo apt-get install libxt-dev
     
-    如果还有缺少库的情况，可以到这里<http://packages.ubuntu.com/>搜索。
+    如果还有缺少库的情况，可以到这里<https://packages.ubuntu.com/>搜索。
 
 8. 继续make时的错误
 
@@ -115,8 +115,8 @@ tags:       [java, jvm, openjdk, ubuntu]
 
         在classpath中确实没找到AdapterMethodHandle这个类，从下面两个邮件列表中的问题看，应该是新旧两个虚拟机不兼容，所以重新下载源码([openjdk-7u40-fcs-src-b43-26_aug_2013][3])再编译
 
-        * [http://mail.openjdk.java.net/pipermail/mlvm-dev/2012-July/004821.html][1]
-        * [http://mail.openjdk.java.net/pipermail/build-dev/2013-May/008877.html][2]
+        * [https://mail.openjdk.java.net/pipermail/mlvm-dev/2012-July/004821.html][1]
+        * [https://mail.openjdk.java.net/pipermail/build-dev/2013-May/008877.html][2]
 
 9.  make成功
 
@@ -178,7 +178,7 @@ tags:       [java, jvm, openjdk, ubuntu]
 
 
 
-[1]:    http://mail.openjdk.java.net/pipermail/mlvm-dev/2012-July/004821.html
-[2]:    http://mail.openjdk.java.net/pipermail/build-dev/2013-May/008877.html
-[3]:    http://www.java.net/download/openjdk/jdk7u40/promoted/b43/openjdk-7u40-fcs-src-b43-26_aug_2013.zip
+[1]:    https://mail.openjdk.java.net/pipermail/mlvm-dev/2012-July/004821.html
+[2]:    https://mail.openjdk.java.net/pipermail/build-dev/2013-May/008877.html
+[3]:    https://www.java.net/download/openjdk/jdk7u40/promoted/b43/openjdk-7u40-fcs-src-b43-26_aug_2013.zip
 [4]:    /blog/2013/09/26/build_openjdk

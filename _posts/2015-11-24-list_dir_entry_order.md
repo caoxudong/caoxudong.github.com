@@ -42,10 +42,10 @@ glibc对`readdir_r`的[说明文档][7]中也并未提到过和顺序相关的�
 
 
 
-[1]:    http://hg.openjdk.java.net/jdk8u/jdk8u60/jdk/file/935758609767/src/windows/native/java/io/WinNTFileSystem_md.c#l618    "`WinNTFileSystem.list(File f)"
+[1]:    https://hg.openjdk.java.net/jdk8u/jdk8u60/jdk/file/935758609767/src/windows/native/java/io/WinNTFileSystem_md.c#l618    "`WinNTFileSystem.list(File f)"
 [2]:    https://msdn.microsoft.com/en-us/library/windows/desktop/aa364428(v=vs.85).aspx    "FindNextFile "
 [3]:    https://msdn.microsoft.com/en-us/library/windows/desktop/aa364418(v=vs.85).aspx    "FindFirstFileW"
-[4]:    http://hg.openjdk.java.net/jdk8u/jdk8u60/jdk/file/935758609767/src/solaris/classes/java/io/UnixFileSystem.java    "UnixFileSystem"
-[5]:    http://hg.openjdk.java.net/jdk8u/jdk8u60/jdk/file/935758609767/src/windows/classes/java/io/WinNTFileSystem.java    "WinNTFileSystem"
-[6]:    http://hg.openjdk.java.net/jdk8u/jdk8u60/jdk/file/935758609767/src/solaris/native/java/io/UnixFileSystem_md.c#l278    "UnixFileSystem_md.c#l278"
+[4]:    https://hg.openjdk.java.net/jdk8u/jdk8u60/jdk/file/935758609767/src/solaris/classes/java/io/UnixFileSystem.java    "UnixFileSystem"
+[5]:    https://hg.openjdk.java.net/jdk8u/jdk8u60/jdk/file/935758609767/src/windows/classes/java/io/WinNTFileSystem.java    "WinNTFileSystem"
+[6]:    https://hg.openjdk.java.net/jdk8u/jdk8u60/jdk/file/935758609767/src/solaris/native/java/io/UnixFileSystem_md.c#l278    "UnixFileSystem_md.c#l278"
 [7]:    https://www.gnu.org/software/libc/manual/html_node/Reading_002fClosing-Directory.html    "Reading and Closing a Directory Stream"

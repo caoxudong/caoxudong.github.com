@@ -6,7 +6,7 @@ tags:       [java, jvm, serviceability]
 ---
 
 
-原文地址： <http://caoxudong818.iteye.com/blog/1576234>
+原文地址： <https://caoxudong818.iteye.com/blog/1576234>
 
 在[前文][1]中提到，$JAVA_HOME/bin下有一些工具也是通过SA实现的，本文就对SA中tools包下的工具做简单介绍。
 
@@ -297,24 +297,24 @@ Win32DebuggerLocal类的writeBytesToProcess方法：
 to be continued......
 
 [1]:    /blog/2012/06/23/introduction_to_serviceability_overview
-[2]:    http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/tools/Tool.java
-[3]:    http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/tools/JInfo.java#JInfo
-[4]:    http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/tools/FinalizerInfo.java#FinalizerInfo
-[5]:    http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/bugspot/BugSpotAgent.java#BugSpotAgent
-[6]:    http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/livejvm/ServiceabilityAgentJVMDIModule.java#ServiceabilityAgentJVMDIModule
-[7]:    http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/Address.java#Address
-[8]:    http://caoxudong818.iteye.com/blog/1565980
-[9]:    http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/linux/LinuxAddress.java#LinuxAddress
-[10]:   http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/linux/LinuxDebugger.java#LinuxDebugger
-[11]:   http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/livejvm/CIntegerAccessor.java#CIntegerAccessor
-[12]:   http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/windbg/WindbgAddress.java#WindbgAddress
-[13]:   http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/dbx/DbxAddress.java#DbxAddress
-[14]:   http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/dummy/DummyAddress.java#DummyAddress
-[15]:   http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/remote/RemoteAddress.java#RemoteAddress
-[16]:   http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/proc/ProcAddress.java#ProcAddress
-[17]:   http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/win32/Win32Address.java#Win32Address
-[18]:   http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/win32/Win32Debugger.java#Win32Debugger
-[19]:   http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/win32/Win32DebuggerLocal.java#Win32DebuggerLocal
-[20]:   http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/DebuggerBase.java#DebuggerBase
-[21]:   http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/DebuggerBase.java#DebuggerBase.writeCInteger%28long%2Clong%2Clong%29
-[22]:   http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/win32/Win32DebuggerLocal.java#Win32DebuggerLocal.writeBytesToProcess%28long%2Clong%2Cbyte%5B%5D%29
+[2]:    https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/tools/Tool.java
+[3]:    https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/tools/JInfo.java#JInfo
+[4]:    https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/tools/FinalizerInfo.java#FinalizerInfo
+[5]:    https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/bugspot/BugSpotAgent.java#BugSpotAgent
+[6]:    https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/livejvm/ServiceabilityAgentJVMDIModule.java#ServiceabilityAgentJVMDIModule
+[7]:    https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/Address.java#Address
+[8]:    https://caoxudong818.iteye.com/blog/1565980
+[9]:    https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/linux/LinuxAddress.java#LinuxAddress
+[10]:   https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/linux/LinuxDebugger.java#LinuxDebugger
+[11]:   https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/livejvm/CIntegerAccessor.java#CIntegerAccessor
+[12]:   https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/windbg/WindbgAddress.java#WindbgAddress
+[13]:   https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/dbx/DbxAddress.java#DbxAddress
+[14]:   https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/dummy/DummyAddress.java#DummyAddress
+[15]:   https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/remote/RemoteAddress.java#RemoteAddress
+[16]:   https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/proc/ProcAddress.java#ProcAddress
+[17]:   https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/win32/Win32Address.java#Win32Address
+[18]:   https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/win32/Win32Debugger.java#Win32Debugger
+[19]:   https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/win32/Win32DebuggerLocal.java#Win32DebuggerLocal
+[20]:   https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/DebuggerBase.java#DebuggerBase
+[21]:   https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/DebuggerBase.java#DebuggerBase.writeCInteger%28long%2Clong%2Clong%29
+[22]:   https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/sun/jvm/hotspot/debugger/win32/Win32DebuggerLocal.java#Win32DebuggerLocal.writeBytesToProcess%28long%2Clong%2Cbyte%5B%5D%29

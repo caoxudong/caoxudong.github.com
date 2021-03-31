@@ -274,4 +274,4 @@ tags:       [jvm, openjdk, hotspot, marco]
 
 
 
-[1]:    http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/share/vm/runtime/interfaceSupport.hpp
+[1]:    https://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/share/vm/runtime/interfaceSupport.hpp

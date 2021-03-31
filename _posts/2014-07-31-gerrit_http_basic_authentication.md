@@ -20,14 +20,14 @@ tags:       [git, gerrit]
     
         index index.html index.htm;
     
-        # Make site accessible from http://localhost/
+        # Make site accessible from https://localhost/
         server_name localhost;
     
         location / {
             stub_status on;
             auth_basic "Sign in";
             auth_basic_user_file /home/public_internal/etc/nginx/httppassword;
-            proxy_pass http://yourhost:yourport;
+            proxy_pass https://yourhost:yourport;
         }
 
         error_page 404 /404.html;
@@ -41,7 +41,7 @@ tags:       [git, gerrit]
 
     [gerrit]
         basePath = /home/public_internal/repository/git_repository
-        canonicalWebUrl = http://yourhost:yourport/
+        canonicalWebUrl = https://yourhost:yourport/
     [database]
         type = mysql
         hostname = your_db_host
@@ -66,7 +66,7 @@ tags:       [git, gerrit]
     [sshd]
         listenAddress = *:29418
     [httpd]
-        listenUrl = proxy-http://yourhost:yourport/
+        listenUrl = proxy-https://yourhost:yourport/
     [cache]
         directory = cache
     [gitweb]

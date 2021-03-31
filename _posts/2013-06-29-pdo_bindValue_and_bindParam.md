@@ -28,6 +28,6 @@ tags:       [pdo, php]
 
 针对这种情况可以用`bindValue`方法完成所需功能。
 
-[1]:    http://php.net/manual/en/pdostatement.bindvalue.php
-[2]:    http://php.net/manual/en/pdostatement.bindparam.php
-[3]:    http://www.php.net/manual/en/pdostatement.execute.php
+[1]:    https://php.net/manual/en/pdostatement.bindvalue.php
+[2]:    https://php.net/manual/en/pdostatement.bindparam.php
+[3]:    https://www.php.net/manual/en/pdostatement.execute.php

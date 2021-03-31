@@ -67,7 +67,7 @@ tags:       [tomcat, java]
             1. loadValvesPackage
                 * org.apache.catalina.valves.AbstractAccessLogValve$3
             1. loadJavaxPackage
-                * javax.servlet.http.Cookie
+                * javax.servlet.https.Cookie
             1. loadConnectorPackage
                 * org.apache.catalina.connector.RequestFacade$GetAttributePrivilegedAction
                 * org.apache.catalina.connector.RequestFacade$GetParameterMapPrivilegedAction
@@ -99,12 +99,12 @@ tags:       [tomcat, java]
                 * org.apache.tomcat.util.buf.StringCache
                 * org.apache.tomcat.util.buf.StringCache$ByteEntry
                 * org.apache.tomcat.util.buf.StringCache$CharEntry
-                * org.apache.tomcat.util.http.FastHttpDateFormat
-                * org.apache.tomcat.util.http.HttpMessages
-                * org.apache.tomcat.util.http.parser.HttpParser
-                * org.apache.tomcat.util.http.parser.MediaType
-                * org.apache.tomcat.util.http.parser.MediaTypeCache
-                * org.apache.tomcat.util.http.parser.SkipResult
+                * org.apache.tomcat.util.https.FastHttpDateFormat
+                * org.apache.tomcat.util.https.HttpMessages
+                * org.apache.tomcat.util.https.parser.HttpParser
+                * org.apache.tomcat.util.https.parser.MediaType
+                * org.apache.tomcat.util.https.parser.MediaTypeCache
+                * org.apache.tomcat.util.https.parser.SkipResult
                 * org.apache.tomcat.util.net.Constants
                 * org.apache.tomcat.util.net.DispatchType
                 * org.apache.tomcat.util.net.NioBlockingSelector$BlockPoller$1
@@ -178,7 +178,7 @@ tags:       [tomcat, java]
                                 * Server/Service/Engine/Host/Context/Valve -> `org.apache.catalina.Valve`，具体类型由`className`属性决定
                                 * Server/Service/Engine/Host/Context/JarScanner -> `org.apache.tomcat.util.scan.StandardJarScanner`
                                     * Server/Service/Engine/Host/Context/JarScanner/JarScanFilter -> `org.apache.tomcat.util.scan.StandardJarScanFilter`
-                                * Server/Service/Engine/Host/Context/CookieProcessor -> `org.apache.tomcat.util.http.LegacyCookieProcessor`
+                                * Server/Service/Engine/Host/Context/CookieProcessor -> `org.apache.tomcat.util.https.LegacyCookieProcessor`
                                 * Server/Service/Engine/Host/Context/Ejb -> `org.apache.tomcat.util.descriptor.web.ContextEjb`
                                 * Server/Service/Engine/Host/Context/Environment -> `org.apache.tomcat.util.descriptor.web.ContextEnvironment`
                                 * Server/Service/Engine/Host/Context/LocalEjb -> `org.apache.tomcat.util.descriptor.web.ContextLocalEjb`

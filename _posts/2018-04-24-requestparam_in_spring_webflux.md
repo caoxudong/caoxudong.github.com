@@ -18,7 +18,7 @@ tags:       [java, spring, springboot, webflux]
 以表单(`x-www-form-urlencoded`)提交数据：
 
     curl -X POST \
-        http://localhost:8888/test/callback \
+        https://localhost:8888/test/callback \
         -H 'cache-control: no-cache' \
         -H 'content-type: application/x-www-form-urlencoded' \
         -H 'postman-token: 3331bf20-6b83-3e51-6ac3-079b5a5eb101' \

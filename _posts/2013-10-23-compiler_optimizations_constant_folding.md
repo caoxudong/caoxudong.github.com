@@ -6,7 +6,7 @@ tags:       [compiler, optimization]
 ---
 
 
-wiki地址： [http://en.wikipedia.org/wiki/Constant_folding][1]
+wiki地址： [https://en.wikipedia.org/wiki/Constant_folding][1]
 
 # 常量折叠
 
@@ -37,6 +37,6 @@ wiki地址： [http://en.wikipedia.org/wiki/Constant_folding][1]
     int y = 0;
     return 0;
 
-[1]:    http://en.wikipedia.org/wiki/Constant_folding
-[2]:    http://en.wikipedia.org/wiki/Intermediate_representation#Intermediate_representation
+[1]:    https://en.wikipedia.org/wiki/Constant_folding
+[2]:    https://en.wikipedia.org/wiki/Intermediate_representation#Intermediate_representation
 [3]:    https://github.com/caoxudong/oracle_jrockit_the_definitive_guide/blob/master/chap2/2.6.md

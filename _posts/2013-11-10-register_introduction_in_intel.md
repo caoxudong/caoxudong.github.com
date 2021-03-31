@@ -99,7 +99,7 @@ tags:       [intel, miscroprocessor, register, assembly]
 * [Intel 80X86寄存器分类介绍][4]
 
 
-[1]:    http://www.amazon.cn/Intel%E5%BE%AE%E5%A4%84%E7%90%86%E5%99%A8-%E5%B8%83%E9%9B%B7/dp/B003U2RZ6C
-[3]:    http://blog.csdn.net/u010481185/article/details/8949844
-[4]:    http://blog.chinaunix.net/uid-10014667-id-471549.html
+[1]:    https://www.amazon.cn/Intel%E5%BE%AE%E5%A4%84%E7%90%86%E5%99%A8-%E5%B8%83%E9%9B%B7/dp/B003U2RZ6C
+[3]:    https://blog.csdn.net/u010481185/article/details/8949844
+[4]:    https://blog.chinaunix.net/uid-10014667-id-471549.html
 [5]:    /image/the_intel_microprocessors_note_1_fig_1.png

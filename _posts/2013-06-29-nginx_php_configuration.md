@@ -23,7 +23,7 @@ tags:       [nginx, php]
     events { 
         worker_connections 1024; 
     } 
-    http { 
+    https { 
         include mime.types; 
         default_type application/octet-stream; 
         sendfile on; 
@@ -67,5 +67,5 @@ tags:       [nginx, php]
 
 完成。
 
-[1]:    http://nginx.org/
-[2]:    http://php.net/
+[1]:    https://nginx.org/
+[2]:    https://php.net/

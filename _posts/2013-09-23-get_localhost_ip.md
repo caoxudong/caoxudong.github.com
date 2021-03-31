@@ -171,4 +171,4 @@ NetworkInterface类的getAll方法中会获取本地所有网络接口，是一�
 
 
 
-[1]:    http://hg.openjdk.java.net/jdk7u/jdk7u/jdk/file/861e489158ef/src/solaris/native/java/net/NetworkInterface.c
+[1]:    https://hg.openjdk.java.net/jdk7u/jdk7u/jdk/file/861e489158ef/src/solaris/native/java/net/NetworkInterface.c

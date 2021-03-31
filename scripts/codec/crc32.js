@@ -1,4 +1,4 @@
-/* crc32.js (C) 2014-present SheetJS -- http://sheetjs.com */
+/* crc32.js (C) 2014-present SheetJS -- https://sheetjs.com */
 /* vim: set ts=2: */
 /*exported CRC32 */
 var CRC32;

@@ -6,9 +6,9 @@ tags:       [compiler, java, jvm, translation, optimization]
 ---
 
 
-原文地址： <a href="http://www.google.com/url?q=http%3A%2F%2Fwww.javaworld.com%2Fjavaworld%2Fjw-09-2012%2F120905-jvm-performance-optimization-compilers.html&sa=D&sntz=1&usg=AFQjCNGA_3yyF8ccxVeWj7RlRcMuG7vVmg" target="_blank">http://www.google.com/url?q=http%3A%2F%2Fwww.javaworld.com%2Fjavaworld%2Fjw-09-2012%2F120905-jvm-performance-optimization-compilers.html&sa=D&sntz=1&usg=AFQjCNGA_3yyF8ccxVeWj7RlRcMuG7vVmg</a>
+原文地址： <a href="https://www.google.com/url?q=https%3A%2F%2Fwww.javaworld.com%2Fjavaworld%2Fjw-09-2012%2F120905-jvm-performance-optimization-compilers.html&sa=D&sntz=1&usg=AFQjCNGA_3yyF8ccxVeWj7RlRcMuG7vVmg" target="_blank">https://www.google.com/url?q=https%3A%2F%2Fwww.javaworld.com%2Fjavaworld%2Fjw-09-2012%2F120905-jvm-performance-optimization-compilers.html&sa=D&sntz=1&usg=AFQjCNGA_3yyF8ccxVeWj7RlRcMuG7vVmg</a>
 
-转载地址： <a href="http://www.importnew.com/2009.html" target="_blank">http://www.importnew.com/2009.html</a>
+转载地址： <a href="https://www.importnew.com/2009.html" target="_blank">https://www.importnew.com/2009.html</a>
 
 [转载： JVM性能优化， Part 1 -- 概述][2]
 
@@ -22,7 +22,7 @@ Java编译器存在是Java编程语言能独立于平台的根本原因。软件
 
 标准CPU并不能识别字节码，它需要被转换为当前平台所能理解的本地指令。在JVM中，有专门的组件负责将字节码编译为平台相关指令，实际上，这也是一种编译器。有些JVM编译器可以处理多层级的编译工作，例如，编译器在最终将字节码转换为平台相关指令前，会为相关的字节码建立多层级的中间表示（intermediate representation）。
 
-> 字节码与JVM 如果你想了解更多有关字节码与JVM的信息，请阅读 “<a href="http://www.javaworld.com/javaworld/jw-09-1996/jw-09-bytecodes.html" target="_blank">Bytecode basics</a>”(Bill Venners, JavaWorld)
+> 字节码与JVM 如果你想了解更多有关字节码与JVM的信息，请阅读 “<a href="https://www.javaworld.com/javaworld/jw-09-1996/jw-09-bytecodes.html" target="_blank">Bytecode basics</a>”(Bill Venners, JavaWorld)
 
 以平台未知的角度看，我们希望尽可能的保持平台独立性，因此，最后一级的编译，也就是从最低级表示到实际机器码的转换，是与具体平台的处理器架构息息相关的。在最高级的表示上，会因使用静态编译器还是动态编译器而有所区别。在这里，我们可以选择应用程序所以来的可执行环境，期望达到的性能要求，以及我们所面临的资源限制。在本系列的第1篇文章的[静态编译器与动态编译器][2]一节中，已经对此有过简要介绍。我将在本文的后续章节中详细介绍这部分内容。
 
@@ -110,7 +110,7 @@ Java编译器存在是Java编程语言能独立于平台的根本原因。软件
 
 对于那些需要长时间运行的应用程序，例如服务器端的企业级Java应用程序来说，客户端编译器所实现的功能还略有不足，因此服务器端的编译会使用类似C2这类的编译器。启动应用程序时添加命令行参数“-server”可以启用C2编译器。由于大多数服务器端应用程序都会长时间运行，因此相对于运行时间稍短的轻量级客户端应用程序，在服务器端应用程序中启用C2编译器可以收集到更多的运行时数据，也就可以执行一些更高级的编译技术与算法。
 
-> **提示：给服务器端编译器热身** 对于服务器端编译器来说，在应用程序开始运行之后，编译器可能会在一段时间之后才开始优化“热点”代码，所以服务器端编译器通常需要经过一个“热身”阶段。在服务器端编译器执行性能优化任务之前，要确保应用程序的各项准备工作都已就绪。给予编译器足够多的时间来完成编译、优化的工作才能取得更好的效果。（更多关于编译器热身与监控原理的内容请参见JavaWorld的文章”<a href="http://www.javaworld.com/javaqa/2003-04/01-qa-0411-hotspot.html" target="_blank">Watch your HotSpot compiler go</a>“。）
+> **提示：给服务器端编译器热身** 对于服务器端编译器来说，在应用程序开始运行之后，编译器可能会在一段时间之后才开始优化“热点”代码，所以服务器端编译器通常需要经过一个“热身”阶段。在服务器端编译器执行性能优化任务之前，要确保应用程序的各项准备工作都已就绪。给予编译器足够多的时间来完成编译、优化的工作才能取得更好的效果。（更多关于编译器热身与监控原理的内容请参见JavaWorld的文章”<a href="https://www.javaworld.com/javaqa/2003-04/01-qa-0411-hotspot.html" target="_blank">Watch your HotSpot compiler go</a>“。）
 
 在执行编译任务优化任务时，服务器端编译器要比客户端编译器综合考虑更多的运行时信息，执行更复杂的分支分析，即对哪种优化路径能取得更好的效果作出判断。获取的运行时数据越多，编译优化所产生的效果越好。当然，要完成一些复杂的、高级的性能分析任务，编译器就需要消耗更多的资源。使用了C2编译器的JVM会消耗更多的资源，例如更多的线程，更多的CPU指令周期，以及更大的code cache等。
 
@@ -263,9 +263,9 @@ Eva Andearsson对JVM计数、SOA、云计算和其他企业级中间件解决方
 
 [1]:   /image/jvmperf2-fig1.png
 [2]:   /blog/2013/09/27/jvm_performance_optimization_1_overview                "JVM性能优化， Part 1 ―― 概述"
-[3]:   http://www.javaworld.com/javaqa/2003-04/01-qa-0411-hotspot.html          "Watch your HotSpot compiler go"
-[4]:   http://www.javaworld.com/javaworld/jw-09-1996/jw-09-bytecodes.html       "Bytecode basics"
-[5]:   http://docs.oracle.com/javase/6/docs/technotes/guides/javac/index.html   "Java编译器"
-[6]:   http://researchweb.watson.ibm.com/trl/projects/jit/index_e.htm           "Understanding Just-In-Time Compilation and Optimization"
-[7]:   http://www.azulsystems.com/blog/cliff/2010-07-16-tiered-compilation      "层次编译"
-[8]:   http://dl.acm.org/citation.cfm?id=2081919                                "Using Platform-Specific Performance Counters for Dynamic Compilation"
+[3]:   https://www.javaworld.com/javaqa/2003-04/01-qa-0411-hotspot.html          "Watch your HotSpot compiler go"
+[4]:   https://www.javaworld.com/javaworld/jw-09-1996/jw-09-bytecodes.html       "Bytecode basics"
+[5]:   https://docs.oracle.com/javase/6/docs/technotes/guides/javac/index.html   "Java编译器"
+[6]:   https://researchweb.watson.ibm.com/trl/projects/jit/index_e.htm           "Understanding Just-In-Time Compilation and Optimization"
+[7]:   https://www.azulsystems.com/blog/cliff/2010-07-16-tiered-compilation      "层次编译"
+[8]:   https://dl.acm.org/citation.cfm?id=2081919                                "Using Platform-Specific Performance Counters for Dynamic Compilation"

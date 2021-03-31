@@ -1,5 +1,5 @@
 # This is the default format. 
-# For more see: http://jekyllrb.com/docs/permalinks/
+# For more see: https://jekyllrb.com/docs/permalinks/
 permalink: /:categories/:year/:month/:day/:title 
 
 exclude: [".rvmrc", ".rbenv-version", "README.md", "Rakefile", "changelog.md"]
@@ -28,7 +28,7 @@ author :
 #
 
 plugins: ["jekyll-sitemap"]
-production_url : http://blog.caoxudong.info
+production_url : https://blog.caoxudong.info
 
 # All Jekyll-Bootstrap specific configurations are namespaced into this hash
 #
@@ -39,24 +39,24 @@ JB :
   # Links in your website should always be prefixed with {{BASE_PATH}}
   # however this value will be dynamically changed depending on your deployment situation.
   #
-  # CNAME (http://yourcustomdomain.com)
+  # CNAME (https://yourcustomdomain.com)
   #   DO NOT SET BASE_PATH 
   #   (urls will be prefixed with "/" and work relatively)
   #
-  # GitHub Pages (http://username.github.io)
+  # GitHub Pages (https://username.github.io)
   #   DO NOT SET BASE_PATH 
   #   (urls will be prefixed with "/" and work relatively)
   #
-  # GitHub Project Pages (http://username.github.io/project-name)
+  # GitHub Project Pages (https://username.github.io/project-name)
   #
   #   A GitHub Project site exists in the `gh-pages` branch of one of your repositories.
-  #  REQUIRED! Set BASE_PATH to: http://username.github.io/project-name
+  #  REQUIRED! Set BASE_PATH to: https://username.github.io/project-name
   #
   # CAUTION:
   #   - When in Localhost, your site will run from root "/" regardless of BASE_PATH
   #   - Only the following values are falsy: ["", null, false]
   #   - When setting BASE_PATH it must be a valid url.
-  #     This means always setting the protocol (http|https) or prefixing with "/"
+  #     This means always setting the protocol (https|https) or prefixing with "/"
   BASE_PATH : false
 
   # By default, the asset_path is automatically defined relative to BASE_PATH plus the enabled theme.
@@ -64,7 +64,7 @@ JB :
   #
   # Override this by defining an absolute path to assets here.
   # ex: 
-  #   http://s3.amazonaws.com/yoursite/themes/watermelon
+  #   https://s3.amazonaws.com/yoursite/themes/watermelon
   #   /assets
   #
   ASSET_PATH : false

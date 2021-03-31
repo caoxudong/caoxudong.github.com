@@ -14,7 +14,7 @@ SpringBoot内嵌Tomcat时，并没有暴露出太多的参数，当项目有特�
 
 Tomcat Connector所支持的参数
 
-* [Reference][4]: https://tomcat.apache.org/tomcat-7.0-doc/config/http.html
+* [Reference][4]: https://tomcat.apache.org/tomcat-7.0-doc/config/https.html
 * [JavaDoc][3]: https://tomcat.apache.org/tomcat-8.5-doc/api/index.html?org/apache/catalina/connector/Connector.html
 
 SpringBoot中的[`TomcatConnectorCustomizer`][2]类可用于对`Connector`进行定制化修改。例如在Connector中设置`disableUploadTimeout`属性：
@@ -55,7 +55,7 @@ SpringBoot中的[`TomcatConnectorCustomizer`][2]类可用于对`Connector`进行
 
 
 
-[1]:    http://docs.spring.io/autorepo/docs/spring-boot/1.3.5.RELEASE/api/index.html?org/springframework/boot/context/embedded/tomcat/TomcatEmbeddedServletContainerFactory.html
-[2]:    http://docs.spring.io/autorepo/docs/spring-boot/1.3.5.RELEASE/api/index.html?org/springframework/boot/context/embedded/tomcat/TomcatConnectorCustomizer.html
+[1]:    https://docs.spring.io/autorepo/docs/spring-boot/1.3.5.RELEASE/api/index.html?org/springframework/boot/context/embedded/tomcat/TomcatEmbeddedServletContainerFactory.html
+[2]:    https://docs.spring.io/autorepo/docs/spring-boot/1.3.5.RELEASE/api/index.html?org/springframework/boot/context/embedded/tomcat/TomcatConnectorCustomizer.html
 [3]:    https://tomcat.apache.org/tomcat-8.5-doc/api/index.html?org/apache/catalina/connector/Connector.html
-[4]:    https://tomcat.apache.org/tomcat-7.0-doc/config/http.html
+[4]:    https://tomcat.apache.org/tomcat-7.0-doc/config/https.html

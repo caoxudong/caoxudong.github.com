@@ -5,7 +5,7 @@ layout:     post
 tags:       [java]
 ---
 
->转载自我在知乎的回答，[http://www.zhihu.com/question/24401191/answer/37601385][2]
+>转载自我在知乎的回答，[https://www.zhihu.com/question/24401191/answer/37601385][2]
 
     $ java -version
     java version "1.8.0_20"
@@ -324,6 +324,6 @@ java中的注解是一种继承自接口`java.lang.annotation.Annotation`的特�
 嗯，就这样吧。
 
 
-[1]:    http://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.7.16   "4.7.16. The RuntimeVisibleAnnotations attribute"
-[2]:    http://www.zhihu.com/question/24401191/answer/37601385                      "java注解是怎么实现的？"
-[3]:    http://docs.oracle.com/javase/specs/jls/se8/html/jls-9.html#jls-9.6         "9.6. Annotation Types"
+[1]:    https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.7.16   "4.7.16. The RuntimeVisibleAnnotations attribute"
+[2]:    https://www.zhihu.com/question/24401191/answer/37601385                      "java注解是怎么实现的？"
+[3]:    https://docs.oracle.com/javase/specs/jls/se8/html/jls-9.html#jls-9.6         "9.6. Annotation Types"

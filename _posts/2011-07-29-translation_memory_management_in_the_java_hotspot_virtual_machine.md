@@ -6,7 +6,7 @@ tags:       [translation, java, hotspot, jvm, memory]
 ---
 
 
-原文地址：<http://caoxudong818.iteye.com/blog/1135981>
+原文地址：<https://caoxudong818.iteye.com/blog/1135981>
 
 原英文地址：[Memory Management in the Java HotSpot™ Virtual Machine][1] 
 
@@ -496,7 +496,7 @@ HAT工具可以帮助调试无意识对象保持（unintentional object retentio
 
 
 
-[1]:    http://www.oracle.com/technetwork/java/javase/memorymanagement-whitepaper-150215.pdf
+[1]:    https://www.oracle.com/technetwork/java/javase/memorymanagement-whitepaper-150215.pdf
 [3]:    /image/translation_Memory_management_in_the_java_hotSpot_virtual_machine-fig_1.png
 [4]:    /image/translation_Memory_management_in_the_java_hotSpot_virtual_machine-fig_2.png
 [5]:    /image/translation_Memory_management_in_the_java_hotSpot_virtual_machine-fig_3.png
@@ -505,20 +505,20 @@ HAT工具可以帮助调试无意识对象保持（unintentional object retentio
 [8]:    /image/translation_Memory_management_in_the_java_hotSpot_virtual_machine-fig_6.png
 [9]:    /image/translation_Memory_management_in_the_java_hotSpot_virtual_machine-fig_7.png
 [10]:   /image/translation_Memory_management_in_the_java_hotSpot_virtual_machine-fig_8.png
-[11]:   http://www.devx.com/Java/Article/21977
-[12]:   http://java.sun.com/docs/hotspot/gc5.0/gc_tuning_5.html
-[13]:   http://java.sun.com/j2se/1.5.0/docs/guide/vm/server–class.html
-[14]:   http://java.sun.com/j2se/1.5.0/docs/guide/vm/gc–ergonomics.html
-[15]:   http://java.sun.com/docs/hotspot/gc5.0/ergo5.html
-[16]:   http://java.sun.com/docs/hotspot/VMOptions.html
-[17]:   http://java.sun.com/j2se/1.5.0/docs/tooldocs/solaris/java.html
-[18]:   http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/java.html
-[19]:   http://java.sun.com/j2se/1.5/pdf/jdk50_ts_guide.pdf
-[20]:   http://java.sun.com/developer/technicalArticles/Programming/HPROF.html
+[11]:   https://www.devx.com/Java/Article/21977
+[12]:   https://java.sun.com/docs/hotspot/gc5.0/gc_tuning_5.html
+[13]:   https://java.sun.com/j2se/1.5.0/docs/guide/vm/server–class.html
+[14]:   https://java.sun.com/j2se/1.5.0/docs/guide/vm/gc–ergonomics.html
+[15]:   https://java.sun.com/docs/hotspot/gc5.0/ergo5.html
+[16]:   https://java.sun.com/docs/hotspot/VMOptions.html
+[17]:   https://java.sun.com/j2se/1.5.0/docs/tooldocs/solaris/java.html
+[18]:   https://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/java.html
+[19]:   https://java.sun.com/j2se/1.5/pdf/jdk50_ts_guide.pdf
+[20]:   https://java.sun.com/developer/technicalArticles/Programming/HPROF.html
 [21]:   https://hat.dev.java.net/
-[22]:   http://devresource.hp.com/drc/resources/jmemmodel/index.jsp
-[23]:   http://www.devx.com/Java/Article/30192
-[24]:   http://java.sun.com/j2se/1.5.0/relnotes.html
-[25]:   http://java.sun.com/j2se/1.5.0/docs/guide/vm/index.html
-[26]:   http://java.sun.com/j2se/realtime/index.jsp
-[27]:   http://www.amazon.com/Garbage-Collection-Algorithms-Automatic-Management/dp/0471941484
+[22]:   https://devresource.hp.com/drc/resources/jmemmodel/index.jsp
+[23]:   https://www.devx.com/Java/Article/30192
+[24]:   https://java.sun.com/j2se/1.5.0/relnotes.html
+[25]:   https://java.sun.com/j2se/1.5.0/docs/guide/vm/index.html
+[26]:   https://java.sun.com/j2se/realtime/index.jsp
+[27]:   https://www.amazon.com/Garbage-Collection-Algorithms-Automatic-Management/dp/0471941484

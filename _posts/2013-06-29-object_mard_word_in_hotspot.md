@@ -52,6 +52,6 @@ tags:       [hotspot, java, jvm, vm]
 
 
 
-[1]:    http://hg.openjdk.java.net/jdk7u/jdk7u/hotspot/file/05fe7a87d149/src/share/vm/oops/markOop.hpp
-[2]:    http://hg.openjdk.java.net/jdk7u/jdk7u/hotspot/file/05fe7a87d149/src/share/vm/utilities/globalDefinitions.hpp
+[1]:    https://hg.openjdk.java.net/jdk7u/jdk7u/hotspot/file/05fe7a87d149/src/share/vm/oops/markOop.hpp
+[2]:    https://hg.openjdk.java.net/jdk7u/jdk7u/hotspot/file/05fe7a87d149/src/share/vm/utilities/globalDefinitions.hpp
 [3]:    https://gist.github.com/caoxudong/8567764

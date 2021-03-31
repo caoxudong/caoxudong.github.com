@@ -120,8 +120,8 @@ java.lang.UNIXProcess这个类只存在于*nix系的操作系统中，并且分�
         return 0x80 + WTERMSIG(status);
     #endif
 
-[1]:    http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/java/lang/Runtime.java#613
-[2]:    http://hg.openjdk.java.net/jdk7u/jdk7u/jdk/file/87c6c2882d3f/src/solaris/classes/java/lang/
-[3]:    http://hg.openjdk.java.net/jdk7u/jdk7u/jdk/file/87c6c2882d3f/make/java/java/Makefile
-[4]:    http://hg.openjdk.java.net/jdk7u/jdk7u/jdk/file/87c6c2882d3f/make/common/Defs.gmk
-[5]:    http://hg.openjdk.java.net/jdk7u/jdk7u/jdk/file/87c6c2882d3f/src/solaris/native/java/lang/UNIXProcess_md.c
+[1]:    https://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/java/lang/Runtime.java#613
+[2]:    https://hg.openjdk.java.net/jdk7u/jdk7u/jdk/file/87c6c2882d3f/src/solaris/classes/java/lang/
+[3]:    https://hg.openjdk.java.net/jdk7u/jdk7u/jdk/file/87c6c2882d3f/make/java/java/Makefile
+[4]:    https://hg.openjdk.java.net/jdk7u/jdk7u/jdk/file/87c6c2882d3f/make/common/Defs.gmk
+[5]:    https://hg.openjdk.java.net/jdk7u/jdk7u/jdk/file/87c6c2882d3f/src/solaris/native/java/lang/UNIXProcess_md.c

@@ -6,9 +6,9 @@ tags:       [translation, java, jvm, optimization]
 ---
 
 
-原文地址 <a href="http://www.javaworld.com/javaworld/jw-08-2012/120821-jvm-performance-optimization-overview.html" target="_blank">http://www.javaworld.com/javaworld/jw-08-2012/120821-jvm-performance-optimization-overview.html</a>
+原文地址 <a href="https://www.javaworld.com/javaworld/jw-08-2012/120821-jvm-performance-optimization-overview.html" target="_blank">https://www.javaworld.com/javaworld/jw-08-2012/120821-jvm-performance-optimization-overview.html</a>
 
-转载地址 <a href="http://www.importnew.com/1774.html" target="_blank">http://www.importnew.com/1774.html</a>
+转载地址 <a href="https://www.importnew.com/1774.html" target="_blank">https://www.importnew.com/1774.html</a>
 
 众所周知，Java应用程序是运行在JVM上的，但是你对JVM有所了解么？作为这个系列文章的第一篇，本文将对经典Java虚拟机的运行机制做简单介绍，内容包括“一次编写，到处运行”的利弊、垃圾回收的基本原理、常用垃圾回收算法的示例和编译器优化等。后续的系列文章将会JVM性能优化的内容进行介绍，包括新一代JVM的设计思路，以及如何支持当今Java应用程序对高性能和高扩展性的要求。
 
@@ -18,7 +18,7 @@ tags:       [translation, java, jvm, optimization]
 
 希望在阅读此系列文章后，你能对影响Java伸缩性的因素有所了解，并且知道这些因素是如何影响Java开发的，如何使Java难以优化的。希望会你有那种发自内心的惊叹，并且能够激励你为Java做一点事情：拒绝限制，努力改变。如果你还没准备好为开源事业贡献力量，希望本系列文章可以为你指明方向。
 
-> JVM职业生涯 在我职业生涯的早期，垃圾回收的问题曾经很难解决。垃圾回收问题和JVM的跨平台问题我更加为JVM和中间件的相关技术而着迷。我对JVM的热情源于十年前在<a href="http://www.infoworld.com/d/developer-world/oracle-moving-merge-jrockit-hotspot-jvms-448" target="_blank">JRockit</a>团队工作的经历，当时要编码实现一种新的、能够自动学习、自动调优的垃圾回收算法（参见相关资源）。从那个项目开始，我踏上了JVM技术之旅，期间在BEA System公司工作的很多年，与Intel公司和Sun公司有过合作关系，在Oracle收购BEA公司和Sun公司之后为Oracle工作了一年。另外，我的硕士论文深入分析了JRockit的试验性特性，为<a href="http://www.javaworld.com/javaworld/jw-08-2012/120821-jvm-performance-optimization-overview.html#resources" target="_blank">Deterministic Garbage Collection</a>算法打下了基础。当我加入Azul公司的团队后，我回到了熟悉的工作中，负责管理维护<a href="http://www.infoworld.com/d/developer-world/azul-systems-searches-managed-runtime-breakthroughs-228" target="_blank">Zing JVM</a>的垃圾回收算法。现在我的工作有了一点小变化，负责日程安排与资源管理，关注分布式的可伸缩数据处理框架，目前在Cloudera公司工作，负责开源项目<a href="http://www.infoworld.com/d/business-intelligence/cloudera-moves-hadoop-beyond-mapreduce-194941" target="_blank">Hadoop</a>的开发。
+> JVM职业生涯 在我职业生涯的早期，垃圾回收的问题曾经很难解决。垃圾回收问题和JVM的跨平台问题我更加为JVM和中间件的相关技术而着迷。我对JVM的热情源于十年前在<a href="https://www.infoworld.com/d/developer-world/oracle-moving-merge-jrockit-hotspot-jvms-448" target="_blank">JRockit</a>团队工作的经历，当时要编码实现一种新的、能够自动学习、自动调优的垃圾回收算法（参见相关资源）。从那个项目开始，我踏上了JVM技术之旅，期间在BEA System公司工作的很多年，与Intel公司和Sun公司有过合作关系，在Oracle收购BEA公司和Sun公司之后为Oracle工作了一年。另外，我的硕士论文深入分析了JRockit的试验性特性，为<a href="https://www.javaworld.com/javaworld/jw-08-2012/120821-jvm-performance-optimization-overview.html#resources" target="_blank">Deterministic Garbage Collection</a>算法打下了基础。当我加入Azul公司的团队后，我回到了熟悉的工作中，负责管理维护<a href="https://www.infoworld.com/d/developer-world/azul-systems-searches-managed-runtime-breakthroughs-228" target="_blank">Zing JVM</a>的垃圾回收算法。现在我的工作有了一点小变化，负责日程安排与资源管理，关注分布式的可伸缩数据处理框架，目前在Cloudera公司工作，负责开源项目<a href="https://www.infoworld.com/d/business-intelligence/cloudera-moves-hadoop-beyond-mapreduce-194941" target="_blank">Hadoop</a>的开发。
 
 # Java的性能与“一次编写，到处运行”的挑战
 
@@ -86,7 +86,7 @@ JVM也可以在运行java应用程序时，很好的管理动态资源。这指�
 
 垃圾回收就是JVM释放那些没有引用指向的堆内存的操作。当垃圾回收首次触发时，有引用指向的对象会被保存下来，那些没有引用指向的对象占用的空间会被回收。当所有可回收的内存都被回收后，这些空间就可以被分配给新的对象了。
 
-垃圾回收不会回收仍有引用指向的对象；否则就会违反JVM规范。这个规则有一个例外，就是对软引用或<a href="http://java.sun.com/docs/books/performance/1st_edition/html/JPAppGC.fm.html" target="_blank">弱引用</a>的使用，当垃圾回收器发现内存快要用完时，会回收只有软引用或弱引用指向的对象所占用的内存。我的建议是，尽量避免使用弱引用，因为Java规范中存在的模糊的表述可能会使你对弱引用的使用产生误解。此外，Java本身是动态内存管理的，你没必要考虑什么时候该释放哪块内存。
+垃圾回收不会回收仍有引用指向的对象；否则就会违反JVM规范。这个规则有一个例外，就是对软引用或<a href="https://java.sun.com/docs/books/performance/1st_edition/html/JPAppGC.fm.html" target="_blank">弱引用</a>的使用，当垃圾回收器发现内存快要用完时，会回收只有软引用或弱引用指向的对象所占用的内存。我的建议是，尽量避免使用弱引用，因为Java规范中存在的模糊的表述可能会使你对弱引用的使用产生误解。此外，Java本身是动态内存管理的，你没必要考虑什么时候该释放哪块内存。
 
 对于垃圾回收来说，挑战在于，如何将垃圾回收对应用程序造成的影响降到最小。如果垃圾回收执行的不充分，那么应用程序迟早会发生OOM错误；如果垃圾回收执行的太频繁，会对应用程序的吞吐量和响应时间造成影响，当然，这都不是好的影响。
 
@@ -113,7 +113,7 @@ JVM实现了可移植性（“一次编写，到处运行”）和动态内存�
 
 # 关于作者
 
-Eva Andearsson对JVM计数、SOA、云计算和其他企业级中间件解决方案有着10多年的从业经验。在2001年，她以JRockit JVM开发者的身份加盟了创业公司Appeal Virtual Solutions（即BEA公司的前身）。在垃圾回收领域的研究和算法方面，EVA获得了两项专利。此外她还是提出了确定性垃圾回收（Deterministic Garbage Collection），后来形成了JRockit实时系统（JRockit Real Time）。在技术上，Eva与SUn公司和Intel公司合作密切，涉及到很多将JRockit产品线、WebLogic和Coherence整合的项目。2009年，Eva加盟了<a href="http://www.azulsystems.com/" target="_blank">Azul System</a>公，担任产品经理。负责新的Zing Java平台的开发工作。最近，她改换门庭，以高级产品经理的身份加盟Cloudera公司，负责管理<a href="http://www.cloudera.com/company/" target="_blank">Cloudera</a>公司Hadoop分布式系统，致力于高扩展性、分布式数据处理框架的开发。
+Eva Andearsson对JVM计数、SOA、云计算和其他企业级中间件解决方案有着10多年的从业经验。在2001年，她以JRockit JVM开发者的身份加盟了创业公司Appeal Virtual Solutions（即BEA公司的前身）。在垃圾回收领域的研究和算法方面，EVA获得了两项专利。此外她还是提出了确定性垃圾回收（Deterministic Garbage Collection），后来形成了JRockit实时系统（JRockit Real Time）。在技术上，Eva与SUn公司和Intel公司合作密切，涉及到很多将JRockit产品线、WebLogic和Coherence整合的项目。2009年，Eva加盟了<a href="https://www.azulsystems.com/" target="_blank">Azul System</a>公，担任产品经理。负责新的Zing Java平台的开发工作。最近，她改换门庭，以高级产品经理的身份加盟Cloudera公司，负责管理<a href="https://www.cloudera.com/company/" target="_blank">Cloudera</a>公司Hadoop分布式系统，致力于高扩展性、分布式数据处理框架的开发。
 
 # 相关资源
 
@@ -128,10 +128,10 @@ Eva Andearsson对JVM计数、SOA、云计算和其他企业级中间件解决方
 
 
 [1]:    https://www.usenix.org/conference/java-vm-02/collect-or-not-collect-machine-learning-memory-management      "To Colelct or Not To Collect"
-[2]:    http://www.nada.kth.se/utbildning/grukth/exjobb/rapportlistor/2002/Rapporter02/andreasson_eva_02041.pdf     "Reinforcement Learning for a dynamic JVM"
-[3]:    http://www.oracle.com/us/technologies/java/oracle-jrockit-real-time-1517310.pdf                             "Deterministic Garbage Collection: Unleash the Power of Java with Oracle JRockit Real Time"
-[4]:    http://stackoverflow.com/questions/1878696/why-is-java-faster-when-using-a-jit-vs-compiling-to-machine-code "Why is Java faster when using a JIT vs. compiling to machine code?"
-[5]:    http://www.azulsystems.com/products/zing/virtual-machine                                                    "Zing"
-[6]:    http://www.azulsystems.com/products/zing/diagnostics                                                        "Zing官网中诊断工具的介绍"
-[7]:    http://www.drdobbs.com/jvm/g1-javas-garbage-first-garbage-collector/219401061                               "G1: Java's Garbage First Garbage Collector"
-[8]:    http://www.packtpub.com/oracle-jrockit-definitive-guide/book?tag=                                           "Oracle JRockit: The Definite Guide"
+[2]:    https://www.nada.kth.se/utbildning/grukth/exjobb/rapportlistor/2002/Rapporter02/andreasson_eva_02041.pdf     "Reinforcement Learning for a dynamic JVM"
+[3]:    https://www.oracle.com/us/technologies/java/oracle-jrockit-real-time-1517310.pdf                             "Deterministic Garbage Collection: Unleash the Power of Java with Oracle JRockit Real Time"
+[4]:    https://stackoverflow.com/questions/1878696/why-is-java-faster-when-using-a-jit-vs-compiling-to-machine-code "Why is Java faster when using a JIT vs. compiling to machine code?"
+[5]:    https://www.azulsystems.com/products/zing/virtual-machine                                                    "Zing"
+[6]:    https://www.azulsystems.com/products/zing/diagnostics                                                        "Zing官网中诊断工具的介绍"
+[7]:    https://www.drdobbs.com/jvm/g1-javas-garbage-first-garbage-collector/219401061                               "G1: Java's Garbage First Garbage Collector"
+[8]:    https://www.packtpub.com/oracle-jrockit-definitive-guide/book?tag=                                           "Oracle JRockit: The Definite Guide"

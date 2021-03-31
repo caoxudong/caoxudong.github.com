@@ -3481,7 +3481,7 @@ JNI接口指针(即`JNIEnv`)仅在当前线程内有效。其他的线程若需�
 
 
 
-[1]:     http://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/jniTOC.html
+[1]:     https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/jniTOC.html
 [2]:     #1
 [3]:     #2
 [4]:     #2.1
@@ -3588,8 +3588,8 @@ JNI接口指针(即`JNIEnv`)仅在当前线程内有效。其他的线程若需�
 [105]:   #4.5.12.1
 [106]:   #4.5.12.2
 [107]:   #4.5.13
-[108]:   http://docs.oracle.com/javase/8/docs/technotes/guides/io/index.html
-[109]:   http://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html
+[108]:   https://docs.oracle.com/javase/8/docs/technotes/guides/io/index.html
+[109]:   https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html
 [110]:   #4.5.13.1
 [111]:   #4.5.13.2
 [112]:   #4.5.13.3

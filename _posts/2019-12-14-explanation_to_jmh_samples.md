@@ -7,7 +7,7 @@ tags:       [java, jmh, jvm, benchmark]
 
 # what is jmh
 
-jmh官网地址，[http://openjdk.java.net/projects/code-tools/jmh/][1]
+jmh官网地址，[https://openjdk.java.net/projects/code-tools/jmh/][1]
 
 jmh能帮助你做benchmark，测量代码的吞吐量、平均响应时间等指标。
 
@@ -18,7 +18,7 @@ jmh能帮助你做benchmark，测量代码的吞吐量、平均响应时间等�
 
 # examples explanation
 
-samples地址，[http://hg.openjdk.java.net/code-tools/jmh/file/40c1cca654c1/jmh-samples/src/main/java/org/openjdk/jmh/samples][2]
+samples地址，[https://hg.openjdk.java.net/code-tools/jmh/file/40c1cca654c1/jmh-samples/src/main/java/org/openjdk/jmh/samples][2]
 
 下面通过实例说一下jmh如何帮助我们做benchmark。
 
@@ -213,5 +213,5 @@ jmh可以按照参数指定的规则fork出对应的jvm进程来测试每一个�
 
 # Resources
 
-[1]:    http://openjdk.java.net/projects/code-tools/jmh/
-[2]:    http://hg.openjdk.java.net/code-tools/jmh/file/40c1cca654c1/jmh-samples/src/main/java/org/openjdk/jmh/samples
+[1]:    https://openjdk.java.net/projects/code-tools/jmh/
+[2]:    https://hg.openjdk.java.net/code-tools/jmh/file/40c1cca654c1/jmh-samples/src/main/java/org/openjdk/jmh/samples

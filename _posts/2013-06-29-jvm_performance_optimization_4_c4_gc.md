@@ -7,9 +7,9 @@ tags:       [c4, gc, java, jvm, translation]
 
 
 
-原文地址 <a href="http://www.javaworld.com/javaworld/jw-11-2012/121107-jvm-performance-optimization-low-latency-garbage-collection.html" target="_blank">http://www.javaworld.com/javaworld/jw-11-2012/121107-jvm-performance-optimization-low-latency-garbage-collection.html</a>
+原文地址 <a href="https://www.javaworld.com/javaworld/jw-11-2012/121107-jvm-performance-optimization-low-latency-garbage-collection.html" target="_blank">https://www.javaworld.com/javaworld/jw-11-2012/121107-jvm-performance-optimization-low-latency-garbage-collection.html</a>
 
-转载地址 <a href="http://www.importnew.com/2410.html" target="_blank">http://www.importnew.com/2410.html</a>
+转载地址 <a href="https://www.importnew.com/2410.html" target="_blank">https://www.importnew.com/2410.html</a>
 
 [转载： JVM性能优化， Part 1 -- 概述][4]
 
@@ -94,11 +94,11 @@ C4将内存分配和提供足够连续空闲内存的能力完全区分开。C4�
 
 # 更多关于垃圾回收的文章
 
-*   “<a href="http://www.azulsystems.com/products/zing/c4-java-garbage-collector-wp" target="_blank">C4: The Continuously Concurrent Compacting Collector</a>” (Gil Tene, Balaji Iyengar and Michael Wolf; Proceedings of the International Symposium on Memory Management, 2011): Learn more about the C4 algorithm and shattered object moves. 
-*   “<a href="http://dl.acm.org/citation.cfm?id=1029879" target="_blank">Garbage-first garbage collection</a>” (David Detlefs, et al., 2004, Proceedings of the 4th international Symposium on Memory Management, 2004): Learn more about the G1 algorithm. (Paid access on the ACM website.) 
-*   “<a href="http://www.drdobbs.com/jvm/g1-javas-garbage-first-garbage-collector/219401061" target="_blank">G1: Java’s Garbage First Garbage Collector</a>” (Eric J. Bruno, Dr. Dobb’s, August 2009): A more in-depth overview and evaluation of G1. 
-*   The IBM Software Developers Kit (SDK) for Java documentation includes information about the <a href="http://publib.boulder.ibm.com/infocenter/java7sdk/v7r0/index.jsp?topic=%2Fcom.ibm.java.aix.70.doc%2Fdiag%2Funderstanding%2Fmm_gc_balanced.html" target="_blank">Balanced Garbage Collection Policy</a>. 
-*   “<a href="http://stackoverflow.com/questions/338745/java-vm-ibm-vs-sun" target="_blank">Java VM: IBM vs Sun</a>” (Stackoverflow.com, December 2008): What factors might help you choose? 
+*   “<a href="https://www.azulsystems.com/products/zing/c4-java-garbage-collector-wp" target="_blank">C4: The Continuously Concurrent Compacting Collector</a>” (Gil Tene, Balaji Iyengar and Michael Wolf; Proceedings of the International Symposium on Memory Management, 2011): Learn more about the C4 algorithm and shattered object moves. 
+*   “<a href="https://dl.acm.org/citation.cfm?id=1029879" target="_blank">Garbage-first garbage collection</a>” (David Detlefs, et al., 2004, Proceedings of the 4th international Symposium on Memory Management, 2004): Learn more about the G1 algorithm. (Paid access on the ACM website.) 
+*   “<a href="https://www.drdobbs.com/jvm/g1-javas-garbage-first-garbage-collector/219401061" target="_blank">G1: Java’s Garbage First Garbage Collector</a>” (Eric J. Bruno, Dr. Dobb’s, August 2009): A more in-depth overview and evaluation of G1. 
+*   The IBM Software Developers Kit (SDK) for Java documentation includes information about the <a href="https://publib.boulder.ibm.com/infocenter/java7sdk/v7r0/index.jsp?topic=%2Fcom.ibm.java.aix.70.doc%2Fdiag%2Funderstanding%2Fmm_gc_balanced.html" target="_blank">Balanced Garbage Collection Policy</a>. 
+*   “<a href="https://stackoverflow.com/questions/338745/java-vm-ibm-vs-sun" target="_blank">Java VM: IBM vs Sun</a>” (Stackoverflow.com, December 2008): What factors might help you choose? 
 
 # 关于作者
 

@@ -6,7 +6,7 @@ tags:       [java, jvm, translation, optimization]
 ---
 
 
-原文地址 <http://www.javaworld.com/javaworld/jw-03-2013/130301-jvm-performance-optimization-java-scalability.html?page=1>
+原文地址 <https://www.javaworld.com/javaworld/jw-03-2013/130301-jvm-performance-optimization-java-scalability.html?page=1>
 
 [转载： JVM性能优化， Part 1 -- 概述][1]
 
@@ -204,17 +204,17 @@ Eva Andearsson对JVM计数、SOA、云计算和其他企业级中间件解决方
 [2]:    /blog/2013/11/10/jvm_performance_optimization_2_compiler
 [3]:    /blog/2013/11/10/jvm_performance_optimization_3_gc
 [4]:    /blog/2013/06/29/jvm_performance_optimization_4_c4_gc
-[5]:    http://www.javaworld.com/javaworld/jw-01-2002/jw-0111-hotspotgc.html
-[6]:    http://www.infoq.com/presentations/Understanding-Java-Garbage-Collection
-[7]:    http://www.oracle.com/technetwork/java/hotspotfaq-138619.html#gc_pause
-[8]:    http://stackoverflow.com/questions/1434779/maximum-java-heap-size-of-a-32-bit-jvm-on-a-64-bit-os
-[9]:    http://ludopoitou.wordpress.com/2012/05/02/about-opendj-and-hotspot-jvm-g1/
-[10]:   http://www.javaworld.com/javaworld/jw-08-2012/120821-jvm-performance-optimization-overview.html
-[11]:   http://www.javaworld.com/javaworld/jw-09-2012/120905-jvm-performance-optimization-compilers.html
-[12]:   http://www.javaworld.com/javaworld/jw-10-2012/121010-jvm-performance-optimization-garbage-collection.html
-[13]:   http://www.javaworld.com/javaworld/jw-11-2012/121107-jvm-performance-optimization-low-latency-garbage-collection.html
-[14]:   http://www.javaworld.com/jw-11-1999/jw-11-performance.html
-[15]:   http://www.javaworld.com/javaworld/jw-08-1996/jw-08-gc.html
-[16]:   http://www.javaworld.com/javaworld/jw-03-2009/jw-03-multicore-and-cloud-ready-1.html
+[5]:    https://www.javaworld.com/javaworld/jw-01-2002/jw-0111-hotspotgc.html
+[6]:    https://www.infoq.com/presentations/Understanding-Java-Garbage-Collection
+[7]:    https://www.oracle.com/technetwork/java/hotspotfaq-138619.html#gc_pause
+[8]:    https://stackoverflow.com/questions/1434779/maximum-java-heap-size-of-a-32-bit-jvm-on-a-64-bit-os
+[9]:    https://ludopoitou.wordpress.com/2012/05/02/about-opendj-and-hotspot-jvm-g1/
+[10]:   https://www.javaworld.com/javaworld/jw-08-2012/120821-jvm-performance-optimization-overview.html
+[11]:   https://www.javaworld.com/javaworld/jw-09-2012/120905-jvm-performance-optimization-compilers.html
+[12]:   https://www.javaworld.com/javaworld/jw-10-2012/121010-jvm-performance-optimization-garbage-collection.html
+[13]:   https://www.javaworld.com/javaworld/jw-11-2012/121107-jvm-performance-optimization-low-latency-garbage-collection.html
+[14]:   https://www.javaworld.com/jw-11-1999/jw-11-performance.html
+[15]:   https://www.javaworld.com/javaworld/jw-08-1996/jw-08-gc.html
+[16]:   https://www.javaworld.com/javaworld/jw-03-2009/jw-03-multicore-and-cloud-ready-1.html
 [17]:   /image/jvmperf5-fig1.png
 [18]:   /image/jvmperf5-fig2.png

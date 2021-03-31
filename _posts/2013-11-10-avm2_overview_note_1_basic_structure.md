@@ -189,5 +189,5 @@ RTQName常用于那些在编译时无法确定命名空间的限定名：
 
 to be continued...
 
-[1]:    http://www.adobe.com/content/dam/Adobe/en/devnet/actionscript/articles/avm2overview.pdf
-[2]:    http://wwwimages.adobe.com/www.adobe.com/content/dam/Adobe/en/devnet/swf/pdf/swf_file_format_spec_v10.pdf
+[1]:    https://www.adobe.com/content/dam/Adobe/en/devnet/actionscript/articles/avm2overview.pdf
+[2]:    https://wwwimages.adobe.com/www.adobe.com/content/dam/Adobe/en/devnet/swf/pdf/swf_file_format_spec_v10.pdf

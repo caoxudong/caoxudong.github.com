@@ -92,10 +92,10 @@ auth_token是如此重要，因此为了提升其安全性，可以在用户每�
 
 
 [1]:    https://jcp.org/en/jsr/detail?id=315
-[2]:    http://en.wikipedia.org/wiki/Stateless_protocol
+[2]:    https://en.wikipedia.org/wiki/Stateless_protocol
 [3]:    https://www.ietf.org/rfc/rfc2616.txt
-[4]:    http://en.wikipedia.org/wiki/Representational_state_transfer
-[5]:    http://en.wikipedia.org/wiki/HTTP_cookie
-[6]:    http://homakov.blogspot.com/2013/03/hacking-github-with-webkit.html
-[7]:    http://coolshell.cn/articles/5353.html
+[4]:    https://en.wikipedia.org/wiki/Representational_state_transfer
+[5]:    https://en.wikipedia.org/wiki/HTTP_cookie
+[6]:    https://homakov.blogspot.com/2013/03/hacking-github-with-webkit.html
+[7]:    https://coolshell.cn/articles/5353.html
 [8]:    https://github.com

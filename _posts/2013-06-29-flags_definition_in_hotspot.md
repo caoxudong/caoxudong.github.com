@@ -205,7 +205,7 @@ flag的类型必须是bool、intx、uintx或ccstr之一，其中，ccstr的意�
 
 
 
-[1]:    http://hg.openjdk.java.net/jdk7/hotspot/hotspot/file/9b0ca45cd756/src/share/vm/runtime/globals.hpp
-[2]:    http://hg.openjdk.java.net/jdk7/hotspot/hotspot/file/9b0ca45cd756/src/os/linux/vm/globals_linux.hpp
-[3]:    http://hg.openjdk.java.net/jdk7/hotspot/hotspot/file/9b0ca45cd756/src/share/vm/gc_implementation/g1/g1_globals.hpp
-[4]:    http://hg.openjdk.java.net/jdk7/hotspot/hotspot/file/9b0ca45cd756/src/share/vm/c1/c1_globals.hpp
+[1]:    https://hg.openjdk.java.net/jdk7/hotspot/hotspot/file/9b0ca45cd756/src/share/vm/runtime/globals.hpp
+[2]:    https://hg.openjdk.java.net/jdk7/hotspot/hotspot/file/9b0ca45cd756/src/os/linux/vm/globals_linux.hpp
+[3]:    https://hg.openjdk.java.net/jdk7/hotspot/hotspot/file/9b0ca45cd756/src/share/vm/gc_implementation/g1/g1_globals.hpp
+[4]:    https://hg.openjdk.java.net/jdk7/hotspot/hotspot/file/9b0ca45cd756/src/share/vm/c1/c1_globals.hpp

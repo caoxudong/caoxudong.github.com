@@ -6,7 +6,7 @@ tags:       [gc, java, jvm, cms]
 ---
 
 
-转载地址： <http://caoxudong818.iteye.com/blog/1388880>
+转载地址： <https://caoxudong818.iteye.com/blog/1388880>
 
 原文在[这里][1]。
 
@@ -86,7 +86,7 @@ tags:       [gc, java, jvm, cms]
 
 ## 试验结果 （略）
 
-[1]:    http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.22.8915
+[1]:    https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.22.8915
 [2]:    /image/a_generational_mostly_concurrent_garbage_collection_fig1.png
 [3]:    /image/a_generational_mostly_concurrent_garbage_collection_fig2.png
 [4]:    /image/a_generational_mostly_concurrent_garbage_collection_fig3.png

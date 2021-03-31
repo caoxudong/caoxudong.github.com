@@ -95,4 +95,4 @@ _exit函数的实现在$glibc_src_home/sysdeps/unix/sysv/linux/_exit.c中
     }
 
 [1]:    /blog/2013/06/29/about_exit_function_part1_declaration
-[2]:    http://gcc.gnu.org/onlinedocs/gcc-3.2/gcc/Function-Attributes.html
+[2]:    https://gcc.gnu.org/onlinedocs/gcc-3.2/gcc/Function-Attributes.html

@@ -415,4 +415,4 @@ TODO: 完成对剩余消息流的说明。添加对中间人（man-in-middle）�
 
 
 
-[1]:    http://www.ietf.org/proceedings/10mar/slides/tsvarea-1.pdf
+[1]:    https://www.ietf.org/proceedings/10mar/slides/tsvarea-1.pdf

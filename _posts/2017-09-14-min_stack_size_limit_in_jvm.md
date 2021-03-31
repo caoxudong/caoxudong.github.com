@@ -291,16 +291,16 @@ linux x86平台下，线程栈底部内存页的排布如下所示：[os_linux_x
 
 
 
-[1]:    http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os/linux/vm/os_linux.cpp#l4990
-[2]:    http://www.oracle.com/technetwork/java/javase/crashes-137240.html
-[3]:    http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os/linux/vm/os_linux.cpp#l141
-[4]:    http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os_cpu/linux_x86/vm/os_linux_x86.cpp#l681
-[5]:    http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os/linux/vm/os_linux.cpp#l795
-[6]:    http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os_cpu/linux_x86/vm/os_linux_x86.cpp#l675
-[7]:    http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/share/vm/runtime/globals.hpp#l3313
-[8]:    http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/cpu/x86/vm/globals_x86.hpp#l59
-[9]:    http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os/linux/vm/os_linux.cpp#l4937
-[10]:   http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os/linux/vm/os_linux.cpp#l4901
-[11]:   http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os/linux/vm/os_linux.cpp#l141
-[12]:   http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/share/vm/utilities/globalDefinitions.hpp#l81
-[13]:   http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os_cpu/linux_x86/vm/os_linux_x86.cpp#l214
+[1]:    https://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os/linux/vm/os_linux.cpp#l4990
+[2]:    https://www.oracle.com/technetwork/java/javase/crashes-137240.html
+[3]:    https://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os/linux/vm/os_linux.cpp#l141
+[4]:    https://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os_cpu/linux_x86/vm/os_linux_x86.cpp#l681
+[5]:    https://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os/linux/vm/os_linux.cpp#l795
+[6]:    https://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os_cpu/linux_x86/vm/os_linux_x86.cpp#l675
+[7]:    https://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/share/vm/runtime/globals.hpp#l3313
+[8]:    https://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/cpu/x86/vm/globals_x86.hpp#l59
+[9]:    https://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os/linux/vm/os_linux.cpp#l4937
+[10]:   https://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os/linux/vm/os_linux.cpp#l4901
+[11]:   https://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os/linux/vm/os_linux.cpp#l141
+[12]:   https://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/share/vm/utilities/globalDefinitions.hpp#l81
+[13]:   https://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/file/aa4ffb1f30c9/src/os_cpu/linux_x86/vm/os_linux_x86.cpp#l214

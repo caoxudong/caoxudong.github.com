@@ -2,7 +2,7 @@
 title:      《The OAuth 2.0 Authorization Framework》笔记
 layout:     post
 category:   blog
-tags:       [note, security, http, oauth, RFC]
+tags:       [note, security, https, oauth, RFC]
 ---
 
 >《The OAuth 2.0 Authorization Framework》，https://tools.ietf.org/html/rfc6749
@@ -588,7 +588,7 @@ authorization server **禁止(MUST NOT)**颁发refresh token。
 下面的示例展示了authorization server通过HTTP响应将user-agent重定向到另一个地址:
 
     HTTP/1.1 302 Found
-    Location: http://example.com/cb#access_token=2YotnFZFEjr1zCsicMWpAA&state=xyz&token_type=example&expires_in=3600
+    Location: https://example.com/cb#access_token=2YotnFZFEjr1zCsicMWpAA&state=xyz&token_type=example&expires_in=3600
 
 开发者需要注意，某些user-agent不支持在响应头`Location`中添加参数片段，此时需要使用其他重定向方法，例如在返回的新页面中添加一个重定向按钮。
 

@@ -7598,13 +7598,13 @@ JVMTI代理必须通过函数`Allocate`为要修改的类数据分配内存，JV
 [1]:      #1
 [2]:      #1.1
 [3]:      #1.2
-[4]:      http://docs.oracle.com/javase/7/docs/technotes/guides/jpda/architecture.html
+[4]:      https://docs.oracle.com/javase/7/docs/technotes/guides/jpda/architecture.html
 [5]:      #1.3
 [6]:      #1.4
 [7]:      #1.5
 [8]:      #1.6
 [10]:     #1.9
-[11]:     http://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#5.3.3
+[11]:     https://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#5.3.3
 [12]:     #1.7
 [13]:     #1.8
 [14]:     #1.10
@@ -7613,7 +7613,7 @@ JVMTI代理必须通过函数`Allocate`为要修改的类数据分配内存，JV
 [17]:     #1.13
 [18]:     #1.14
 [19]:     #1.15
-[20]:     http://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#3.6
+[20]:     https://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#3.6
 [21]:     #2
 [22]:     #2.1
 [23]:     #2.2
@@ -7656,9 +7656,9 @@ JVMTI代理必须通过函数`Allocate`为要修改的类数据分配内存，JV
 [60]:     #4.6
 [61]:     #5
 [62]:     #6
-[63]:     http://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#2
-[64]:     http://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#4.5.2
-[65]:     http://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#2.5.3
+[63]:     https://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#2
+[64]:     https://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#4.5.2
+[65]:     https://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#2.5.3
 [66]:     #2.6.1.1
 [67]:     #2.6.1.2
 [68]:     #2.6.2.1
@@ -7694,7 +7694,7 @@ JVMTI代理必须通过函数`Allocate`为要修改的类数据分配内存，JV
 [98]:     #2.6.5.5
 [99]:     #2.6.5.6
 [100]:    https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html
-[101]:    http://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#5.1.2
+[101]:    https://blog.caoxudong.info/blog/2017/10/11/jni_functions_note#5.1.2
 [102]:    https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6
 [103]:    #2.6.6.7
 [104]:    #2.6.6.8
@@ -7756,7 +7756,7 @@ JVMTI代理必须通过函数`Allocate`为要修改的类数据分配内存，JV
 [160]:    #2.6.12.1
 [161]:    #2.6.12.2
 [162]:    #2.6.12.3
-[163]:    http://blog.caoxudong.info/blog/2017/10/11/jni_functions_note
+[163]:    https://blog.caoxudong.info/blog/2017/10/11/jni_functions_note
 [164]:    #2.6.13.1
 [165]:    #2.6.13.2
 [166]:    #2.6.13.3
