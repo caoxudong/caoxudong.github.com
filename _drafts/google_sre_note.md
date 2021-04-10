@@ -5,7 +5,7 @@ category:   blog
 tags:       [sre, note]
 ---
 
->《机器学习》，https://book.douban.com/subject/26875239/
+>《SRE-Google运维解密》，https://book.douban.com/subject/26875239/
 
 # chap1 介绍
 
@@ -120,3 +120,18 @@ SLO设定的原则：
 
 使用时序数据库设计监控报警系统。
 
+# chap11 on-call轮值
+
+sre的关键在于平衡琐碎事情和开发系统工具的时间。
+
+# chap12 有效的故障排查手段
+
+监控，正确的监控，合适的监控
+
+# chap13 紧急事件响应
+
+混沌系统助力系统健康、稳定，关注复盘、关注细节。
+
+# chap14 紧急事故管理
+
+当发生故障时，切忌手忙脚乱，切忌闷头瞎搞，要多沟通、明确分工职责
