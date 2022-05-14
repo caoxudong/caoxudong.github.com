@@ -95,12 +95,15 @@
                 sweetAlert("Oops...", "Please select codec at first!", "error");
                 return;
               }
-              var source = sourceTextArea.val();
-              var target = null;
-              if (source !== null) {
-                target = codecScriptsMap[codec][operation](source);
+              var sourceLines = sourceTextArea.val().split("\n");
+              var targetLines = [];
+              if (sourceLines !== null) {
+                for (var i = 0; i < sourceLines.length; i++) {
+                  tmpTarget = codecScriptsMap[codec][operation](sourceLines[i]);
+                  targetLines.push(tmpTarget)
+                }
               }
-              targetTextArea.val(target);
+              targetTextArea.val(targetLines.join("\n"));
             };
             convertCode2DecodeButton.click(function() {
               var codec = codecSelect.val();
