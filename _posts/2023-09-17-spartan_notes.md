@@ -39,9 +39,9 @@ tags:       [fit, note]
 * [计时][4]
 
 
-[1]:    /images/20230917_spartan_medal.jpg
-[2]:    /images/20230917_spartan_finishing_mission.jpeg
-[3]:    /images/20230917_spartan_mission_rank.jpg
-[4]:    /images/20230917_spartan_timing.jpg
-[5]:    /images/20230917_spartan_raodmap.png
+[1]:    /image/20230917_spartan_medal.jpg
+[2]:    /image/20230917_spartan_finishing_mission.jpeg
+[3]:    /image/20230917_spartan_mission_rank.jpg
+[4]:    /image/20230917_spartan_timing.jpg
+[5]:    /image/20230917_spartan_raodmap.png
 [6]:    /attachments/20230917_spartan_guide.pdf
